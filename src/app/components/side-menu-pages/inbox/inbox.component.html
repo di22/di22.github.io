@@ -1,0 +1,134 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" fxLayoutAlign="center center" >
+    <mat-card class="card" >
+      <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
+        <h5 class="headers-color">المعاملات الخارجيه</h5>
+      </mat-card-title>
+
+      <mat-divider ></mat-divider>
+
+      <mat-card-content>
+        <form [formGroup]="searchForm" novalidate autocomplete="off">
+        <div class="mat-elevation-z8 card-content-space-around" fxLayout="column" fxLayoutAlign="center">
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+            <div fxFlex="25%" fxFlexOffset.gt-lg="10px">
+              <mat-form-field>
+                <mat-label>رقم الطلب</mat-label>
+                <input matInput formControlName="id">
+              </mat-form-field>
+            </div>
+            <div fxFlex="25%">
+              <mat-form-field>
+                <mat-label >حالة الطلب</mat-label>
+                <mat-select  value="16px" formControlName="requestStatusId">
+                  <mat-option *ngFor="let requestStatus of (requestStatuses$ | async)" [value]="requestStatus.id">{{requestStatus.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div fxFlex="25%">
+              <mat-form-field>
+                <mat-label>الفتره من</mat-label>
+                <input matInput [matDatepicker]="dp" placeholder="Different locale" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
+                <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                <mat-datepicker #dp></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div fxFlex="25%">
+              <mat-form-field>
+                <mat-label>الفتره إلي</mat-label>
+                <input matInput [matDatepicker]="dp1" placeholder="Different locale" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
+                <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+                <mat-datepicker #dp1></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+            <div fxFlex="25%" >
+              <mat-form-field>
+                <mat-label > نوع الطلب</mat-label>
+                <mat-select  formControlName="transactionTypeId" >
+                  <mat-option *ngFor="let requestType of (requestTypes$ | async)" [value]="requestType.id">{{requestType.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div fxFlex="25%" >
+              <mat-form-field>
+                <mat-label >الموظف</mat-label>
+                <mat-select  formControlName="organizationUnitId" >
+                  <mat-option *ngFor="let employee of (employee$ | async)" [value]="employee.id">{{employee.customerName}}></mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div>
+      </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div  >
+            <button mat-raised-button color="Basic" (click)="search(searchForm.value)">بحث</button>
+          </div> <div >
+          <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
+        </div>
+        </div>
+      </mat-card-actions>
+      <mat-card-content>
+        <mat-table [dataSource]="searchResult$ | async" class="mat-elevation-z8">
+          <!-- Position Column -->
+          <ng-container matColumnDef="position">
+            <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index "> {{i+1}} </mat-cell>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="request-id">
+            <mat-header-cell *matHeaderCellDef> رقم الطلب </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+          </ng-container>
+
+          <!-- Weight Column -->
+          <ng-container matColumnDef="request-date">
+            <mat-header-cell *matHeaderCellDef> تاريخ الطلب </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.requestDate.day}}/{{element.requestDate.month}}/{{element.requestDate.year}} </mat-cell>
+          </ng-container>
+
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="arrival-date">
+            <mat-header-cell *matHeaderCellDef> تاريخ الوصول </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.approvalAssignedDate.day}}/{{element.approvalAssignedDate.month}}/{{element.approvalAssignedDate.year}}  </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="request-status">
+            <mat-header-cell *matHeaderCellDef>حالة الطلب </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.requestStatusHistory.requestStatus.description}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="request-type">
+            <mat-header-cell *matHeaderCellDef>نوع الطلب </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.transactionType.description}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="notes">
+            <mat-header-cell *matHeaderCellDef>ملاحظات الطلب </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.requestStatusHistory.statusReason? element.requestStatusHistory.statusReason : 'لا يوجد'}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="show">
+            <mat-header-cell *matHeaderCellDef>عرض </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <mat-icon matTooltip="عرض" color="primary">remove_red_eye</mat-icon>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="attachments">
+            <mat-header-cell *matHeaderCellDef>المرفقات </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <mat-icon matTooltip="المرفقات" color="primary">attachment</mat-icon>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

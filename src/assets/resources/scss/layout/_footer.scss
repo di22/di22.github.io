@@ -1,0 +1,27 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-image: url("src/assets/resources/img/header.png");
+  height: 45px;
+  background-position: center;
+  .hero-text-box-footer {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    color: rgb(255, 255, 255);
+    transform: translate(0%, 5%);
+    h1 {
+      font-size: 1.2rem;
+    }
+    a {
+
+    }
+  }
+
+}

@@ -1,0 +1,27 @@
+.side-menu {
+  position: absolute;
+  min-height: 100vh;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.sidenav_container {
+  min-width: 60px;
+  height: calc(100vh - 200px);
+}
+
+.jim {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+/* SPACER */
+.spacer {
+  flex: 1 1 auto;
+}
+ .text-space {
+   margin-right: 10px;
+  // padding: 0px 7px;
+ }

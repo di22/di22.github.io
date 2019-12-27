@@ -1,0 +1,13 @@
+<mat-sidenav-container class="side-menu" [hasBackdrop]="false">
+  <mat-sidenav #sidenav [mode]="'side'" gdArea="side" opened>
+<app-right-menu></app-right-menu>
+  </mat-sidenav>
+
+  <mat-sidenav-content [@onMainContentChange]="onSideNavChange ? 'open': 'close'">
+    <app-header [sidenav]="sidenav"></app-header>
+    <app-bread-crumbs></app-bread-crumbs>
+
+<ng-content></ng-content>
+    <app-footer gdArea="footer"></app-footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,37 @@
+.breadcrumbs {
+  text-align:right !important;
+  border-radius:0;
+  > *:before {
+    vertical-align:middle !important;
+    font-weight:400 !important;
+    font-style:normal !important;
+    speak:none;text-decoration:inherit !important;
+    text-transform:none !important;
+    text-rendering:geometricPrecision !important;
+    -webkit-font-smoothing:antialiased !important;
+    -moz-osx-font-smoothing:grayscale  !important;
+    color: #966e44 !important;
+    margin: 0 0.75rem !important;
+    position: relative;
+    top: -2px !important;
+    font-size:11pt !important;
+  }
+
+  li{
+    text-align:right !important;
+    float:right !important;
+  }
+
+  > * a {
+    color: #856b4b;
+    font-size: 10pt;
+  }
+
+  span {
+    font-size: 11pt !important;
+    margin-right:5px !important;
+  }
+
+}
+
+
