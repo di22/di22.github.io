@@ -1,8 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
 export const loadMainCategories = createAction(
-  '[MainCategories] Load MainCategories',
-  props<{ }>()
+  '[MainCategories] Load MainCategories'
 );
 
 export const loadMainCategoriesSuccess = createAction(

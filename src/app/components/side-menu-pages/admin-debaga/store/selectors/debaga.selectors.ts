@@ -2,10 +2,10 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromDebaga from '../reducers/debaga.reducer';
 
 export const selectDebagaState = createFeatureSelector<fromDebaga.State>(
-  fromDebaga.debagaFeatureKey
+  fromDebaga.debagasFeatureKey
 );
 
-export const selectDebagaEntites = createSelector(
+export const selectDebagaEntities = createSelector(
   selectDebagaState,
   fromDebaga.selectAll
 );

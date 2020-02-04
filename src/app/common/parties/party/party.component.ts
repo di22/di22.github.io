@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit, Optional, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as fromApp from '../../../store';
 import {State} from '../../../store';
@@ -14,7 +14,7 @@ import {AdminTypes} from '../../../DTO`s/admin-types';
 import * as fromAdminTypesSelectors from '../../../store/general/lookups/admin-types/selectors/admin-type.selectors';
 import * as fromRequestSelectors from './store/request/selectors/request.selectors';
 import * as fromCustomerSelectors from './store/customer/selectors/customer.selectors';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {ControlContainer, FormBuilder, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 // tslint:disable-next-line:max-line-length
@@ -22,13 +22,15 @@ import {loadGetRequestCustomerTypes} from '../../../store/general/lookups/reques
 import {loadCustomerIdTypes} from '../../../store/general/lookups/customer-id-types/actions/custiomer-id-type.actions';
 import {loadNationalities} from '../../../store/general/lookups/nationalites/actions/nationalites.actions';
 import {loadAdminTypes} from '../../../store/general/lookups/admin-types/actions/admin-type.actions';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CreateRequest, GetRequestDetails} from './store/request/actions/request.actions';
 import {Request} from '../../../DTO`s/request';
-import {createCustomer, deleteCustomer, updateCustomer} from './store/customer/actions/customer.actions';
+import {createCustomer, deleteCustomer, getROPCustomer, updateCustomer} from './store/customer/actions/customer.actions';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {TransactionCategories} from '../../data/transactionCategories';
+import {CustomerService} from '../../services/customer.service';
+import {ValidationMessagesService} from '../../../services/config/validation-messages.service';
 
 @Component({
   selector: 'app-party',
@@ -40,14 +42,27 @@ import {TransactionCategories} from '../../data/transactionCategories';
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
     },
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}]
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}],
+  viewProviders: [
+    {
+      provide: ControlContainer,
+      useExisting: FormGroupDirective
+    }
+  ]
 })
 export class PartyComponent implements OnInit {
   @Input() participantType: number;
+  procurationCustomer: FormGroup;
+  request: FormGroup;
   requestId: number;
   transactionId: number;
-  dateFrom: any;
+  expiryDate: any;
+  companyExpiryDate: any;
+  embassyDate: any;
+  birthDate: any;
   dateTo: {};
+  url: string;
+  maxLength = 9;
   transactionCategories: TransactionCategories = new TransactionCategories();
   appStore$: Observable<fromApp.State>;
   requestCustomerTypes$: Observable<RequestCustomerType[]> = this.store.select(state =>
@@ -57,30 +72,38 @@ export class PartyComponent implements OnInit {
   adminTypes$: Observable<AdminTypes[]> = this.store.select(state => fromAdminTypesSelectors.selectFeatureAdminTypes(state));
   request$: Observable<Request> = this.store.select(state => fromRequestSelectors.selectFeatureRequestState(state));
   customers$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectUserEntities(state));
+  customerROP$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectROPCustomer(state));
   displayedColumns: string[] = ['position', 'customerIdType', 'civilId', 'nationality', 'name', 'requestCustomerType', 'mobileNumber', 'moql-qaser-mfwad', 'check', 'edit-delete'];
 
-  request: FormGroup;
-  procurationCustomer: FormGroup;
+  validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
+
   constructor(private store: Store<State>,
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
-              private activatedRout: ActivatedRoute) { }
+              private validationMessagesService: ValidationMessagesService,
+              private customerService: CustomerService,
+              private activatedRout: ActivatedRoute,
+              private router: Router,
+              private ref: ChangeDetectorRef) { }
 
   ngOnInit() {
+    this.url = this.router.url.slice(this.router.url.lastIndexOf('/', this.router.url.length));
     this.initForms();
     this.procurationCustomer.controls.particpantType.setValue({id: this.participantType});
     this.procurationCustomer.get('customer').get('customerName').disable();
     this.procurationCustomer.get('customer').get('birthDate').disable();
     this.procurationCustomer.get('customer').get('nationality').disable();
     this.procurationCustomer.controls.customer.get('customerIDType').valueChanges.subscribe(value => {
-      value === 1 ? this.procurationCustomer.get('customer').get('customerName').disable() :
+      if (value === 1) {
+        this.procurationCustomer.get('customer').get('customerName').disable();
+        this.procurationCustomer.get('customer').get('birthDate').disable();
+        this.procurationCustomer.get('customer').get('nationality').disable();
+      } else {
         this.procurationCustomer.controls.customer.get('customerName').enable();
-
-      value === 1 ? this.procurationCustomer.get('customer').get('birthDate').disable() :
         this.procurationCustomer.controls.customer.get('birthDate').enable();
-
-      value === 1 ? this.procurationCustomer.get('customer').get('nationality').disable() :
         this.procurationCustomer.controls.customer.get('nationality').enable();
+      }
+      this.updateProofNoMaxLenght(value);
     });
     this.activatedRout.data.subscribe(params => {
       this.transactionId = params.transactionId;
@@ -107,6 +130,7 @@ export class PartyComponent implements OnInit {
       this.store.dispatch(loadNationalities());
       this.store.dispatch(loadAdminTypes());
     }
+
   }
 
   initForms = () => {
@@ -125,14 +149,14 @@ export class PartyComponent implements OnInit {
         telephone: []
       }),
       customer: this.formBuilder.group({
-        customerName: [],
+        customerName: ['', [Validators.required, Validators.pattern('^\\s*\\S+(?:\\s+\\S+)+\\s*$')]],
         customerNameEn: [''],
         customerStatus: [{id: 1}],
         customerType: [{id: 1}],
-        customerCategory: [2],
+        customerCategory: [2, [Validators.required, this.validationMessagesService.validateSelectInput]],
         nationality: [],
-        customerIDType: [1],
-        customerCivilId: [],
+        customerIDType: [1, [Validators.required, this.validationMessagesService.validateSelectInput]],
+        customerCivilId: ['', [Validators.required, Validators.maxLength(this.maxLength)]],
         job: [''],
         address: [],
         tribeName: [],
@@ -141,10 +165,10 @@ export class PartyComponent implements OnInit {
         tbookId: [3],
         birthPlace: [''],
         jobPlace: [''],
-        idExpiryDate: [],
+        idExpiryDate: [''],
         customerGender: [{id: 1}],
         customerReligion: [{id: 4}],
-        mobileNo: [],
+        mobileNo: ['', [Validators.maxLength(15), Validators.minLength(8)]],
         professionId: [],
         qualificationId: [],
         workStatusId: [],
@@ -183,7 +207,7 @@ export class PartyComponent implements OnInit {
         parentProcurationSerial: [],
         manualFlag: [false]
       })
-    });
+    }, {validators: this.validationMessagesService.conditionallyRequiredValidator});
 
     this.request = this.formBuilder.group({
       requestDate: [null],
@@ -198,29 +222,64 @@ export class PartyComponent implements OnInit {
       procurationCustomers: [[]]
     });
   }
-
+  updateProofNoMaxLenght = (id) => {
+    switch (id) {
+      case 1:
+        this.maxLength = 9;
+        break;
+      case 12:
+        this.maxLength = 20;
+        break;
+      case 4:
+        this.maxLength = 20;
+        break;
+      case 5:
+        this.maxLength = 15;
+        break;
+      case 9:
+        this.maxLength = 10;
+        break;
+      case 11:
+        this.maxLength = 12;
+        break;
+      case 6:
+        this.maxLength = 11;
+        break;
+      case 3:
+        this.maxLength = 9;
+        break;
+      default:
+        this.maxLength = 20;
+        break;
+    }
+  }
   createRequest = (searchObj) => {
     const data = {data: {request: searchObj}};
     // const encryptData = this.encryption(data);
    //  this.request$.pipe(take(1)).subscribe(request => {
    //   if (!Object.entries(request).length) {
-    this.store.dispatch(CreateRequest({request: data}));
+    this.store.dispatch(CreateRequest({request: data, url: this.url}));
    //   }
   //  });
   }
-  creatProcurationCustomer = (customer: any) => {
-    const savedCustomer = JSON.parse(JSON.stringify(customer));
-   // const customer = {data: {procurationCustomer: customerObj}};
-    if (!customer.id) {
-      delete customer.id;
+  creatProcurationCustomer = () => {
+    if (this.procurationCustomer.valid) {
+      const savedCustomer = Object.assign({}, this.procurationCustomer.getRawValue());
+      // const customer = {data: {procurationCustomer: customerObj}};
+      if (!savedCustomer.id) {
+        delete savedCustomer.id;
+      }
+      savedCustomer.requestCustomerType = Object.assign({}, {id: JSON.parse(JSON.stringify(savedCustomer.customer.customerCategory))});
+      savedCustomer.customer.customerCategory = Object.assign({}, {id: 1});
+      savedCustomer.customer.customerIDType = {id: savedCustomer.customer.customerIDType};
+      savedCustomer.customer.nationality = {id: savedCustomer.customer.nationality};
+      savedCustomer.customer.idExpiryDate = this.expiryDate;
+      savedCustomer.id ? this.store.dispatch(updateCustomer({customer: savedCustomer, savedCustomer}))
+        : this.store.dispatch(createCustomer({customer: savedCustomer, savedCustomer}));
+      this.clearForm();
+    } else {
+      this.validationMessagesService.validateAllFormFields(this.procurationCustomer);
     }
-    customer.requestCustomerType = Object.assign( {}, {id: JSON.parse(JSON.stringify(customer.customer.customerCategory))});
-    customer.customer.customerCategory = Object.assign({}, {id: 1});
-    customer.customer.customerIDType = {id: customer.customer.customerIDType};
-    customer.customer.nationality = {id: customer.customer.nationality};
-    customer.id ? this.store.dispatch(updateCustomer({customer, savedCustomer}))
-      : this.store.dispatch(createCustomer({customer, savedCustomer}));
-    this.clearForm();
   }
 
   fetchProcurationCustomer = (customer: any) => {
@@ -236,28 +295,51 @@ export class PartyComponent implements OnInit {
     this.store.dispatch(deleteCustomer({id: data, entityId}));
   }
   onChangesExpiryDate = (event: any) => {
-    this.dateFrom = {
+    this.expiryDate = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
+    this.customerService.getCustomerFromROP({civilNumber: this.procurationCustomer.controls.customer.get('customerCivilId').value,
+      dateOfExpiry: `${this.expiryDate.day}-${this.expiryDate.month}-${this.expiryDate.year}`}).subscribe(response => {
+        if (response.items.length > 0) {
+          this.procurationCustomer.get('customer').get('customerName').patchValue(
+            `${response.items[0].person.civilIdCard.arabicName.first} ${response.items[0].person.civilIdCard.arabicName.second} ${response.items[0].person.civilIdCard.arabicName.third} ${response.items[0].person.civilIdCard.arabicName.sixth}`
+          );
+          this.procurationCustomer.get('customer').get('customerNameEn').patchValue(
+            `${response.items[0].person.civilIdCard.englishName.first} ${response.items[0].person.civilIdCard.englishName.second} ${response.items[0].person.civilIdCard.englishName.third} ${response.items[0].person.civilIdCard.englishName.sixth}`
+          );
+          if (response.items[0].person.civilIdCard.nationality.code === 'OMN') {
+            this.procurationCustomer.get('customer').get('nationality').patchValue(512);
+          }
+          this.procurationCustomer.get('customer').get('birthDate')
+            .patchValue(this.onGetBirthDateFromROP(response.items[0].person.civilIdCard.birthDetails.dateOfBirth));
+        }
+    });
+   // this.store.dispatch(getROPCustomer({data: {civilNumber: this.procurationCustomer.controls.customer.get('customerCivilId').value,
+   //   dateOfExpiry: `${this.dateFrom.day}-${this.dateFrom.month}-${this.dateFrom.year}`}}));
   }
   onChangesBirthDate = (event: any) => {
-    this.dateFrom = {
+    this.birthDate = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
   }
+  onGetBirthDateFromROP = (date: string): any => {
+    let d: any = date.split('-');
+    d = {day: d[0], month: d[1], year: d[2]};
+    return d;
+  }
   onChangesEmbassyDate = (event: any) => {
-    this.dateFrom = {
+    this.embassyDate = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
   }
   onChangesCompanyExpiryDate = (event: any) => {
-    this.dateFrom = {
+    this.companyExpiryDate = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
@@ -272,6 +354,9 @@ export class PartyComponent implements OnInit {
   }
   getFormControlCustomerValue = (control) => {
     return this.procurationCustomer.controls.customer.value[`${control}`];
+  }
+  getFormControlCustomer = (control) => {
+    return this.procurationCustomer.controls.customer.get(`${control}`);
   }
   getFormControlProcurationValue = (control) => {
     return this.procurationCustomer.controls.procuration.value[`${control}`];

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {Observable} from 'rxjs';
@@ -19,6 +19,10 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 import * as selectFeatureResult from './store/selectors/inbox.selectors';
 
+
+import * as jspdf from 'jspdf';
+import html2canvas from 'html2canvas';
+
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
@@ -32,6 +36,9 @@ import * as selectFeatureResult from './store/selectors/inbox.selectors';
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}]
 })
 export class InboxComponent implements OnInit {
+
+  @ViewChild('contentToConvert', {static: false}) pdfTable: ElementRef;
+
   searchObj: any = {data: {}};
   dateFrom: any;
   dateTo: {};
@@ -99,6 +106,24 @@ export class InboxComponent implements OnInit {
     this.searchForm.reset();
   }
 
+ captureScreen() {
+
+      const doc = new jspdf();
+      doc.setFont('Arial');
+      const specialElementHandlers = {
+        '#editor'(element, renderer) {
+          return true;
+        }
+      };
+
+      const pdfTable = this.pdfTable.nativeElement;
+
+      doc.fromHTML(pdfTable.textContent, 15, 15, {
+        width: 190,
+        elementHandlers: specialElementHandlers
+      });
+      doc.save('tableToPdf.pdf');
+  }
   encryption = (data) => {
     return this.encryptDecryptService.encryptUsingAES256(data);
   }

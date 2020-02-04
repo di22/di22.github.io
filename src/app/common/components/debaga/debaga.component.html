@@ -1,1 +1,3 @@
-<p>debaga works!</p>
+<app-basic-data [debagas$]="debagas$" *ngIf="((debagas$ | async) | debagaFilter: true).length > 0"></app-basic-data>
+<br>
+<app-optional-data [debagas$]="debagas$" *ngIf="((debagas$ | async) | debagaFilter: false).length > 0"></app-optional-data>

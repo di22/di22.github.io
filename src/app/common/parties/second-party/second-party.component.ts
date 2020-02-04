@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-second-party',
@@ -7,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SecondPartyComponent implements OnInit {
 
+  secondForm: FormGroup;
   constructor() { }
 
   ngOnInit() {

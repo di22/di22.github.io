@@ -23,7 +23,10 @@ import * as fromCustomerIdType from './general/lookups/customer-id-types/reducer
 import * as fromAdminType from './general/lookups/admin-types/reducers/admin-type.reducer';
 import * as fromRequest from '../common/parties/party/store/request/reducers/request.reducer';
 import * as fromCustomer from '../common/parties/party/store/customer/reducers/customer.reducer';
-import * as fromDebaga from '../common/components/debaga/store/reducers/debaga.reducer';
+import * as fromDebaga from '../components/side-menu-pages/admin-debaga/store/reducers/debaga.reducer';
+import * as fromRequestDebaga from '../common/components/debaga/store/reducers/request-debaga.reducer';
+import * as fromRequestAttachments from './general/lookups/requestAttachments/reducers/request-attachments.reducer';
+import * as fromTransactionRequestAttachment from '../common/components/request-attachment/store/reducers/transaction-request-attachment.reducer';
 
 export interface State {
   [fromAuth.authFeatureKey]: fromAuth.State;
@@ -39,7 +42,15 @@ export interface State {
   [fromAdminType.adminTypeFeatureKey]: fromAdminType.State;
   [fromRequest.requestFeatureKey]: fromRequest.State;
   [fromCustomer.customerFeatureKey]: fromCustomer.State;
-  [fromDebaga.debagaFeatureKey]: fromDebaga.State;
+  [fromDebaga.debagasFeatureKey]: fromDebaga.State;
+  [fromRequestDebaga.requestDebagaFeatureKey]: fromRequestDebaga.State;
+  [fromRequestAttachments.requestAttachmentsFeatureKey]: fromRequestAttachments.State;
+  [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: fromTransactionRequestAttachment.State;
+
+
+
+
+
  // [fromLookups.lookupsFeatureKey]: fromLookups.State;
 }
 
@@ -57,7 +68,10 @@ export const reducers: ActionReducerMap<State> = {
   [fromAdminType.adminTypeFeatureKey]: fromAdminType.reducer,
   [fromRequest.requestFeatureKey]: fromRequest.reducer,
   [fromCustomer.customerFeatureKey]: fromCustomer.reducer,
-  [fromDebaga.debagaFeatureKey]: fromDebaga.reducer
+  [fromDebaga.debagasFeatureKey]: fromDebaga.reducer,
+  [fromRequestDebaga.requestDebagaFeatureKey]: fromRequestDebaga.reducer,
+  [fromRequestAttachments.requestAttachmentsFeatureKey]: fromRequestAttachments.reducer,
+  [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: fromTransactionRequestAttachment.reducer,
   // [fromLookups.lookupsFeatureKey]: fromLookups.reducer
 };
 

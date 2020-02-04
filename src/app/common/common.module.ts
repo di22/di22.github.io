@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {FlexLayoutModule, FlexModule} from '@angular/flex-layout';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CategoriesComponent } from './components/categories/categories.component';
 import {RouterModule} from '@angular/router';
 import { FirstPartyComponent } from './parties/first-party/first-party.component';
@@ -17,12 +16,20 @@ import { PartyComponent } from './parties/party/party.component';
 import { EffectsModule } from '@ngrx/effects';
 import { RequestEffects } from './parties/party/store/request/effects/request.effects';
 import {StoreModule} from '@ngrx/store';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+
 import {reducerProvider, reducers, REDUCERS_TOKEN} from './store';
 import { CustomerEffects } from './parties/party/store/customer/effects/customer.effects';
 import { CustomerParticpantTypePipe } from './pipes/customer-particpant-type.pipe';
 import {DirectivesModule} from '../directives-module/directives.module';
 import { BasicDataComponent } from './components/debaga/basic-data/basic-data.component';
 import { OptionalDataComponent } from './components/debaga/optional-data/optional-data.component';
+import { DebagaFilterPipe } from './pipes/debaga-filter.pipe';
+import {StringToArrayPipe} from './pipes/string-to-array.pipe';
+import { RequestAttachmentComponent } from './components/request-attachment/request-attachment.component';
+import { TransactionRequestAttachmentEffects } from './components/request-attachment/store/effects/transaction-request-attachment.effects';
+import { GetColumnsFromDebagaPipe } from './pipes/get-columns-from-debaga.pipe';
+import { GetBasicDataValuesPipe } from './pipes/get-basic-data-values.pipe';
 
 @NgModule({
   declarations: [
@@ -35,7 +42,12 @@ import { OptionalDataComponent } from './components/debaga/optional-data/optiona
     PartyComponent,
     CustomerParticpantTypePipe,
     BasicDataComponent,
-    OptionalDataComponent
+    OptionalDataComponent,
+    DebagaFilterPipe,
+    StringToArrayPipe,
+    RequestAttachmentComponent,
+    GetColumnsFromDebagaPipe,
+    GetBasicDataValuesPipe
   ],
   imports: [
     CommonModule,
@@ -44,28 +56,31 @@ import { OptionalDataComponent } from './components/debaga/optional-data/optiona
     HttpClientModule,
     FlexLayoutModule,
     FlexModule,
-    BrowserAnimationsModule,
     RouterModule,
     MaterialModule,
     DirectivesModule,
     // StoreModule.forFeature('common', {common: REDUCERS_TOKEN}),
-    EffectsModule.forFeature([RequestEffects, CustomerEffects])
+    EffectsModule.forFeature([RequestEffects, CustomerEffects, TransactionRequestAttachmentEffects]),
+    CKEditorModule
   ],
-    exports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        FlexLayoutModule,
-        FlexModule,
-        BrowserAnimationsModule,
-        CategoriesComponent,
-        FirstPartyComponent,
-        AdminTypesPipe,
-        SecondPartyComponent,
-        DirectivesModule,
-        WitnessesComponent
-    ],
-  providers: [reducerProvider]
+  exports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    FlexLayoutModule,
+    FlexModule,
+    CKEditorModule,
+    CategoriesComponent,
+    FirstPartyComponent,
+    AdminTypesPipe,
+    SecondPartyComponent,
+    DirectivesModule,
+    WitnessesComponent,
+    DebagaComponent,
+    RequestAttachmentComponent
+  ],
+  providers: [reducerProvider],
+  bootstrap: [PartyComponent]
 })
 export class CommonSharedModule { }

@@ -58,7 +58,9 @@
         <mat-icon>library_books</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <app-witnesses></app-witnesses>
+    <ng-template matExpansionPanelContent>
+      <app-debaga></app-debaga>
+    </ng-template>
     <mat-action-row>
       <button mat-button color="warn" (click)="prevStep()">السابق</button>
       <button mat-button color="primary" (click)="nextStep()">النهايه</button>

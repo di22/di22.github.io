@@ -1,0 +1,203 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row">
+    <mat-card class="card">
+
+      <mat-card-content>
+        <form [formGroup]="adminDebagaForm" novalidate autocomplete="off">
+
+          <div class="mat-elevation-z8 card-content-space-around" fxLayout="column" fxLayoutGap="1%"  fxLayoutAlign="center">
+            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="10%">
+              <mat-form-field class="input-width" >
+                <mat-label >نوع المعاملة</mat-label>
+                <mat-select   formControlName="transactionTypeId">
+                  <mat-option *ngFor="let tg of (transactionCategories$ | async)" [value]="tg.id">{{tg.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div fxLayout="column wrap" fxLayout.xs="column" fxLayoutAlign="start " fxLayoutGap="1%" formGroupName="debagaTemplateLuDTO">
+
+              <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="5%">
+
+              <mat-form-field class="input-width">
+                <mat-label>االاسم باللغة العربية</mat-label>
+                <input matInput type="number" formControlName="description">
+              </mat-form-field>
+
+              <mat-form-field class="input-width">
+                <mat-label>الاسم بالغة الانجليزية</mat-label>
+                <input matInput type="number" formControlName="code">
+              </mat-form-field>
+
+              <mat-form-field class="input-width">
+                <mat-label>القيمة</mat-label>
+                <input matInput type="number" formControlName="cost">
+              </mat-form-field>
+
+              <mat-form-field class="input-width">
+                <mat-label>عدد الشهور</mat-label>
+                <input matInput type="number" formControlName="expiredMonths">
+              </mat-form-field>
+
+
+
+              <mat-form-field class="input-width">
+                <mat-label>اقصى عدد احرف</mat-label>
+                <input matInput type="number" formControlName="maxValue">
+              </mat-form-field>
+
+              <mat-form-field class="input-width">
+                <mat-label>اقل عدد احرف</mat-label>
+                <input matInput type="number" formControlName="minValue">
+              </mat-form-field>
+
+            <mat-form-field class="input-width">
+              <mat-label >تابع الي</mat-label>
+              <mat-select  formControlName="parentDebagaTemplate">
+                <mat-option *ngFor="let cId of []" [value]="cId.id">{{cId.description}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+              <mat-form-field class="input-width">
+                <mat-label >نوع البيانات المدخله بالحقل</mat-label>
+                <mat-select  formControlName="columnType">
+                  <mat-option *ngFor="let ft of (fieldType$ | async)" [value]="ft.id">{{ft.ar}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+
+              <mat-form-field class="input-width">
+                <mat-label >نوع التاريخ</mat-label>
+                <mat-select  formControlName="classType">
+                  <mat-option *ngFor="let dt of (dateTypes$ | async)" [value]="dt.en">{{dt.ar}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+            </div>
+
+            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="5%">
+              <mat-form-field class="input-width">
+                <mat-label >اضافة اختيارات</mat-label>
+                <mat-select  >
+                  <mat-option *ngFor="let cId of []" [value]="cId.id">{{cId.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="input-width">
+                <input matInput type="number" >
+              </mat-form-field>
+
+              <button mat-raised-button color="Basic" (click)="AddTableDataLists()">اضافة خيار</button>
+
+              <button mat-raised-button color="warn" (click)="DeletTableDataLists()">حذف خيار</button>
+
+            </div>
+
+              <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="1%" formGroupName="htmlComponentLu">
+
+                <mat-form-field class="input-width">
+                  <mat-label>الترتيب</mat-label>
+                  <input matInput type="number" formControlName="sortOrder">
+                </mat-form-field>
+
+                <mat-form-field class="input-width">
+                  <mat-label >نوع الحقل</mat-label>
+                  <mat-select  formControlName="id">
+                    <mat-option *ngFor="let hc of (htmlComponents$ | async)" [value]="hc.id">{{hc.ar}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+              </div>
+
+            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1%" fxLayoutAlign="start center">
+              <mat-checkbox formControlName="staticTemplate" >نماذج أساسية</mat-checkbox>
+              <mat-checkbox formControlName="required" >مطلوب</mat-checkbox>
+            </div>
+
+          </div>
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div>
+            <button mat-raised-button color="Basic" (click)="addDebaga()">{{adminDebagaForm.controls.debagaTemplateLuDTO.value.id ? 'تعديل' : 'إضافه'}}</button>
+          </div>
+          <div>
+            <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
+          </div>
+        </div>
+      </mat-card-actions>
+      <mat-card-content>
+        <mat-table [dataSource]="(debagas$ | async)" class="mat-elevation-z8">
+
+
+
+
+
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="position">
+            <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index "> {{i+1}} </mat-cell>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>الاسم (عربي) </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.debagaTemplate.description}}</mat-cell>
+          </ng-container>
+
+
+          <ng-container matColumnDef="order">
+            <mat-header-cell *matHeaderCellDef>الترتيب </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.sortOrder}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fieldType">
+            <mat-header-cell *matHeaderCellDef>نوع الحقل </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.debagaTemplate.htmlComponentLu.code}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fieldNature">
+            <mat-header-cell *matHeaderCellDef>طبيعة الحقل </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.debagaTemplate.columnType}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="cost">
+            <mat-header-cell *matHeaderCellDef>القيمة </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.debagaTemplate.cost}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="monthesExpire">
+            <mat-header-cell *matHeaderCellDef>عدد الشهور </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.debagaTemplate.expiredMonths}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="debagaType">
+            <mat-header-cell *matHeaderCellDef>نماذج </mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.debagaTemplate.staticTemplate ? ' أساسية' : ' إختيارية'}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="edit-delete">
+            <mat-header-cell *matHeaderCellDef>تعديل/حذف </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <a mat-icon-button><mat-icon matTooltip="تعديل" color="primary" (click)="fetchDebaga(element)">edit</mat-icon></a>
+              <a mat-icon-button><mat-icon matTooltip="حذف" color="warn" (click)="deleteDebaga(element.id)">delete</mat-icon></a>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+
+
+      </mat-card-content>
+    </mat-card>
+
+
+  </div>
+</div>

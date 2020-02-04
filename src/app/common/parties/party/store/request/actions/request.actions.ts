@@ -3,7 +3,7 @@ import {Request} from '../../../../../../DTO`s/request';
 
 export const CreateRequest = createAction(
   '[Request] Create Request',
-  props<{request: any}>()
+  props<{request: any, url: string}>()
 );
 
 export const GetRequestDetails = createAction(

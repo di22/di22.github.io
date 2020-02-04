@@ -58,7 +58,16 @@ export class BreadCrumbsComponent implements OnInit {
         params: child.snapshot.params,
         url
       };
-      breadcrumbs.push(breadcrumb);
+      let isSameRout = false;
+      for (let bread of breadcrumbs) {
+        if (breadcrumb.label === bread.label) {
+          isSameRout = true;
+          bread = breadcrumb;
+        }
+      }
+      if (!isSameRout) {
+        breadcrumbs.push(breadcrumb);
+      }
       // console.log(breadcrumbs)
       // recursive
       return this.getBreadcrumbs(child, url, breadcrumbs);

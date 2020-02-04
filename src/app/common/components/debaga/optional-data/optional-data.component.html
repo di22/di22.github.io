@@ -1,1 +1,108 @@
-<p>optional-data works!</p>
+<div class="container" fxFlexFill>
+  <div fxLayout="row" fxLayoutAlign="center center" >
+    <mat-card class="card" >
+      <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
+        <h5 class="headers-color">النماذج</h5>
+      </mat-card-title>
+
+      <mat-divider ></mat-divider>
+
+      <mat-card-content>
+<form [formGroup]="requestDebagaForm" >
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
+
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+    <li class="mat-tree-node">
+      <button mat-icon-button disabled></button>
+      <ng-container *ngTemplateOutlet="node.htmlCodeType === 'RADIOBUTTON' ? RADIOBUTTON : node.htmlCodeType === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST : node.htmlCodeType === 'TEXT' && node.columnType === 'ALPHANUMERIC'  ? TEXT : node.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
+
+      <ng-template #CHECKBOX>
+        <mat-checkbox [formControlName]="node.id" [id]="node.id" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (click)="todoItemSelectionToggle(node)"></mat-checkbox>
+      </ng-template>
+      <ng-template #RADIOBUTTON>
+          <mat-radio-button [formControlName]="node.id" [id]="node.id" [value]="node.id" ngDefaultControl [name]="node.parentDebagaTemplateId" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (click)="todoItemSelectionToggle(node)"></mat-radio-button>
+      </ng-template>
+      <span>
+        {{node.description}}
+      </span>
+      <ng-template #MULTIDROPDOWNLIST >
+        <mat-form-field class="debaga-fields">
+          <mat-select [formControlName]="node.id" [id]="node.id"  multiple >
+            <mat-option *ngFor="let element of (node.text | stringToArray)" [value]="element">{{element}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-template>
+
+      <ng-template #DATE>
+        <mat-form-field class="input-width debaga-fields">
+          <input matInput [formControlName]="node.id" [id]="node.id"  [min]="startDate() " [max]="endDate(node.maxValue)" [matDatepicker]="dp" (dateChange)="onChangesDate($event)" >
+          <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+      </ng-template>
+      <ng-template #TEXT >
+        <mat-form-field class="input-width debaga-fields">
+          <input [formControlName]="node.id" [id]="node.id" matInput (change)="setValue(node, $event, 'i')">
+        </mat-form-field>
+      </ng-template>
+
+    </li>
+  </mat-tree-node>
+  <!-- This is the tree node template for expandable nodes -->
+  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+    <li>
+      <div class="mat-tree-node">
+
+        <ng-container *ngTemplateOutlet="node.htmlCodeType === 'RADIOBUTTON' ? RADIOBUTTON : node.htmlCodeType === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST : node.htmlCodeType === 'TEXT' && node.columnType === 'ALPHANUMERIC'  ? TEXT : node.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
+
+        <ng-template #CHECKBOX>
+          <mat-checkbox [formControlName]="node.id" [id]="node.id"  [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (click)="todoItemSelectionToggle(node)"></mat-checkbox>
+        </ng-template>
+        <ng-template #RADIOBUTTON>
+            <mat-radio-button [formControlName]="node.id" [id]="node.id" [value]="node.id"  ngDefaultControl [name]="node.parentDebagaTemplateId" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" value="1"  (click)="todoItemSelectionToggle(node)"></mat-radio-button>
+        </ng-template>
+        <span>
+        {{node.description}}
+      </span>
+        <ng-template #MULTIDROPDOWNLIST >
+          <mat-form-field class="debaga-fields">
+            <mat-select [formControlName]="node.id" [id]="node.id"   multiple>
+              <mat-option *ngFor="let element of (node.text | stringToArray)" [value]="element">{{element}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-template>
+
+        <ng-template #DATE >
+          <mat-form-field class="input-width debaga-fields">
+            <input [formControlName]="node.id" [id]="node.id" matInput [min]="startDate()" [max]="node.maxValue" [matDatepicker]="dp" placeholder="تاريخ سربان الوكاله" (dateChange)="onChangesDate($event)" >
+            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp></mat-datepicker>
+          </mat-form-field>
+        </ng-template>
+
+        <ng-template #TEXT >
+          <mat-form-field class="input-width debaga-fields">
+            <input [formControlName]="node.id" [id]="node.id" matInput >
+          </mat-form-field>
+        </ng-template>
+      </div>
+    </li>
+  </mat-tree-node>
+</mat-tree>
+</form>
+<br/>
+<ckeditor [editor]="Editor" [formControl]="textExtension"></ckeditor>
+<br/>
+<ckeditor [editor]="Editor" [formControl]="textResult"></ckeditor>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div  >
+            <button mat-raised-button color="Basic" (click)="addOrUpdate()">إضافه</button>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

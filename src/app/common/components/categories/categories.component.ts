@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as fromTransactionCategories from '../../../store/general/categories/main-categories.reducer';
+import * as fromTransactionCategoriesSelector from '../../../store/general/categories/main-categories-selector';
 import {Store} from '@ngrx/store';
 import {State} from '../../../store';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -17,27 +18,32 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 export class CategoriesComponent implements OnInit {
 
   @Input() parentId: number;
-  transactionState: Observable<fromTransactionCategories.State>;
-  transactionCategories$: Observable<any> = this.store.select(state =>
-    state[fromTransactionCategories.mainCategoriesFeatureKey].transactions);
+  appStore$: Observable<State>;
+  transactionCategories$: Observable<any> = this.store.select(state => fromTransactionCategoriesSelector.selectCategories(state));
   url: string;
+  routes = [];
   constructor(private store: Store<State>,
-              private router: Router) {}
+              private router: Router,
+              private activatedRout: ActivatedRoute) {}
 
   ngOnInit() {
-    this.transactionState = this.store.select('mainCategories');
+     this.url = this.router.url.slice(this.router.url.lastIndexOf('/'), this.router.url.length).substr(1);
+     this.routes = ['RealEstates'];
+     this.appStore$ = this.store.select(state => state);
 
-    this.store.select(state => state[mainCategoriesFeatureKey].transactions).pipe(take(1))
+     this.transactionCategories$.pipe(take(1))
       .subscribe(
-        (transactions: any) => {
-          if (!transactions) {
-            this.store.dispatch(loadMainCategories({}));
-          }
-        }
-      );
+        (transactions: []) => {
+         if (transactions.length === 0) {
+    this.store.dispatch(loadMainCategories());
+          }});
   }
-  routeToSubCategories = (descriptionEn) => {
-    this.router.navigateByUrl(`../${descriptionEn}`);
+  routeToSubCategories = (descriptionEn: string) => {
+    if (this.routes.includes(descriptionEn)) {
+      this.router.navigate([`${this.url}/${descriptionEn}`]);
+    } else {
+      this.router.navigate(['/' + descriptionEn]);
+    }
   }
 
   drop(event: CdkDragDrop<any[]>, array) {

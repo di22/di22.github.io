@@ -10,6 +10,7 @@ export interface Customer {
 
 export interface State extends EntityState<Customer> {
   selectedCustomerId: number;
+  ROPCustomer: any;
   error: any;
 }
 
@@ -19,6 +20,7 @@ export const adapter: EntityAdapter<Customer> = createEntityAdapter<Customer>({
 
 export const initialState: State = adapter.getInitialState({
   selectedCustomerId: null,
+  ROPCustomer: {},
   error: null
 });
 
@@ -31,6 +33,8 @@ const customerReducer = createReducer(
   on(CustomerActions.updateCustomerSuccess, (state, action) => adapter.upsertOne(action.customer, state)),
   on(CustomerActions.deleteCustomerSuccess, (state, action) => adapter.removeOne(action.id, state)),
   on(CustomerActions.loadCustomersSuccess, (state, action) => adapter.addAll(action.customers, state)),
+   on(CustomerActions.getROPCustomerSuccess, (state, action) => ({state, error: null,
+     ids: state.ids, entities: state.entities, ROPCustomer: action.customer, selectedCustomerId: state.selectedCustomerId}))
   // on(CustomerActions.loadCustomersFailure, (state, action) => ({state, error: action.error, ids: state.ids, entities: state.entities}))
   // tslint:disable-next-line:max-line-length
  // on(CustomerActions.loadCustomersFailure, (state, action) => adapter.({state, error: action.error, customers: state.customers, customer: {}, customerId: null})),

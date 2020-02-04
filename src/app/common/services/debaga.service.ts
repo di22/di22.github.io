@@ -9,19 +9,28 @@ export class DebagaService {
   URL: string;
   constructor(private http: HttpClient,
               private commonService: CommonService) {
-    this.URL =  this.commonService.getURL('transaction');
+    this.URL =  this.commonService.getURL('request');
   }
 
   getDebagas = (obj) => {
     return  this.http.post(`${this.URL}get-transaction-debaga-templates.do`, obj);
   }
   createDebaga = (obj) => {
-    return this.http.post<any>(`${this.URL}add-procuration-customer.do`, obj);
+    return this.http.post<any>(`${this.URL}add-debaga.do`, obj);
+  }
+  createRequestDebaga = (obj) => {
+    return this.http.post<any>(`${this.URL}add-request-debaga.do`, obj);
   }
   updateDebaga = (obj) => {
-    return this.http.post<any>(`${this.URL}update-procuration-customer.do`, obj);
+    return this.http.post<any>(`${this.URL}edit-debaga.do`, obj);
   }
-  deleteDebaga = (id) => {
-    return  this.http.post(`${this.URL}delete-procuration-customer.do`, id);
+  updaterequestDebaga = (obj) => {
+    return this.http.post<any>(`${this.URL}update-request-debaga.do`, obj);
+  }
+  updateRequestDebagaByGroup = (obj) => {
+    return this.http.post<any>(`${this.URL}update-request-debaga-by-group.do`, obj);
+  }
+  deleteRequestDebagaByGroup = (obj) => {
+    return this.http.post<any>(`${this.URL}delete-request-debaga-by-group.do`, obj);
   }
 }

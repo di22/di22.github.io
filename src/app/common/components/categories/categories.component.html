@@ -4,9 +4,9 @@
     <ul class="all_icons">
       <ng-container *ngFor="let transaction of transactionCategories$|async"  >
         <div *ngIf="transaction.parentTransactionCategory" >
-          <li class=" col space-in-icon" *ngIf="transaction.parentTransactionCategory?.id === parentId && transaction.id !== 2 && transaction.id !== 112">
+          <li class=" col space-in-icon" *ngIf="transaction.parentTransactionCategory?.id === parentId && transaction.id !== 2 && transaction.id !== 230">
             <div class="ih-item circle effect1">
-              <a [routerLink]="transaction.descriptionEn">
+              <a [routerLink]="['./' + transaction?.code]">
 
                 <div class="spinner"></div>
                 <div class="img">
@@ -31,7 +31,7 @@
         <div *ngIf="transaction.transactionCategory">
           <li class=" col space-in-icon" *ngIf="transaction.transactionCategory.id === parentId && transaction.id !== 2 && transaction.id !== 230">
             <div class="ih-item circle effect1">
-              <a (click)="routeToSubCategories(transaction.id)">
+              <a [routerLink]="['./' + transaction?.code]">
 
                 <div class="spinner"></div>
                 <div class="img">

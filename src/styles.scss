@@ -122,9 +122,14 @@ span {
 
 
 .input-width {
-  width: 15%;
+  width: 20%;
+  max-width: 40%;
 }
 
 .red-snackbar {
   background-color: brown;
+}
+
+.mat-tree-node {
+  overflow: unset !important;
 }

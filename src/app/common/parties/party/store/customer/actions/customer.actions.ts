@@ -12,6 +12,16 @@ export const createCustomerSuccess = createAction(
   props<{customer: any}>()
 );
 
+export const getROPCustomer = createAction(
+  '[Customer] Get Customer',
+  props<{data: {civilNumber: any, dateOfExpiry: any}}>()
+);
+
+export const getROPCustomerSuccess = createAction(
+  '[Customer] Get ROP Customer Success',
+  props<{customer: any}>()
+);
+
 export const upsertCustomer = createAction(
   '[Customer/API] Upsert Customer',
   props<{ customer: Customer }>()

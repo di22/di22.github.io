@@ -1,11 +1,11 @@
 <div class="container" fxFlexFill>
   <div fxLayout="row" >
     <mat-card class="card"  >
-     <!-- <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
+     <!--
+     <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
         <h5 class="headers-color"> {{participantType === 1 ?  'الطرف الأول' : 'الطرف الثاني'}}</h5>
-      </mat-card-title> -->
-
-      <mat-divider ></mat-divider>
+      </mat-card-title>
+       -->
 
       <mat-card-content>
         <form [formGroup]="procurationCustomer" novalidate autocomplete="off">
@@ -18,6 +18,9 @@
                 <mat-select   formControlName="customerCategory">
                   <mat-option *ngFor="let cg of (requestCustomerTypes$ | async)" [value]="cg.id">{{cg.description}}</mat-option>
                 </mat-select>
+                <mat-error *ngFor="let type of (validationTypes$ | async)">
+                  <mat-error *ngIf="getFormControlCustomer('customerCategory').hasError(type) && (getFormControlCustomer('customerCategory').dirty || getFormControlCustomer('customerCategory').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الصفه')}}</mat-error>
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width">
@@ -25,28 +28,48 @@
                 <mat-select  formControlName="customerIDType">
                   <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id">{{cId.description}}</mat-option>
                 </mat-select>
+                <mat-error *ngFor="let type of (validationTypes$ | async)">
+                  <mat-error *ngIf="getFormControlCustomer('customerIDType').hasError(type) && (getFormControlCustomer('customerIDType').dirty
+                   || getFormControlCustomer('customerIDType').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'نوع الوثيفه')}}</mat-error>
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width">
                 <mat-label>الرقم المدني</mat-label>
-                <input matInput formControlName="customerCivilId">
+                <input matInput type="number" formControlName="customerCivilId" [maxLength]="maxLength" appInputLimiter="maxLength">
+                <mat-error *ngFor="let type of (validationTypes$ | async)">
+                  <mat-error *ngIf="getFormControlCustomer('customerCivilId').hasError(type) && (getFormControlCustomer('customerCivilId').dirty || getFormControlCustomer('customerCivilId').touched)">{{validationMessagesService.getValidatorErrorMessage(type, {max: maxLength, min: 1}, 'الرقم المدني')}}</mat-error>
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width" *ngIf="getFormControlCustomerValue('customerIDType') === 1">
                 <mat-label>الصلاحيه</mat-label>
-                <input matInput [matDatepicker]="dp2" placeholder="Different locale" (dateChange)="onChangesExpiryDate($event)" formControlName="idExpiryDate">
+                <input matInput [matDatepicker]="dp2" (dateChange)="onChangesExpiryDate($event)" formControlName="idExpiryDate">
                 <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
                 <mat-datepicker #dp2></mat-datepicker>
+                <mat-error *ngFor="let type of (validationTypes$ | async)">
+                  <mat-error *ngIf="getFormControlCustomer('idExpiryDate').hasError(type) && (getFormControlCustomer('idExpiryDate').dirty
+                   || getFormControlCustomer('idExpiryDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الصلاحيه')}}</mat-error>
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width">
                 <mat-label>الاسم كامل</mat-label>
                 <input matInput formControlName="customerName">
+                <mat-hint align="start"><strong>الاسم يتكون من مقطعين علي الأقل</strong> </mat-hint>
+                <mat-error *ngFor="let type of (validationTypes$ | async)">
+                  <mat-error *ngIf="getFormControlCustomer('customerName').hasError(type) && (getFormControlCustomer('customerName').dirty
+                   || getFormControlCustomer('customerName').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الاسم كامل')}}</mat-error>
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width">
                 <mat-label> رقم النقال</mat-label>
-                <input matInput formControlName="mobileNo">
+                <input matInput type="tel" formControlName="mobileNo">
+                <mat-error *ngFor="let type of (validationTypes$ | async)">
+                  <mat-error *ngIf="getFormControlCustomer('mobileNo').hasError(type) && (getFormControlCustomer('mobileNo').dirty
+                   || getFormControlCustomer('mobileNo').touched)">{{validationMessagesService.getValidatorErrorMessage(type, {max: 15, min: 8}, 'الرقم المدني')}}</mat-error>
+                </mat-error>
               </mat-form-field>
 
 
@@ -154,7 +177,7 @@
 
               <mat-form-field class="input-width">
                 <mat-label> رقم تليفون الشركه</mat-label>
-                <input matInput formControlName="telephone">
+                <input type="tel" matInput formControlName="telephone">
               </mat-form-field>
 
               <mat-form-field class="input-width">
@@ -209,7 +232,7 @@
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div>
-            <button mat-raised-button color="Basic" (click)="creatProcurationCustomer(this.procurationCustomer.value)">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
+            <button mat-raised-button color="Basic" (click)="creatProcurationCustomer()">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
           </div>
           <div>
           <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>

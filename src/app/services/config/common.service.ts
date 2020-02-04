@@ -13,6 +13,9 @@ export class CommonService {
   getURL(url) {
    return this.URL_LOCATION = `${environment.apiURL}sak2/${url}/`;
   }
+  getROPURL = () => {
+    return this.URL_LOCATION = `${environment.ROPURL}`;
+  }
   getNotaryURL = () => {
     this.notaryURL = `${environment.apiURL}notary/`;
     return this.notaryURL;

@@ -70,13 +70,17 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div  >
             <button mat-raised-button color="Basic" (click)="search(searchForm.value)">بحث</button>
-          </div> <div >
+          </div>
+          <div >
           <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
         </div>
+          <div  >
+            <button mat-raised-button color="Basic" (click)="captureScreen()">TOPDF</button>
+          </div>
         </div>
       </mat-card-actions>
-      <mat-card-content>
-        <mat-table [dataSource]="searchResult$ | async" class="mat-elevation-z8">
+      <mat-card-content id="contentToConvert" #contentToConvert>
+        <mat-table [dataSource]="searchResult$ | async" class="mat-elevation-z8" >
           <!-- Position Column -->
           <ng-container matColumnDef="position">
             <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>

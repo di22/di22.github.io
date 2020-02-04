@@ -9,13 +9,13 @@ export interface State {
 }
 
 export const initialState: State = {
-  transactions: null,
+  transactions: [],
   error: null
 };
 
 const mainCategoriesReducer = createReducer(
   initialState,
-on(fromMainCategories.loadMainCategories, state => ({...state})),
+on(fromMainCategories.loadMainCategories, state => state),
 on(fromMainCategories.loadMainCategoriesSuccess, (state, action) => ({...state, transactions: action.transactions, error: null})),
 on(fromMainCategories.loadMainCategoriesFailure, (state, action) => ({...state, error: action.error, transactions: []}))
 );

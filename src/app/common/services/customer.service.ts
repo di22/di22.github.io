@@ -18,6 +18,9 @@ export class CustomerService {
   updateCustomer = (obj) => {
     return this.http.post<any>(`${this.URL}update-procuration-customer.do`, obj);
   }
+  getCustomerFromROP = (obj) => {
+    return this.http.get<any>(`${this.commonService.getROPURL()}`, {params: obj});
+  }
   searchProcurationCustomerChilds = (obj) => {
     return  this.http.post(`${this.URL}search-customer-child.do`, obj);
   }

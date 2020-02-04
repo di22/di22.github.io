@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {loadMainCategories, loadMainCategoriesFailure, loadMainCategoriesSuccess} from './main-categories.actions';
-import {catchError, map, mergeMap} from 'rxjs/operators';
+import {catchError, concatMap, map, mergeMap} from 'rxjs/operators';
 import {MainCategoriesService} from '../../../services/main-categories.service';
 import {of} from 'rxjs';
 
@@ -11,7 +11,7 @@ import {of} from 'rxjs';
 export class MainCategoriesEffects {
   getTransactionCategories$ = createEffect(() =>
   this.actions$.pipe(ofType(loadMainCategories),
-    mergeMap(() =>
+    concatMap(() =>
     this.mainCategoriesService.getTransactions().pipe(
       map((transactions: any) => this.mainCategoriesService.flatTransactions(transactions.data.lookupList)),
       map(transactions => loadMainCategoriesSuccess({transactions})),

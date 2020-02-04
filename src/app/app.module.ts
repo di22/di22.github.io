@@ -18,7 +18,6 @@ import { environment } from '../environments/environment';
 
 import { MainCategoriesComponent } from './components/main-categories/main-categories.component';
 import { InboxComponent } from './components/side-menu-pages/inbox/inbox.component';
-import { AgenciesComponent } from './components/sub-categories/agencies/agencies.component';
 import { WillsEndowmentComponent } from './components/sub-categories/wills-endowment/wills-endowment.component';
 import { AttestationsComponent } from './components/sub-categories/attestations/attestations.component';
 import { SellingPledgingGiftComponent } from './components/sub-categories/selling-pledging-gift/selling-pledging-gift.component';
@@ -37,20 +36,24 @@ import {AdminTypeEffects} from './store/general/lookups/admin-types/effects/admi
 import {ErrorHandlerService} from './services/config/error-handler.service';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {DirectivesModule} from './directives-module/directives.module';
-import { DebagaEffects } from './common/components/debaga/store/effects/debaga.effects';
+import { AdminDebagaComponent } from './components/side-menu-pages/admin-debaga/admin-debaga.component';
+import { DebagaEffects } from './components/side-menu-pages/admin-debaga/store/effects/debaga.effects';
+import { RequestDebagaEffects } from './common/components/debaga/store/effects/request-debaga.effects';
+import {AgenciesModule} from './components/sub-categories/agencies/agencies.module';
+import { RequestAttachmentsEffects } from './store/general/lookups/requestAttachments/effects/request-attachments.effects';
 
 
 @NgModule({
   declarations: [
     MainCategoriesComponent,
     InboxComponent,
-    AgenciesComponent,
     WillsEndowmentComponent,
     AttestationsComponent,
     SellingPledgingGiftComponent,
     CancellationsComponent,
     AcknowledgmentsUndertakingsComponent,
-    PersonalAffairsComponent],
+    PersonalAffairsComponent,
+    AdminDebagaComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -59,6 +62,7 @@ import { DebagaEffects } from './common/components/debaga/store/effects/debaga.e
     AuthModule,
     AppRoutingModule,
     CommonSharedModule,
+    AgenciesModule,
     DirectivesModule,
     StoreModule.forRoot(REDUCERS_TOKEN, {
       metaReducers,
@@ -81,10 +85,9 @@ import { DebagaEffects } from './common/components/debaga/store/effects/debaga.e
       maxAge: 25, // Retains last 25 states
     }),
     StoreRouterConnectingModule.forRoot({
-      navigationActionTiming: NavigationActionTiming.PostActivation,
-      routerState: RouterState.Full
+
     }),
-    EffectsModule.forFeature([DebagaEffects])
+    EffectsModule.forFeature([DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects])
   ],
   providers: [reducerProvider,
     { provide: LocationStrategy, useClass: HashLocationStrategy },

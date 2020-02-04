@@ -9,3 +9,8 @@ export const selectUserEntities = createSelector(
   selectCustomerState,
   fromCustomer.selectAll
 );
+
+export const selectROPCustomer = createSelector(
+  selectCustomerState,
+  (state: fromCustomer.State) => state.ROPCustomer
+);

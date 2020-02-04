@@ -12,6 +12,17 @@ import {CustomerService} from '../../../../../services/customer.service';
 @Injectable()
 export class CustomerEffects {
 
+  getROPCustomer$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(CustomerActions.getROPCustomer),
+      concatMap((action) =>
+        this.customerService.getCustomerFromROP(action.data).pipe(
+          map(customer => CustomerActions.getROPCustomerSuccess({customer: customer.items[0]})),
+          catchError(error => of(CustomerActions.loadCustomersFailure({ error }))))
+      )
+    );
+  });
+
   createCustomer$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(CustomerActions.createCustomer),

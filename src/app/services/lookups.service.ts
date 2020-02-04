@@ -10,6 +10,7 @@ import {Nationality} from '../DTO`s/nationality';
 import {RequestCustomerType} from '../DTO`s/request-customer-type';
 import {CustomerIdType} from '../DTO`s/customer-id-type';
 import {AdminTypes} from '../DTO`s/admin-types';
+import {RequestAttachments} from '../DTO`s/requestAttachments';
 
 @Injectable({
   providedIn: 'root'
@@ -44,5 +45,8 @@ employeeURL: string;
   }
   getNotaryAdminTypes = () => {
     return this.http.get<AdminTypes[] | any>(`${this.commonService.getNotaryURL()}rest/1/notaryAdmin`, {params: {limit: '999999'}});
+  }
+  getAttachmentTypesByTranscationCode = (obj) => {
+    return this.http.post<any>(`${this.URL}get-attachment-types-by-transcation-code.do`, obj);
   }
 }

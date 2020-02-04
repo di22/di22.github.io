@@ -10,19 +10,17 @@ export class TokenInterceptorService implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.authService.getToken();
-    if (!req.url.includes('login')) {
+    if (!req.url.includes('login') && !req.url.includes('QueryROP.ashx')) {
       if (req.url.includes('notary')) {
         req = req.clone({
           setHeaders: {
-            Authorization: `${token}`,
-            'Content-Type': 'application/json'
+            Authorization: `${token}`
           }
         });
       } else {
         req = req.clone({
           setHeaders: {
-            'X-Auth-Token': `${token}`,
-            'Content-Type': 'application/json'
+            'X-Auth-Token': `${token}`
           }
         });
       }
