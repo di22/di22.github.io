@@ -37,7 +37,7 @@ import html2canvas from 'html2canvas';
 })
 export class InboxComponent implements OnInit {
 
-  @ViewChild('contentToConvert', {static: false}) pdfTable: ElementRef;
+  @ViewChild('contentToConvert') pdfTable: ElementRef;
 
   searchObj: any = {data: {}};
   dateFrom: any;
