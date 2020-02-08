@@ -30,6 +30,8 @@ import { RequestAttachmentComponent } from './components/request-attachment/requ
 import { TransactionRequestAttachmentEffects } from './components/request-attachment/store/effects/transaction-request-attachment.effects';
 import { GetColumnsFromDebagaPipe } from './pipes/get-columns-from-debaga.pipe';
 import { GetBasicDataValuesPipe } from './pipes/get-basic-data-values.pipe';
+import { AutoCompleteFilterPipe } from './pipes/auto-complete-filter.pipe';
+import { RequestCustomerTypePipe } from './pipes/request-customer-type.pipe';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { GetBasicDataValuesPipe } from './pipes/get-basic-data-values.pipe';
     StringToArrayPipe,
     RequestAttachmentComponent,
     GetColumnsFromDebagaPipe,
-    GetBasicDataValuesPipe
+    GetBasicDataValuesPipe,
+    AutoCompleteFilterPipe,
+    RequestCustomerTypePipe
   ],
   imports: [
     CommonModule,

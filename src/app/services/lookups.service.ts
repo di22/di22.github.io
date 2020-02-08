@@ -17,10 +17,12 @@ import {RequestAttachments} from '../DTO`s/requestAttachments';
 })
 export class LookupsService {
 URL: string;
+relativesURL: string;
 employeeURL: string;
   constructor(private http: HttpClient,
               private commonService: CommonService) {
    this.URL =  this.commonService.getURL('lookup');
+   this.relativesURL =  this.commonService.getURL('transaction');
    this.employeeURL =  this.commonService.getURL('sak-user');
   }
 
@@ -48,5 +50,15 @@ employeeURL: string;
   }
   getAttachmentTypesByTranscationCode = (obj) => {
     return this.http.post<any>(`${this.URL}get-attachment-types-by-transcation-code.do`, obj);
+  }
+  getRelativesByTranscationCode = (obj) => {
+    return this.http.post<any>(`${this.relativesURL}get-relatives-by-tranTypeId.do`, obj);
+  }
+  getLawOffices = (resourcId) => {
+    return this.http.get<any>(`${this.commonService.getPortalURL()}GetRest`, {headers: {'X-resource-id': resourcId}});
+  }
+  getLawers = (resourcId, InstitutionId?) => {
+    return this.http.get<any>(`${this.commonService.getPortalURL()}GetRest`,
+      {headers: {'X-resource-id': resourcId, 'X-request-id': InstitutionId}});
   }
 }

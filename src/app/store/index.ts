@@ -27,6 +27,8 @@ import * as fromDebaga from '../components/side-menu-pages/admin-debaga/store/re
 import * as fromRequestDebaga from '../common/components/debaga/store/reducers/request-debaga.reducer';
 import * as fromRequestAttachments from './general/lookups/requestAttachments/reducers/request-attachments.reducer';
 import * as fromTransactionRequestAttachment from '../common/components/request-attachment/store/reducers/transaction-request-attachment.reducer';
+import * as fromRelatives from './general/lookups/relatives/reducers/relatives.reducer';
+import * as fromLawOffice from './general/lookups/law-offices/reducers/law-office.reducer';
 
 export interface State {
   [fromAuth.authFeatureKey]: fromAuth.State;
@@ -46,6 +48,9 @@ export interface State {
   [fromRequestDebaga.requestDebagaFeatureKey]: fromRequestDebaga.State;
   [fromRequestAttachments.requestAttachmentsFeatureKey]: fromRequestAttachments.State;
   [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: fromTransactionRequestAttachment.State;
+  [fromRelatives.relativesFeatureKey]: fromRelatives.State;  [fromLawOffice.lawOfficeFeatureKey]: fromLawOffice.State;
+
+
 
 
 
@@ -72,6 +77,8 @@ export const reducers: ActionReducerMap<State> = {
   [fromRequestDebaga.requestDebagaFeatureKey]: fromRequestDebaga.reducer,
   [fromRequestAttachments.requestAttachmentsFeatureKey]: fromRequestAttachments.reducer,
   [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: fromTransactionRequestAttachment.reducer,
+  [fromRelatives.relativesFeatureKey]: fromRelatives.reducer,
+  [fromLawOffice.lawOfficeFeatureKey]: fromLawOffice.reducer,
   // [fromLookups.lookupsFeatureKey]: fromLookups.reducer
 };
 

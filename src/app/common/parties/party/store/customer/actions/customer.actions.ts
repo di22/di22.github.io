@@ -4,7 +4,7 @@ import {Update} from '@ngrx/entity';
 
 export const createCustomer = createAction(
   '[Customer] Create Customer',
-  props<{customer: any, savedCustomer: any}>()
+  props<{customer: any}>()
 );
 
 export const createCustomerSuccess = createAction(

@@ -4,7 +4,7 @@ import {MatSnackBar} from '@angular/material';
 @Injectable({
   providedIn: 'root'
 })
-export class ErrorMessageService {
+export class MessageService {
 
   constructor(private snackBar: MatSnackBar, private zone: NgZone) { }
 
@@ -14,6 +14,19 @@ export class ErrorMessageService {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         panelClass: ['red-snackbar']
+      });
+      snack.onAction().subscribe(() => {
+        snack.dismiss();
+      });
+    });
+  }
+
+  successMessage = (text: any) => {
+    this.zone.run(() => {
+      const snack = this.snackBar.open(text, 'ok', {
+        horizontalPosition: 'left',
+        verticalPosition: 'top',
+        panelClass: ['green-snackbar']
       });
       snack.onAction().subscribe(() => {
         snack.dismiss();

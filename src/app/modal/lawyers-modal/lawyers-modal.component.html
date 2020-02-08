@@ -1,0 +1,35 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" >
+    <mat-card class="card"  >
+
+
+      <mat-card-content>
+        <mat-table [dataSource]="(lawers$ | async)" class="mat-elevation-z8">
+
+          <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+            <mat-header-cell *matHeaderCellDef> {{column.header}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index ">
+              {{column.columnDef === 'position' ? i+1 : column.cell(element)}}
+              <mat-checkbox *ngIf="column.columnDef === 'select'" (click)="$event.stopPropagation()"
+                            (change)="onSelect(element, $event)"
+                            [checked]="selection.isSelected(element)"
+                            [aria-label]="checkboxLabel(element)">
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      </mat-card-content>
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div class="center">
+            <button mat-raised-button color="Basic" (click)="onAdd()">إضافه</button>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

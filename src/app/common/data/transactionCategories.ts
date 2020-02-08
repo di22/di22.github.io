@@ -3,6 +3,7 @@ export class TransactionCategories {
   divorceTransactions = ['DIVORCE_CONTRACT'];
   lawyerTransactions = ['POA_LAWYER'];
   marriageAndDivorceTransactions = [...this.marriageTransactions, ...this.divorceTransactions];
+  widowingProof = ['POA_PASSPORT_ISSUANCE'];
   constructor() {
 
   }

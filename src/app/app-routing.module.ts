@@ -36,7 +36,8 @@ const routes: Routes = [
       { path: 'inbox', component: InboxComponent, data: { breadcrumb: 'البريد الوارد' }},
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
-    ]}, // { path: 'PageNotAllowed', component: NotAllowedComponent},
+    ]},
+ { path: 'route', loadChildren: () => import('./modal/modal.module').then(m => m.ModalModule) }, // { path: 'PageNotAllowed', component: NotAllowedComponent},
  // { path: '**', component: NotFoundComponent}
 ];
 

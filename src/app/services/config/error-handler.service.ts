@@ -1,12 +1,12 @@
 import {ErrorHandler, Injectable, InjectionToken, Injector} from '@angular/core';
-import {ErrorMessageService} from './error-message.service';
+import {MessageService} from './message.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorHandlerService implements ErrorHandler {
 
-  constructor(private errorMessage: ErrorMessageService) { }
+  constructor(private errorMessage: MessageService) { }
 
   handleError(error: any): void {
     this.errorMessage.errorMessage(error);

@@ -1,0 +1,16 @@
+.mat-dialog-container {
+ /// color: #9F6000 !important;
+ // background-color: #FEEFB3 !important;
+}
+
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  h3 {
+    font-size: 20px;
+  }
+}

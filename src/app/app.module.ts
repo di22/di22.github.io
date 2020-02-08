@@ -41,6 +41,9 @@ import { DebagaEffects } from './components/side-menu-pages/admin-debaga/store/e
 import { RequestDebagaEffects } from './common/components/debaga/store/effects/request-debaga.effects';
 import {AgenciesModule} from './components/sub-categories/agencies/agencies.module';
 import { RequestAttachmentsEffects } from './store/general/lookups/requestAttachments/effects/request-attachments.effects';
+import {ModalModule} from './modal/modal.module';
+import { RelativesEffects } from './store/general/lookups/relatives/effects/relatives.effects';
+import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/law-office.effects';
 
 
 @NgModule({
@@ -64,6 +67,7 @@ import { RequestAttachmentsEffects } from './store/general/lookups/requestAttach
     CommonSharedModule,
     AgenciesModule,
     DirectivesModule,
+    ModalModule,
     StoreModule.forRoot(REDUCERS_TOKEN, {
       metaReducers,
       runtimeChecks: {
@@ -87,7 +91,7 @@ import { RequestAttachmentsEffects } from './store/general/lookups/requestAttach
     StoreRouterConnectingModule.forRoot({
 
     }),
-    EffectsModule.forFeature([DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects])
+    EffectsModule.forFeature([DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects, RelativesEffects, LawOfficeEffects])
   ],
   providers: [reducerProvider,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
@@ -96,7 +100,8 @@ import { RequestAttachmentsEffects } from './store/general/lookups/requestAttach
     ],
     exports: [
         MainCategoriesComponent,
-      DirectivesModule
+      DirectivesModule,
+      ModalModule
     ],
   bootstrap: [AppComponent]
 })
