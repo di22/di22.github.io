@@ -147,6 +147,7 @@
   },
   "defaultProject": "notary",
   "cli": {
-    "defaultCollection": "@ngrx/schematics"
+    "defaultCollection": "@ngrx/schematics",
+    "analytics": "b150c82e-da8e-48be-8944-7dd967aaf243"
   }
 }

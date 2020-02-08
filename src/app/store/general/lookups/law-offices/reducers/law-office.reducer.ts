@@ -4,8 +4,8 @@ import * as LawOfficeActions from '../actions/law-office.actions';
 export const lawOfficeFeatureKey = 'lawOffice';
 
 export interface State {
-  offices: [];
-  lawers: [];
+  offices: any[];
+  lawers: any[];
 }
 
 export const initialState: State = {

@@ -2,7 +2,8 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {Observable, of} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DebagaTemplete} from '../../../../DTO`s/debaga-templete';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTree} from '../../../../DTO`s/flatTree';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';

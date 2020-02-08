@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {TableDataService} from '../../common/services/table-data.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {Store} from '@ngrx/store';
 import {default as fromApp, State} from '../../store';
 import {Observable} from 'rxjs';
