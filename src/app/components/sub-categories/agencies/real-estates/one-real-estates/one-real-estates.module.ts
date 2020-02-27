@@ -12,7 +12,6 @@ import {CommonSharedModule} from '../../../../../common/common.module';
   imports: [
     CommonModule,
     OneRealEstatesRoutingModule,
-    CommonModule,
     MaterialModule,
     CommonSharedModule
   ]

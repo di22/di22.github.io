@@ -15,7 +15,7 @@ export class EncryptDecryptService {
   constructor() {}
   encryptUsingAES256(request) {
     this.encrypted = CryptoJS.AES.encrypt(
-      JSON.stringify(request), this.key, {
+      request, this.key, {
         keySize: 16,
         iv: this.iv,
         mode: CryptoJS.mode.CBC,

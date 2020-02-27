@@ -1,10 +1,10 @@
 import * as fromCustiomerIdType from '../reducers/custiomer-id-type.reducer';
-import { selectCustiomerIdTypeState } from './custiomer-id-type.selectors';
+import { selectCustomerIdTypeState } from './custiomer-id-type.selectors';
 
 describe('CustiomerIdType Selectors', () => {
   it('should select the feature state', () => {
-    const result = selectCustiomerIdTypeState({
-      [fromCustiomerIdType.custiomerIdTypeFeatureKey]: {}
+    const result = selectCustomerIdTypeState({
+      [fromCustiomerIdType.customerIdTypeFeatureKey]: {}
     });
 
     expect(result).toEqual({});

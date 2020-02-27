@@ -17,7 +17,7 @@ export class RequestAttachmentService {
   addRequestAttachment = (attachment) => {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'undefined'
+        'Content-Type':  'multipart/form-data'
       })
     };
     const fd = new FormData();

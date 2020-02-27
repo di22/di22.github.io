@@ -17,6 +17,7 @@ import {SideMenuEffects} from './side-menu/store/side-menu.effects';
 import { RightMenuComponent } from './right-menu/right-menu.component';
 import {CommonSharedModule} from '../common/common.module';
 import { BreadCrumbsComponent } from './bread-crumbs/bread-crumbs.component';
+import {NgxSpinnerModule} from 'ngx-spinner';
 
 @NgModule({
   declarations: [HeaderComponent,
@@ -35,6 +36,7 @@ import { BreadCrumbsComponent } from './bread-crumbs/bread-crumbs.component';
     RouterModule,
     StoreModule.forFeature(fromSideMenu.sideMenuFeatureKey, fromSideMenu.reducer),
     EffectsModule.forFeature([SideMenuEffects]),
-    CommonSharedModule]
+    CommonSharedModule,
+    NgxSpinnerModule]
 })
 export class CoreModule { }

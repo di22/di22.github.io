@@ -15,6 +15,5 @@ export const loadAuthFailure = createAction(
   props<{ error: any }>()
 );
 export const logout = createAction(
-  '[Auth] Logout',
-  props<{ }>()
+  '[Auth] Logout'
 );

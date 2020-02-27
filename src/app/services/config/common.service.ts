@@ -11,7 +11,7 @@ export class CommonService {
   constructor() { }
 
   getURL(url) {
-   return this.URL_LOCATION = `${environment.apiURL}sak2/${url}/`;
+   return this.URL_LOCATION = `${environment.apiURL}sak-info-test/${url}/`;
   }
   getROPURL = () => {
     return this.URL_LOCATION = `${environment.ROPURL}`;

@@ -1,0 +1,47 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" >
+    <mat-card class="card"  >
+
+
+      <mat-card-content>
+        <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="20%" >
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="5%" fxLayoutAlign="start center">
+        <mat-form-field class="inputs-one-line">
+          <mat-label>الإجمالي</mat-label>
+          <input matInput type="number"  [formControl]="autoCalc" >
+        </mat-form-field>
+          <button mat-fab color="basic" matTooltip="تقدير آلي" (click)="feesEstimation()">
+            <mat-icon>monetization_on</mat-icon>
+          </button>
+          </div>
+
+        <div fxLayout="column" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1%" fxLayoutAlign="start">
+
+          <mat-slide-toggle color="primary" [formControl]="isExempt">معفي من الرسوم</mat-slide-toggle>
+          <mat-form-field >
+            <mat-select  [formControl]="exemptReasons" >
+              <mat-option [value]="''">إختر</mat-option>
+              <mat-option *ngFor="let er of (exemptReasons$ | async)" [value]="er.id">{{er.description}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        </div>
+      </mat-card-content>
+
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center" >
+          <div class="center">
+            <button mat-raised-button class="button-width button-success" (click)="feesEstimation()">تحصيل</button>
+            <button mat-raised-button  class="button-width button-success">إصدار المحرر</button>
+            <button mat-raised-button color="basic" class="button-width" *ngIf="false">إصدار المحرر بناء على قرار المحكمة</button>
+            <button mat-raised-button color="basic" class="button-width" *ngIf="false">إصدار بعد الرفض النهائي</button>
+            <button mat-raised-button color="basic" class="button-width" (click)="mo7rrReview()">عـرض المحــرر</button>
+            <button mat-raised-button color="basic" class="button-width">عـرض الإيصــــال</button>
+            <button mat-raised-button color="basic" class="button-width">عـرض السجل التاريخي</button>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

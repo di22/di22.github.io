@@ -12,6 +12,7 @@ import {loadRequestAttachmentss} from '../../../store/general/lookups/requestAtt
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {RequestAttachment} from '../../../DTO`s/requestAttachment';
 import {addTransactionRequestAttachment, deleteTransactionRequestAttachment} from './store/actions/transaction-request-attachment.actions';
+import {RequestAttachmentService} from '../../services/request-attachment.service';
 
 @Component({
   selector: 'app-request-attachment',
@@ -50,6 +51,7 @@ export class RequestAttachmentComponent implements OnInit {
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
               private activatedRout: ActivatedRoute,
+              private requestAttachmentService: RequestAttachmentService,
               private router: Router) { }
 
   ngOnInit() {
@@ -99,7 +101,10 @@ export class RequestAttachmentComponent implements OnInit {
   }
 
    uploadFile(file) {
-     this.store.dispatch(addTransactionRequestAttachment({transactionRequestAttachment: file}));
+    this.requestAttachmentService.addRequestAttachment(file).subscribe(res => {
+      const x = res;
+    });
+    // this.store.dispatch(addTransactionRequestAttachment({transactionRequestAttachment: file}));
   }
 
    uploadFiles() {

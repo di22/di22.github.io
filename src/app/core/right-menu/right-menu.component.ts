@@ -17,7 +17,7 @@ export class RightMenuComponent implements OnInit {
     {name: 'الرئيسيه', link: '/notary', icon: 'home'},
     {name: 'الخدمات', link: '/services', icon: 'local_laundry_service'},
     {name: 'البريد الوارد', link: 'inbox', icon: 'mail'},
-    {name: 'معاملاتي', link: '/my-requests', icon: 'archive'},
+    {name: 'معاملاتي', link: 'my-requests', icon: 'archive'},
     {name: 'البحث', link: '/search', icon: 'search'},
     {name: 'إعدادات المعاملات', link: '/requests-setting', icon: 'settings_applications'},
     {name: 'إعدادات أكواد النظام', link: '/requests-code-setting', icon: 'code'},

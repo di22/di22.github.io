@@ -18,7 +18,7 @@ export class LogoutComponent implements OnInit {
     this.authState = this.store.select('auth');
   }
 logout = () => {
-this.store.dispatch(logout({}));
+this.store.dispatch(logout());
 }
 
 }

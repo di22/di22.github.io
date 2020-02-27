@@ -15,10 +15,9 @@ import { AdminTypesPipe } from './pipes/admin-types.pipe';
 import { PartyComponent } from './parties/party/party.component';
 import { EffectsModule } from '@ngrx/effects';
 import { RequestEffects } from './parties/party/store/request/effects/request.effects';
-import {StoreModule} from '@ngrx/store';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
-import {reducerProvider, reducers, REDUCERS_TOKEN} from './store';
+import {reducerProvider} from './store';
 import { CustomerEffects } from './parties/party/store/customer/effects/customer.effects';
 import { CustomerParticpantTypePipe } from './pipes/customer-particpant-type.pipe';
 import {DirectivesModule} from '../directives-module/directives.module';
@@ -32,6 +31,12 @@ import { GetColumnsFromDebagaPipe } from './pipes/get-columns-from-debaga.pipe';
 import { GetBasicDataValuesPipe } from './pipes/get-basic-data-values.pipe';
 import { AutoCompleteFilterPipe } from './pipes/auto-complete-filter.pipe';
 import { RequestCustomerTypePipe } from './pipes/request-customer-type.pipe';
+import { CompleteRequestComponent } from './components/complete-request/complete-request.component';
+import {DebagaEffects} from '../components/side-menu-pages/admin-debaga/store/effects/debaga.effects';
+import {RequestDebagaEffects} from './components/debaga/store/effects/request-debaga.effects';
+import {RequestAttachmentsEffects} from '../store/general/lookups/requestAttachments/effects/request-attachments.effects';
+import { CompleteRequestEffects } from './components/complete-request/store/effects/complete-request.effects';
+import { RequestComponent } from './components/request/request.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +56,9 @@ import { RequestCustomerTypePipe } from './pipes/request-customer-type.pipe';
     GetColumnsFromDebagaPipe,
     GetBasicDataValuesPipe,
     AutoCompleteFilterPipe,
-    RequestCustomerTypePipe
+    RequestCustomerTypePipe,
+    CompleteRequestComponent,
+    RequestComponent
   ],
   imports: [
     CommonModule,
@@ -64,27 +71,30 @@ import { RequestCustomerTypePipe } from './pipes/request-customer-type.pipe';
     MaterialModule,
     DirectivesModule,
     // StoreModule.forFeature('common', {common: REDUCERS_TOKEN}),
-    EffectsModule.forFeature([RequestEffects, CustomerEffects, TransactionRequestAttachmentEffects]),
+    EffectsModule.forFeature([RequestEffects, CustomerEffects, TransactionRequestAttachmentEffects,
+      DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects, CompleteRequestEffects]),
     CKEditorModule
   ],
-  exports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    FlexLayoutModule,
-    FlexModule,
-    CKEditorModule,
-    CategoriesComponent,
-    FirstPartyComponent,
-    AdminTypesPipe,
-    SecondPartyComponent,
-    DirectivesModule,
-    WitnessesComponent,
-    DebagaComponent,
-    RequestAttachmentComponent
-  ],
+    exports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        FlexLayoutModule,
+        FlexModule,
+        CKEditorModule,
+        CategoriesComponent,
+        FirstPartyComponent,
+        AdminTypesPipe,
+        SecondPartyComponent,
+        RequestComponent,
+        DirectivesModule,
+        WitnessesComponent,
+        DebagaComponent,
+        RequestAttachmentComponent,
+        CompleteRequestComponent
+    ],
   providers: [reducerProvider],
-  bootstrap: [PartyComponent]
+  bootstrap: []
 })
 export class CommonSharedModule { }

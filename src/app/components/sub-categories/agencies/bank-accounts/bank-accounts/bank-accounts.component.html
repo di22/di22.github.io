@@ -1,0 +1,110 @@
+<button mat-fab color="basic" type="button" matTooltip="رمز المكتب">
+  <mat-icon class="icon-size">add_circle_outline</mat-icon>
+</button>
+
+
+
+<mat-accordion>
+  <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" >
+    <mat-expansion-panel-header >
+      <mat-panel-title>
+        الطرف الأول
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>person_add</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <app-first-party></app-first-party>
+
+    <mat-action-row>
+      <button mat-button color="primary" (click)="nextStep()">التالي</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        الطرف الثاني
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>person_add</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <app-second-party></app-second-party>
+
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">السابق</button>
+      <button mat-button color="primary" (click)="nextStep()">التالي</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        الشهود
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>group_add</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <app-witnesses></app-witnesses>
+
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">السابق</button>
+      <button mat-button color="primary" (click)="nextStep()">التالي</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)" >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        النماذج لوكالة الحسابات البنكية
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>library_books</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <app-debaga></app-debaga>
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">السابق</button>
+      <button mat-button color="primary" (click)="nextStep()">التالي</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)" >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        المرفقات
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>library_books</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <ng-template matExpansionPanelContent>
+      <app-request-attachment></app-request-attachment>
+    </ng-template>
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">السابق</button>
+      <button mat-button color="primary" (click)="nextStep()">التالي</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)" >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        تقدير الرسوم والتحصيل
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>monetization_on</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <ng-template matExpansionPanelContent>
+      <app-complete-request></app-complete-request>
+    </ng-template>
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">السابق</button>
+      <button mat-button color="primary" (click)="nextStep()">النهايه</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+</mat-accordion>

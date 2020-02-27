@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import {ErrorHandler, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
@@ -12,9 +12,7 @@ import { StoreModule } from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import { metaReducers, reducerProvider, REDUCERS_TOKEN } from './store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import {NavigationActionTiming, RouterState, StoreRouterConnectingModule} from '@ngrx/router-store';
 import { environment } from '../environments/environment';
-
 
 import { MainCategoriesComponent } from './components/main-categories/main-categories.component';
 import { InboxComponent } from './components/side-menu-pages/inbox/inbox.component';
@@ -33,17 +31,17 @@ import {NationalitesEffects} from './store/general/lookups/nationalites/effects/
 import {GetRequestCustomerTypeEffects} from './store/general/lookups/request-custiomer-types/effects/get-request-customer-type.effects';
 import {CustiomerIdTypeEffects} from './store/general/lookups/customer-id-types/effects/custiomer-id-type.effects';
 import {AdminTypeEffects} from './store/general/lookups/admin-types/effects/admin-type.effects';
-import {ErrorHandlerService} from './services/config/error-handler.service';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {DirectivesModule} from './directives-module/directives.module';
 import { AdminDebagaComponent } from './components/side-menu-pages/admin-debaga/admin-debaga.component';
-import { DebagaEffects } from './components/side-menu-pages/admin-debaga/store/effects/debaga.effects';
-import { RequestDebagaEffects } from './common/components/debaga/store/effects/request-debaga.effects';
 import {AgenciesModule} from './components/sub-categories/agencies/agencies.module';
-import { RequestAttachmentsEffects } from './store/general/lookups/requestAttachments/effects/request-attachments.effects';
 import {ModalModule} from './modal/modal.module';
 import { RelativesEffects } from './store/general/lookups/relatives/effects/relatives.effects';
 import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/law-office.effects';
+import { ExemptReasonEffects } from './store/general/lookups/exemptReasons/effects/exempt-reason.effects';
+import { TransactionCustTypeEffects } from './store/general/lookups/transaction-cust-types/effects/transaction-cust-type.effects';
+import { UserOrgEffects } from './store/general/user-org-details/effects/user-org.effects';
+import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my-requests.component';
 
 
 @NgModule({
@@ -56,7 +54,8 @@ import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/la
     CancellationsComponent,
     AcknowledgmentsUndertakingsComponent,
     PersonalAffairsComponent,
-    AdminDebagaComponent],
+    AdminDebagaComponent,
+    MyRequestsComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -73,6 +72,8 @@ import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/la
       runtimeChecks: {
         strictStateImmutability: true,
         strictActionImmutability: true,
+        strictStateSerializability: false,
+        strictActionSerializability: false,
       }
     }),
     EffectsModule.forRoot([MainCategoriesEffects,
@@ -83,15 +84,16 @@ import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/la
       NationalitesEffects,
       GetRequestCustomerTypeEffects,
       CustiomerIdTypeEffects,
-      AdminTypeEffects]),
+      AdminTypeEffects,
+      RelativesEffects,
+      LawOfficeEffects,
+      ExemptReasonEffects,
+      TransactionCustTypeEffects,
+      UserOrgEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
-    }),
-    StoreRouterConnectingModule.forRoot({
-
-    }),
-    EffectsModule.forFeature([DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects, RelativesEffects, LawOfficeEffects])
+    })
   ],
   providers: [reducerProvider,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
@@ -103,6 +105,7 @@ import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/la
       DirectivesModule,
       ModalModule
     ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

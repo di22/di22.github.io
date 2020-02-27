@@ -4,9 +4,9 @@ import { selectTransactionRequestAttachmentState } from './transaction-request-a
 describe('TransactionRequestAttachment Selectors', () => {
   it('should select the feature state', () => {
     const result = selectTransactionRequestAttachmentState({
-      [fromTransactionRequestAttachment.transactionRequestAttachmentFeatureKey]: {}
+      [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: {}
     });
 
-    expect(result).toEqual({});
+   // expect(result).toEqual({});
   });
 });

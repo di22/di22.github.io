@@ -1,18 +1,22 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'requestCustomerTypePipe'
+  name: 'requestCustomerTypePipe',
+  pure: true
 })
 export class RequestCustomerTypePipe implements PipeTransform {
 
-  transform(value: any, args): any {
-    if (!args) { return  value; }
+  transform(value: any, partyId: number, transactionCustType: []): any {
+    let tempTypes = [];
+    const tempValue = [];
+    if (!partyId) { return  value; }
     if (!value) { return []; }
-    if (args === 3) {
-      return value.filter(it => it.id === 70 || it.id === 71 || it.id === 72 || it.id === 73);
-    } else {
-      return value;
-    }
+    tempTypes = transactionCustType.filter((it: any) => it.partyId === partyId);
+    tempTypes.forEach((ele, i) => {
+      const tran = value.find(v => v.id === ele.custTypeId[0]);
+      tempValue.push(tran);
+    });
+    return tempValue;
   }
 
 }

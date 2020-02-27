@@ -15,17 +15,17 @@ export class MainCategoriesService {
   getTransactions = () => {
     return this.http.get(`${this.URL}get-transaction-categories.do?`);
   }
-  flatTransactions = (root) => {
+  flatTransactions = (root, result = []) => {
     for (const obj of root) {
+      result.push(obj);
       if (obj.childTransactionCategories) {
-        this.flatTransactions(obj.childTransactionCategories);
+        this.flatTransactions(obj.childTransactionCategories, result);
       }
       if (obj.transactionTypes) {
-        this.flatTransactions(obj.transactionTypes);
+        this.flatTransactions(obj.transactionTypes, result);
       }
-      this.transactions.push(obj);
     }
-    this.transactions.sort((a: any, b: any) => {
+    result.sort((a: any, b: any) => {
       if (a.sortOrder < b.sortOrder) {
         return -1;
       } else if (a.sortOrder > b.sortOrder) {
@@ -33,6 +33,6 @@ export class MainCategoriesService {
       }
       return 0;
     });
-    return this.transactions;
+    return result;
   }
 }

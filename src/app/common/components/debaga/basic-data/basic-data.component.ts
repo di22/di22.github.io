@@ -6,8 +6,12 @@ import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
-import {addRequestDebaga, deleteRequestDebaga, updateRequestDebaga} from '../store/actions/request-debaga.actions';
-import {element} from 'protractor';
+import { deleteRequestDebaga} from '../store/actions/request-debaga.actions';
+import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
+import {DebagaService} from '../../../services/debaga.service';
+import {MessageService} from '../../../../services/config/message.service';
+import {environment} from '../../../../../environments/environment';
+import {CustomerService} from '../../../services/customer.service';
 
 @Component({
   selector: 'app-basic-data',
@@ -17,24 +21,27 @@ import {element} from 'protractor';
 export class BasicDataComponent implements OnInit {
 
   @Input() debagas$: Observable<any>;
-  row: number;
+  row = 0;
   requestId: number;
-  requestDebagas: any = [];
+  mociData: any;
+  requestDebagas = new Set();
   debagaForm: FormGroup;
   isEdite: boolean;
-  htmlElementsIDs: {};
-
-  appStore$: Observable<fromApp.State>;
+  isMulti: boolean;
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
 
 
   constructor(private store: Store<fromApp.State>,
               private formBuilder: FormBuilder,
+              private debagaService: DebagaService,
+              private messageService: MessageService,
+              private customerService: CustomerService,
               private encryptDecryptService: EncryptDecryptService,
               private activatedRout: ActivatedRoute,
               private router: Router) { }
 
   ngOnInit() {
+    this.isMulti = true;
     this.initForms();
     this.activatedRout.params.subscribe(params => {
       if (params.requestId) {
@@ -53,7 +60,19 @@ export class BasicDataComponent implements OnInit {
         });
       }
     });
-  //  if (this.debagaForm.contains('9286') && this.debagaForm.contains('9291')) {
+    this.requestDebaga$.subscribe(requestDebaga => {
+      if (requestDebaga && requestDebaga.length > 0) {
+        requestDebaga.forEach((item, i) => {
+          if (item.groupNumber) {
+            if (this.router.url.includes('POA_PASSPORT_ISSUANCE')) {
+              this.isMulti = false;
+            }
+            this.row = item.groupNumber;
+          }
+        });
+      }
+    });
+    if (this.debagaForm.contains('9286') && this.debagaForm.contains('9291')) {
     // مكان العقار
     this.debagaForm.get('9286').valueChanges.subscribe(res => {
       // بيانات العقار
@@ -74,7 +93,7 @@ export class BasicDataComponent implements OnInit {
       }
         }
       });
-   // }
+    }
   }
 
   initForms = () => {
@@ -86,9 +105,9 @@ export class BasicDataComponent implements OnInit {
 
 
   setValue = () => {
-    this.requestDebagas.forEach((ele, i) => {
+    this.requestDebagas.forEach((ele: any, i) => {
         ele = Object.assign(ele, {text: this.debagaForm.get(`${ele.debagaTemplate.id}`).value,
-          groupNumber: this.isEdite ? this.row : this.getTableRows()});
+          groupNumber: this.row});
     });
   }
   drawObjectForSave = (value) => {
@@ -96,18 +115,22 @@ export class BasicDataComponent implements OnInit {
       debagaTemplate: {id: value.id},
       sortOrder: value.sortOrder
     });
-    this.requestDebagas.push(obj);
+    this.requestDebagas.add(obj);
   }
   addRequestDebaga = () => {
     if (this.debagaForm.dirty && this.debagaForm.touched) {
+      this.row++;
       this.setValue();
       const requestDebaga = {
         data: {
-          requestDebaga: this.requestDebagas
+          requestDebaga: Array.from(this.requestDebagas)
         }
       };
-      this.store.dispatch(addRequestDebaga({requestDebaga}));
-      this.clearForm();
+      this.debagaService.createRequestDebaga(requestDebaga).subscribe(res => {
+        this.messageService.successMessage('تم إضافة النماذج بنجاح');
+        this.clearForm();
+        this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
+      });
     }
   }
   updateRequestDebaga = () => {
@@ -116,11 +139,14 @@ export class BasicDataComponent implements OnInit {
       data: {
         requestId: this.requestId,
         groupNo: this.row,
-        requestDebaga: this.requestDebagas
+        requestDebaga: Array.from(this.requestDebagas)
       }
     };
-    this.store.dispatch(updateRequestDebaga({requestDebaga}));
-    this.clearForm();
+    this.debagaService.updaterequestDebaga(requestDebaga).subscribe(res => {
+      this.messageService.successMessage('تم تعديل النماذج بنجاح');
+      this.clearForm();
+      this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
+    });
   }
 
 // fetch data from table to inputs
@@ -133,24 +159,34 @@ export class BasicDataComponent implements OnInit {
     this.store.dispatch(deleteRequestDebaga({id: {data: {requestId: this.requestId, groupNo: i + 1}}}));
   }
 
+  getCommercials = (debaga, event) => {
+    if (!this.mociData) {
+      if (debaga.code.includes('CR_NUMBER')) {
+      if (event.target.value) {
+      if (environment.production) {
+        this.customerService.getMociData(+event.target.value).subscribe(res => {
+          this.mociData = res.data;
+        });
+      } else {
+        this.mociData = this.customerService.getMociDataMocaup(+event.target.value);
+      }
+      if (this.debagaForm.contains('8897')) {
+        this.debagaForm.get('8897').patchValue(this.mociData.data.companySummary.company.arabicName);
+        this.debagaForm.get('8897').disable();
+      }
+      }
+      }
+    }
+  }
+
 // set value to cells of the table
   cellValue = (val, matchVal): string => {
     return val[matchVal];
   }
 
-  getRowForUpdate = (row) => {
-    this.row = row + 1;
-  }
-
-  // to set group number while saving debagas
-  getTableRows = (): number => {
-    const table = document.getElementById('tableId') as HTMLTableRowElement;
-    return table.childElementCount;
-  }
-
-
   clearForm = () => {
     this.debagaForm.reset();
+    this.debagaForm.enable();
     this.isEdite = false;
   }
 }

@@ -16,6 +16,7 @@ export class AuthEffects {
       this.authService.logIn(action.userName, action.password).pipe(
         map(user => loadAuthSuccess({user})),
         tap(user => sessionStorage.setItem('token', user.user.data.authToken)),
+        tap(user => sessionStorage.setItem('user', JSON.stringify(user.user.data.user))),
         tap(() => this.router.navigate(['/notary'])),
         catchError(error => of(loadAuthFailure({error})))
       )

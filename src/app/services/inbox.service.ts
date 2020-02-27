@@ -16,4 +16,7 @@ URL: string;
   searchExternalDraftRequest = (searchObj: SearchInbox) => {
     return this.http.post(`${this.URL}search-external-draft-requests.do`, searchObj);
   }
+  searchOSsDraftRequest = (searchObj: SearchInbox) => {
+    return this.http.post(`${this.URL}search-oss-draft-requests.do`, searchObj);
+  }
 }

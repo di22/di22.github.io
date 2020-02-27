@@ -5,18 +5,23 @@ export const mainCategoriesFeatureKey = 'mainCategories';
 
 export interface State {
   transactions: any;
+  selectedID: number;
   error: any;
 }
 
 export const initialState: State = {
   transactions: [],
+  selectedID: 1,
   error: null
 };
 
 const mainCategoriesReducer = createReducer(
   initialState,
 on(fromMainCategories.loadMainCategories, state => state),
-on(fromMainCategories.loadMainCategoriesSuccess, (state, action) => ({...state, transactions: action.transactions, error: null})),
+on(fromMainCategories.GetSelectedCategory, (state, action) =>
+  ({...state, selectedID: action.id, error: null, transactions: state.transactions})),
+on(fromMainCategories.loadMainCategoriesSuccess, (state, action) =>
+  ({...state, transactions: action.transactions, error: null, selectedID: state.selectedID})),
 on(fromMainCategories.loadMainCategoriesFailure, (state, action) => ({...state, error: action.error, transactions: []}))
 );
 

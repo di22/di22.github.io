@@ -11,25 +11,42 @@
 <form [formGroup]="requestDebagaForm" >
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
 
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+  <mat-tree-node *matTreeNodeDef="let node"  matTreeNodePadding>
     <li class="mat-tree-node">
-      <button mat-icon-button disabled></button>
-      <ng-container *ngTemplateOutlet="node.htmlCodeType === 'RADIOBUTTON' ? RADIOBUTTON : node.htmlCodeType === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST : node.htmlCodeType === 'TEXT' && node.columnType === 'ALPHANUMERIC'  ? TEXT : node.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
+      <ng-container *ngTemplateOutlet="node.htmlCodeType === 'RADIOBUTTON' ? RADIOBUTTON : node.htmlCodeType === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST : node.htmlCodeType === 'DROPDOWNLIST' ? DROPDOWNLIST : node.htmlCodeType === 'TEXT' && node.columnType === 'ALPHANUMERIC'  ? TEXT : node.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
 
       <ng-template #CHECKBOX>
-        <mat-checkbox [formControlName]="node.id" [id]="node.id" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (click)="todoItemSelectionToggle(node)"></mat-checkbox>
+        <mat-checkbox [formControlName]="node.id" [id]="node.id" [checked]="getFormControl(node.id).value === true"   [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (change)="itemSelectionToggle(node)" ></mat-checkbox>
       </ng-template>
       <ng-template #RADIOBUTTON>
-          <mat-radio-button [formControlName]="node.id" [id]="node.id" [value]="node.id" ngDefaultControl [name]="node.parentDebagaTemplateId" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (click)="todoItemSelectionToggle(node)"></mat-radio-button>
+          <mat-radio-button [formControlName]="node.id" [id]="node.id" [checked]="getFormControl(node.id).value == node.id" [value]="node.id" ngDefaultControl [name]="node.parentDebagaTemplateId" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (change)="getOtherRadioButtons(node.parentDebagaTemplateId, node)" ></mat-radio-button>
       </ng-template>
       <span>
         {{node.description}}
       </span>
+      <mat-error  *ngFor="let type of (validationTypes$ | async)" style="margin-right: 15px">
+        <mat-error *ngIf="getFormControl(node.id).hasError(type)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
+      </mat-error>
       <ng-template #MULTIDROPDOWNLIST >
         <mat-form-field class="debaga-fields">
           <mat-select [formControlName]="node.id" [id]="node.id"  multiple >
             <mat-option *ngFor="let element of (node.text | stringToArray)" [value]="element">{{element}}</mat-option>
           </mat-select>
+          <mat-error  *ngFor="let type of (validationTypes$ | async)">
+            <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
+          </mat-error>
+        </mat-form-field>
+      </ng-template>
+      <ng-template #DROPDOWNLIST >
+        <mat-form-field class="debaga-fields">
+          <mat-select [formControlName]="node.id" [id]="node.id" >
+            <mat-option *ngFor="let element of (node.text | stringToArray)" [value]="element">{{element}}</mat-option>
+          </mat-select>
+          <mat-error  *ngFor="let type of (validationTypes$ | async)">
+            <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
+          </mat-error>
         </mat-form-field>
       </ng-template>
 
@@ -38,11 +55,20 @@
           <input matInput [formControlName]="node.id" [id]="node.id"  [min]="startDate() " [max]="endDate(node.maxValue)" [matDatepicker]="dp" (dateChange)="onChangesDate($event)" >
           <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
           <mat-datepicker #dp></mat-datepicker>
+            <mat-error  *ngFor="let type of (validationTypes$ | async)">
+              <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, node.description)}}</mat-error>
+            </mat-error>
         </mat-form-field>
       </ng-template>
+
       <ng-template #TEXT >
         <mat-form-field class="input-width debaga-fields">
-          <input [formControlName]="node.id" [id]="node.id" matInput (change)="setValue(node, $event, 'i')">
+          <input [formControlName]="node.id" [id]="node.id" matInput >
+          <mat-error  *ngFor="let type of (validationTypes$ | async)">
+            <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, node.description)}}</mat-error>
+          </mat-error>
         </mat-form-field>
       </ng-template>
 
@@ -53,22 +79,42 @@
     <li>
       <div class="mat-tree-node">
 
-        <ng-container *ngTemplateOutlet="node.htmlCodeType === 'RADIOBUTTON' ? RADIOBUTTON : node.htmlCodeType === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST : node.htmlCodeType === 'TEXT' && node.columnType === 'ALPHANUMERIC'  ? TEXT : node.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
+        <ng-container *ngTemplateOutlet="node.htmlCodeType === 'RADIOBUTTON' ? RADIOBUTTON : node.htmlCodeType === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST : node.htmlCodeType === 'DROPDOWNLIST' ? DROPDOWNLIST : node.htmlCodeType === 'TEXT' && node.columnType === 'ALPHANUMERIC'  ? TEXT : node.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
 
-        <ng-template #CHECKBOX>
-          <mat-checkbox [formControlName]="node.id" [id]="node.id"  [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" (click)="todoItemSelectionToggle(node)"></mat-checkbox>
+        <ng-template #CHECKBOX style="display: flex; flex-direction: column">
+          <mat-checkbox [formControlName]="node.id" [id]="node.id" [checked]="getFormControl(node.id).value === true"  [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" matTreeNodeToggle  (change)="itemSelectionToggle(node)" ></mat-checkbox>
         </ng-template>
         <ng-template #RADIOBUTTON>
-            <mat-radio-button [formControlName]="node.id" [id]="node.id" [value]="node.id"  ngDefaultControl [name]="node.parentDebagaTemplateId" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" value="1"  (click)="todoItemSelectionToggle(node)"></mat-radio-button>
+            <mat-radio-button [formControlName]="node.id" [id]="node.id" [value]="node.id" [checked]="getFormControl(node.id).value == node.id" ngDefaultControl [name]="node.parentDebagaTemplateId" [matBadge]="node.cost ? node.cost: 0" matBadgePosition="before" matBadgeColor="accent" value="1"  (change)="getOtherRadioButtons(node.parentDebagaTemplateId, node)" ></mat-radio-button>
         </ng-template>
         <span>
         {{node.description}}
       </span>
+        <mat-error  *ngFor="let type of (validationTypes$ | async)" style="margin-right: 15px">
+          <mat-error *ngIf="getFormControl(node.id).hasError(type)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
+        </mat-error>
+
         <ng-template #MULTIDROPDOWNLIST >
           <mat-form-field class="debaga-fields">
             <mat-select [formControlName]="node.id" [id]="node.id"   multiple>
               <mat-option *ngFor="let element of (node.text | stringToArray)" [value]="element">{{element}}</mat-option>
             </mat-select>
+            <mat-error  *ngFor="let type of (validationTypes$ | async)">
+              <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
+            </mat-error>
+          </mat-form-field>
+        </ng-template>
+
+        <ng-template #DROPDOWNLIST >
+          <mat-form-field class="debaga-fields">
+            <mat-select [formControlName]="node.id" [id]="node.id">
+              <mat-option *ngFor="let element of (node.text | stringToArray)" [value]="element">{{element}}</mat-option>
+            </mat-select>
+            <mat-error  *ngFor="let type of (validationTypes$ | async)">
+              <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
+            </mat-error>
           </mat-form-field>
         </ng-template>
 
@@ -77,12 +123,19 @@
             <input [formControlName]="node.id" [id]="node.id" matInput [min]="startDate()" [max]="node.maxValue" [matDatepicker]="dp" placeholder="تاريخ سربان الوكاله" (dateChange)="onChangesDate($event)" >
             <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
             <mat-datepicker #dp></mat-datepicker>
+            <mat-error *ngFor="let type of (validationTypes$ | async)">
+              <mat-error *ngIf="requestDebagaForm.contains(node.id) ">{{validationMessagesService.getValidatorErrorMessage(type, null, node.description)}}</mat-error>
+            </mat-error>
           </mat-form-field>
         </ng-template>
 
         <ng-template #TEXT >
           <mat-form-field class="input-width debaga-fields">
             <input [formControlName]="node.id" [id]="node.id" matInput >
+            <mat-error  *ngFor="let type of (validationTypes$ | async)">
+              <mat-error *ngIf="getFormControl(node.id).hasError(type) && (getFormControl(node.id).dirty
+                   || getFormControl(node.id).touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, node.description)}}</mat-error>
+            </mat-error>
           </mat-form-field>
         </ng-template>
       </div>
@@ -98,8 +151,8 @@
 
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
-          <div  >
-            <button mat-raised-button color="Basic" (click)="addOrUpdate()">إضافه</button>
+          <div>
+            <button mat-raised-button color="Basic" [disabled]="!requestId" (click)="addOrUpdate()">إضافه</button>
           </div>
         </div>
       </mat-card-actions>

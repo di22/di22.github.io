@@ -1,10 +1,11 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import * as RelativesActions from '../actions/relatives.actions';
+import {Relative} from '../../../../../DTO`s/relative';
 
 export const relativesFeatureKey = 'relatives';
 
 export interface State {
-relatives: any[];
+relatives: Relative[];
 error: any;
 }
 

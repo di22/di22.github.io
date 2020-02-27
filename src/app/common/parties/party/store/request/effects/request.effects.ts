@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {catchError, map, concatMap, tap, switchMap} from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 
 import * as RequestActions from '../actions/request.actions';
 import * as CustomerActions from '../../customer/actions/customer.actions';

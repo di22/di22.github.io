@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import {Relative} from '../../../../../DTO`s/relative';
 
 export const loadRelatives = createAction(
   '[Relatives] Load Relatives',
@@ -7,7 +8,7 @@ export const loadRelatives = createAction(
 
 export const loadRelativesSuccess = createAction(
   '[Relatives] Load Relatives Success',
-  props<{ data: any }>()
+  props<{ data: Relative[] }>()
 );
 
 export const loadRelativesFailure = createAction(

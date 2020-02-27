@@ -16,7 +16,7 @@
               <mat-form-field class="input-width">
                 <mat-label >الصفه</mat-label>
                 <mat-select   formControlName="customerCategory">
-                  <mat-option *ngFor="let cg of (requestCustomerTypes$ | async) | requestCustomerTypePipe: participantType" [value]="cg.id">{{cg.description}}</mat-option>
+                  <mat-option *ngFor="let cg of (requestCustomerTypes$ | async) | requestCustomerTypePipe: participantType: (transactionCustomerTypes$ | async)" [value]="cg?.id">{{cg?.description}}</mat-option>
                 </mat-select>
                 <mat-error *ngFor="let type of (validationTypes$ | async)">
                   <mat-error *ngIf="getFormControlCustomer('customerCategory').hasError(type) && (getFormControlCustomer('customerCategory').dirty || getFormControlCustomer('customerCategory').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الصفه')}}</mat-error>
@@ -26,7 +26,7 @@
               <mat-form-field class="input-width">
                 <mat-label >نوع الوثيفه</mat-label>
                 <mat-select  formControlName="customerIDType">
-                  <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id">{{cId.description}}</mat-option>
+                  <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id" (onSelectionChange)="getCustomerType(cId)">{{cId.description}}</mat-option>
                 </mat-select>
                 <mat-error *ngFor="let type of (validationTypes$ | async)">
                   <mat-error *ngIf="getFormControlCustomer('customerIDType').hasError(type) && (getFormControlCustomer('customerIDType').dirty
@@ -36,7 +36,7 @@
 
               <mat-form-field class="input-width">
                 <mat-label>الرقم المدني</mat-label>
-                <input matInput type="number" formControlName="customerCivilId" [maxLength]="maxLength" appInputLimiter="maxLength">
+                <input matInput type="number" formControlName="customerCivilId" appInputLimiter="maxLength">
                 <mat-error *ngFor="let type of (validationTypes$ | async)">
                   <mat-error *ngIf="getFormControlCustomer('customerCivilId').hasError(type) && (getFormControlCustomer('customerCivilId').dirty || getFormControlCustomer('customerCivilId').touched)">{{validationMessagesService.getValidatorErrorMessage(type, {max: maxLength, min: 1}, 'الرقم المدني')}}</mat-error>
                 </mat-error>
@@ -68,7 +68,7 @@
                 <input matInput type="tel" formControlName="mobileNo">
                 <mat-error *ngFor="let type of (validationTypes$ | async)">
                   <mat-error *ngIf="getFormControlCustomer('mobileNo').hasError(type) && (getFormControlCustomer('mobileNo').dirty
-                   || getFormControlCustomer('mobileNo').touched)">{{validationMessagesService.getValidatorErrorMessage(type, {max: 15, min: 8}, 'رقم النقال')}}</mat-error>
+                   || getFormControlCustomer('mobileNo').touched)">hhhhh</mat-error>
                 </mat-error>
               </mat-form-field>
 
@@ -209,7 +209,7 @@
             <mat-form-field class="input-width" *ngIf="participantType === 2 && (relatives$ | async)?.length > 0">
               <mat-label > صلة القرابة</mat-label>
               <mat-select   formControlName="relativeRelation">
-                <mat-option *ngFor="let relative of (relatives$ | async)" [value]="relative.Id">{{relative.NameAr}}</mat-option>
+                <mat-option *ngFor="let relative of (relatives$ | async)" [value]="relative.Id">{{relative.arabicName}}</mat-option>
               </mat-select>
             </mat-form-field>
             <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center" formGroupName="facilityData"
@@ -229,7 +229,7 @@
 
               <mat-form-field class="input-width">
                 <mat-label> السجل التجاري</mat-label>
-                <input matInput formControlName="commericalRegister" type="number">
+                <input matInput formControlName="commericalRegister" type="number" (blur)="getCommercials()">
                 <mat-error *ngFor="let type of (validationTypes$ | async)">
                   <mat-error *ngIf="getFormControlFacilityData('commericalRegister').hasError(type) && (getFormControlFacilityData('commericalRegister').dirty
                    || getFormControlFacilityData('commericalRegister').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'السجل التجاري')}}</mat-error>
@@ -265,7 +265,7 @@
                    || getFormControlFacilityData('expiryDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'اسم الشركه')}}</mat-error>
                 </mat-error>
               </mat-form-field>
-
+              <button *ngIf="mociData" mat-raised-button color="warn" (click)="openCommercialDialog()">تحقق</button>
             </div>
 
             <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center" formGroupName="procuration">
@@ -343,7 +343,7 @@
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div>
-            <button mat-raised-button color="Basic" (click)="creatProcurationCustomer()">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
+            <button mat-raised-button color="Basic" [disabled]="!requestId" (click)="creatProcurationCustomer(procurationCustomer)">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
           </div>
           <div>
           <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>

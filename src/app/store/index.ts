@@ -29,6 +29,9 @@ import * as fromRequestAttachments from './general/lookups/requestAttachments/re
 import * as fromTransactionRequestAttachment from '../common/components/request-attachment/store/reducers/transaction-request-attachment.reducer';
 import * as fromRelatives from './general/lookups/relatives/reducers/relatives.reducer';
 import * as fromLawOffice from './general/lookups/law-offices/reducers/law-office.reducer';
+import * as fromExemptReason from './general/lookups/exemptReasons/reducers/exempt-reason.reducer';
+import * as fromTransactionCustType from './general/lookups/transaction-cust-types/reducers/transaction-cust-type.reducer';
+import * as fromUserOrg from './general/user-org-details/reducers/user-org.reducer';
 
 export interface State {
   [fromAuth.authFeatureKey]: fromAuth.State;
@@ -48,15 +51,14 @@ export interface State {
   [fromRequestDebaga.requestDebagaFeatureKey]: fromRequestDebaga.State;
   [fromRequestAttachments.requestAttachmentsFeatureKey]: fromRequestAttachments.State;
   [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: fromTransactionRequestAttachment.State;
-  [fromRelatives.relativesFeatureKey]: fromRelatives.State;  [fromLawOffice.lawOfficeFeatureKey]: fromLawOffice.State;
+  [fromRelatives.relativesFeatureKey]: fromRelatives.State;
+  [fromLawOffice.lawOfficeFeatureKey]: fromLawOffice.State;
+  [fromExemptReason.exemptReasonFeatureKey]: fromExemptReason.State;
+  [fromTransactionCustType.transactionCustTypeFeatureKey]: fromTransactionCustType.State;
+  [fromUserOrg.userOrgFeatureKey]: fromUserOrg.State;
 
 
 
-
-
-
-
- // [fromLookups.lookupsFeatureKey]: fromLookups.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
@@ -79,7 +81,9 @@ export const reducers: ActionReducerMap<State> = {
   [fromTransactionRequestAttachment.transactionRequestAttachmentsFeatureKey]: fromTransactionRequestAttachment.reducer,
   [fromRelatives.relativesFeatureKey]: fromRelatives.reducer,
   [fromLawOffice.lawOfficeFeatureKey]: fromLawOffice.reducer,
-  // [fromLookups.lookupsFeatureKey]: fromLookups.reducer
+  [fromExemptReason.exemptReasonFeatureKey]: fromExemptReason.reducer,
+  [fromTransactionCustType.transactionCustTypeFeatureKey]: fromTransactionCustType.reducer,
+  [fromUserOrg.userOrgFeatureKey]: fromUserOrg.reducer
 };
 
 export const REDUCERS_TOKEN = new InjectionToken<ActionReducerMap<State>>('App Reducers');

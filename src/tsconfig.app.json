@@ -6,7 +6,8 @@
     "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
-    "enableIvy": true
+    "enableIvy": true,
+    "allowEmptyCodegenFiles": true
   },
   "files": [
     "main.ts",

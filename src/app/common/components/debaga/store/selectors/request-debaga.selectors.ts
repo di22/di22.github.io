@@ -14,3 +14,13 @@ export const selectDebaga = createSelector(
   selectRequestDebagaState,
   (state: fromRequestDebaga.State) => state.debagaText
 );
+
+export const selectExpiryDate = createSelector(
+  selectAllRequestDebaga,
+  (requestDebaga) => requestDebaga.find(rd => rd.debagaTemplate.id === 8771)
+);
+
+export const selectDebagaFees = createSelector(
+  selectRequestDebagaState,
+  (state: fromRequestDebaga.State) => state.fees
+);

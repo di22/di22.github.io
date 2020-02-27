@@ -1,5 +1,5 @@
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DebagaTemplete} from '../../../../DTO`s/debaga-templete';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -9,18 +9,23 @@ import {FlatTree} from '../../../../DTO`s/flatTree';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import moment from 'moment';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {default as fromApp, State} from '../../../../store';
+import * as fromApp from '../../../../store';
 import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute} from '@angular/router';
-import {addDebaga, addRequestDebaga, updateDebaga, updateRequestDebaga} from '../store/actions/request-debaga.actions';
-import {Request} from '../../../../DTO`s/request';
-import * as fromRequestSelectors from '../../../parties/party/store/request/selectors/request.selectors';
+import {
+  getDebagaFees,
+  getExpiryDate,
+} from '../store/actions/request-debaga.actions';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
+import {ValidationMessagesService} from '../../../../services/config/validation-messages.service';
+import {MessageService} from '../../../../services/config/message.service';
+import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
+import {DebagaService} from '../../../services/debaga.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-optional-data',
   templateUrl: './optional-data.component.html',
   styleUrls: ['./optional-data.component.scss'],
@@ -34,13 +39,14 @@ import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.s
 })
 export class OptionalDataComponent implements OnInit {
 
+  @Input() debagas$: Observable<any>;
 
   requestDebagaForm: FormGroup;
-  requestTextDebagaForm: FormGroup;
-  @Input() debagas$: Observable<any>;
+  startRequestDebagasForm: FormArray;
   appStore$: Observable<fromApp.State>;
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
   debaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectDebaga(state));
+  validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
 
   checklistSelection = new SelectionModel<FlatTree>(true /* multiple */);
   flatNodeMap: Map<FlatTree, DebagaTemplete> = new Map<FlatTree, DebagaTemplete>();
@@ -52,35 +58,29 @@ export class OptionalDataComponent implements OnInit {
   requestId: number;
   requestDebaga: {};
   parentNodes = [];
-  requestDebagaObj = {};
+  parentNodesIds = [];
+  requestDebagaType = {};
+
   requestDebagas: any[] = [];
+  basicRequestDebaga: any[] = [];
+  basicRequestDebagaHeaders = new Set();
+
+  basicRequestDebagaTableValues: any[] = [];
   text = '';
   debagaId: number;
   textExtension = new FormControl('');
   textResult = new FormControl({value: '', disabled: true});
   Editor = ClassicEditor;
-  constructor(private store: Store<State>,
+
+  debagaFees = 0;
+  constructor(private store: Store<fromApp.State>,
+              private debagaService: DebagaService,
+              private validationMessagesService: ValidationMessagesService,
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
-              private activatedRout: ActivatedRoute) {
+              private activatedRout: ActivatedRoute,
+              private messageService: MessageService) {
     this.initForms();
-    this.requestDebaga$.subscribe((requestDebaga: any) => {
-      if (requestDebaga) {
-        if (requestDebaga.length > 0) {
-          requestDebaga.forEach(item => {
-            if (!item.groupNumber) {
-              if (!this.requestDebagaObj[item.debagaTemplate.id]) {
-                this.requestDebagaObj[item.debagaTemplate.id] = {
-                  id: item.id, text: item.text,
-                  type: item.debagaTemplate.htmlComponentLu.code,
-                  columnType: item.debagaTemplate.columnType, debagaId: item.debagaTemplate.id
-                };
-              }
-            }
-          });
-        }
-      }
-    });
   }
 
   ngOnInit() {
@@ -103,23 +103,53 @@ export class OptionalDataComponent implements OnInit {
         this.dataSource.data = filteredValues.filter(type => type.staticTemplate === false);
       }
     });
+    this.requestDebaga$.subscribe((requestDebaga: any) => {
+      this.basicRequestDebaga = [];
+      this.basicRequestDebagaTableValues = [];
+      if (requestDebaga) {
+        if (requestDebaga.length > 0) {
+          requestDebaga.forEach((item, i) => {
+            if (!item.groupNumber) {
+              this.setRequestDebagasAfterGetRequestDetails(item);
+            } else {
+              if (item) {
+                this.basicRequestDebaga.push(item);
+                this.basicRequestDebagaHeaders.add(item.debagaTemplate.description);
+              }
+            }
+          });
+          requestDebaga.forEach((ele, i1) => {
+            const arr = [];
+            this.basicRequestDebaga.forEach((ele2, i2) => {
+              if (ele2.groupNumber === i1 + 1) {
+                arr.push(ele2.text ? ele2.text : '');
+              }
+            });
+            if (arr.length > 0) {
+              this.basicRequestDebagaTableValues.push(arr);
+            }
+          });
+          this.store.dispatch(getDebagaFees({fees: this.debagaFees}));
+        }
+      }
+    });
     this.debaga$.subscribe((debaga: any) => {
       if (debaga.id) {
+        const exText = debaga.textExtension ? debaga.textExtension : '';
         this.debagaId = debaga.id;
-        this.textResult.setValue(debaga.text + '\n' + debaga.textExtension ? debaga.textExtension : '');
+        this.textExtension.setValue(exText);
+        this.textResult.setValue(debaga.text ? debaga.text : '' + '\n' + exText );
       }
     });
   }
 initForms = () => {
     this.requestDebagaForm = this.formBuilder.group({});
-    this.requestTextDebagaForm = this.formBuilder.group({});
+    this.startRequestDebagasForm = this.formBuilder.array([]);
 }
   transformer = (node: DebagaTemplete, level: number) => {
     const flatNode = this.nestedNodeMap.has(node) && this.nestedNodeMap.get(node).description === node.description
       ? this.nestedNodeMap.get(node)
       : {} as FlatTree;
-    this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(false));
-    this.requestTextDebagaForm.addControl(`${node.id}`, this.formBuilder.control(node));
     flatNode.id = node.id;
     flatNode.description = node.description;
     flatNode.cost = node.cost;
@@ -133,38 +163,55 @@ initForms = () => {
     flatNode.parentDebagaTemplateId = node.parentDebagaTemplate ? node.parentDebagaTemplate.id : null;
     flatNode.level = level;
     flatNode.expandable = !!node.childDebagaTemplates;
-    this.setRequestDebagasAfterGetRequestDetails(flatNode);
-    this.setDebagas(flatNode);
+    this.setNodeFormControl(flatNode);
+    this.startRequestDebagasForm.push(this.formBuilder.control(this.setDebagas(node)));
+    if (node.code === 'POA_EXPIRY_DATE') {
+      this.requestDebagaForm.get(`${node.id}`).setValidators([Validators.required]);
+      this.requestDebagaForm.get(`${node.id}`).updateValueAndValidity();
+    }
+    this.requestDebagaType[flatNode.id] = {htmlCodeType: flatNode.htmlCodeType,
+      columnType: flatNode.columnType, description: flatNode.description};
     if (!flatNode.parentDebagaTemplateId) {
       this.parentNodes.push(flatNode);
+      this.parentNodesIds.push(flatNode.id);
     }
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
   }
 
-  todoItemSelectionToggle(node: FlatTree) {
+  itemSelectionToggle(node: FlatTree) {
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.toggle(node);
     if (this.checklistSelection.isSelected(node)) {
+      this.checklistSelection.select(...descendants);
       this.treeControl.expandDescendants(node);
     } else {
+      this.checklistSelection.deselect(...descendants);
       this.treeControl.collapseDescendants(node);
     }
+
+    this.toggleCheckBoxesValues(descendants);
   }
 
 
 
+
   addOrUpdate = () => {
-    this.setText();
     this.setValues();
-    this.validation();
+    if (this.requestDebagaForm.valid) {
     if (!this.debagaId) {
       this.addDebaga();
       this.addRequestDebaga();
     } else {
       this.updateDebaga();
       this.updateRequestDebaga();
+    }
+    setTimeout(() => {
+      this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
+    }, 1000);
+    } else {
+      this.validationMessagesService.validateAllFormFields(this.requestDebagaForm);
     }
   }
   addDebaga = () => {
@@ -176,14 +223,16 @@ initForms = () => {
           request: {
             id: this.requestId
           },
-          text:  this.text,
+          text:  this.createTable([this.basicRequestDebagaHeaders, ...this.basicRequestDebagaTableValues])  + this.text,
           textExtension: this.textExtension.value,
           textDate: date,
           textUpdate: date
         }
       }
     };
-    this.store.dispatch(addDebaga({debaga}));
+    this.debagaService.createDebaga(debaga).subscribe(res => {
+      this.messageService.successMessage('تم إضافة النموذج النصي بنجاح');
+    });
   }
   updateDebaga = () => {
     let  date: any = new Date();
@@ -195,48 +244,49 @@ initForms = () => {
             id: this.requestId
           },
           id: this.debagaId,
-          text:  this.text,
-          textExtension: this.textExtension.value,
+          text: this.createTable([this.basicRequestDebagaHeaders, ...this.basicRequestDebagaTableValues]) + this.text,
+          textExtension: this.textExtension.value ? this.textExtension.value : '',
           textDate: date,
           textUpdate: date
         }
       }
     };
-    this.store.dispatch(updateDebaga({debaga}));
+    this.debagaService.updateDebaga(debaga).subscribe(res => {
+      this.messageService.successMessage('تم تعديل النموذج النصي بنجاح');
+    });
   }
   addRequestDebaga = () => {
-    const requestDebaga = {
-      data: {
-        requestId: this.requestId,
-        requestDebaga: this.requestDebagas
-      }
-    };
-    this.store.dispatch(addRequestDebaga({requestDebaga}));
-  }
-  updateRequestDebaga = () => {
-    const requestDebaga = {
-      data: {
-        requestId: this.requestId,
-        requestDebaga: this.requestDebagas
-      }
-    };
-    this.store.dispatch(updateRequestDebaga({requestDebaga}));
-  }
-
-
-  getOtherRadioButtons = (name, node) => {
-    const radios: any = document.getElementsByName(name);
-    for (const r of radios) {
-      if (!r.checked) {
-        this.requestDebagaForm.get(`${r.defaultValue}`).patchValue(false);
-        const nod = this.getParticularNode(+r.defaultValue);
-        this.checklistSelection.deselect(nod);
-        this.treeControl.collapse(nod);
-      }
+    if (this.startRequestDebagasForm.value && this.startRequestDebagasForm.value.length > 0) {
+      const requestDebaga = {
+        data: {
+          requestId: this.requestId,
+          requestDebaga: this.startRequestDebagasForm.value
+        }
+      };
+      this.debagaService.createRequestDebaga(requestDebaga).subscribe(res => {
+        this.messageService.successMessage('تم إضافة النماذج بنجاح');
+      });
     }
   }
+  updateRequestDebaga = () => {
+    if (this.startRequestDebagasForm.value && this.startRequestDebagasForm.value.length > 0) {
+      const requestDebaga = {
+        data: {
+          requestId: this.requestId,
+          requestDebaga: this.startRequestDebagasForm.value
+        }
+      };
+      this.debagaService.updaterequestDebaga(requestDebaga).subscribe(res => {
+        this.messageService.successMessage('تم تعديل النماذج بنجاح');
+      });
+    }
+  }
+
+
+
+  // draw object that used in requestDebagas for save && update andd push it to start request form
   setDebagas = (node) => {
-    this.requestDebaga =  {
+    const requestDebaga =  {
       id: node.id,
       request: {
         id: this.requestId
@@ -247,124 +297,178 @@ initForms = () => {
       },
       sortOrder: node.sortOrder
     };
-    this.requestDebagas.push(this.requestDebaga);
+    return requestDebaga;
   }
-  setValues = () => {
-    const requestDebagasValues = this.requestTextDebagaForm.value;
-    let text = '';
-    this.requestDebagas.forEach((ele, i) => {
-      if (requestDebagasValues[ele.debagaTemplate.id].columnType === 'DATE') {
-        text = typeof this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value === 'string' ? this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.split('-').reverse().join('/') :
-          `${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.date}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.month}/
-          ${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.year}`;
-      } else if (requestDebagasValues[ele.debagaTemplate.id].htmlComponentLu.code === 'MULTIDROPDOWNLIST') {
-        text = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.length > 0 ?
-          this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.join('|') : '';
+
+  // set values from returned saved requestDebagas
+  setRequestDebagasAfterGetRequestDetails = (node) => {
+    const n = this.getParticularNode(node.debagaTemplate.id);
+    if (node.debagaTemplate.htmlComponentLu.code === 'MULTIDROPDOWNLIST') {
+        if (node.text) {
+          if (node.text.includes('|')) {
+            this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(node.text.split('|'));
+          } else {
+            this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue([node.text]);
+          }
+          node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
+        } else {
+          this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue([]);
+        }
+      } else if (node.debagaTemplate.htmlComponentLu.code === 'CHECKBOX'
+        || node.debagaTemplate.htmlComponentLu.code === 'GRID') {
+        if (node.text === 'true') {
+          this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(true);
+          this.checklistSelection.select(n);
+          this.treeControl.expand(n);
+         // this.treeControl.toggle(n);
+          node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
+        } else if (node.text === 'false') {
+          this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(false);
+          this.checklistSelection.deselect(n);
+          this.treeControl.collapse(n);
+         // this.treeControl.toggle(n);
+        }
+      } else if (node.debagaTemplate.htmlComponentLu.code === 'RADIOBUTTON') {
+        if (node.text && node.text == node.debagaTemplate.id) {
+          this.requestDebagaForm.get(`${node.debagaTemplate.id}`).setValue(node.debagaTemplate.id);
+          this.checklistSelection.select(n);
+          this.treeControl.expandDescendants(n);
+          node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
+        } else if (node.text && node.text === 'false') {
+          this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(false);
+          this.checklistSelection.deselect(n);
+          this.treeControl.collapseDescendants(n);
+          this.checklistSelection.toggle(n);
+        }
+      } else if (node.debagaTemplate.columnType === 'DATE') {
+        const time: any = node.text ?
+          moment(new Date(node.text.split('/').reverse().join('/'))).format('YYYY-MM-DD') : '';
+        this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(time);
+        node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
+        if (node.debagaTemplate.code === 'POA_EXPIRY_DATE') {
+          this.store.dispatch(getExpiryDate({date: new Date(node.texttime)}));
+        }
       } else {
-        text = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value;
+        node.text ? node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0 : this.debagaFees += 0;
+        this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(node.text);
       }
-      ele = Object.assign({}, ele, {text});
+  }
+
+
+  setValues = () => {
+    let value = '';
+    this.text = '';
+    this.startRequestDebagasForm.value.forEach((ele, i) => {
+      if (this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value) {
+        if (this.requestDebagaType[ele.debagaTemplate.id].columnType === 'DATE') {
+          if (typeof this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value === 'string') {
+            value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.split('-').reverse().join('/');
+          } else {
+            value = `${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.date}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.month}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.year}`;
+          }
+          this.text += this.requestDebagaType[ele.debagaTemplate.id].description + ' ' + value;
+        } else if (this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'MULTIDROPDOWNLIST') {
+          if (this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.length > 0) {
+            value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.join('|');
+            this.text += this.requestDebagaType[ele.debagaTemplate.id].description + ' '
+              + this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.join(' و ') + ' ';
+          } else {
+            value = '';
+          }
+        } else if (this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'TEXT') {
+          value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value;
+          if (value) {
+            this.text += this.requestDebagaType[ele.debagaTemplate.id].description + ' ' + value + ' ';
+          }
+        } else if (this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'CHECKBOX'
+          || this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'RADIOBUTTON') {
+          value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value;
+          if (value) {
+            this.text += this.requestDebagaType[ele.debagaTemplate.id].description + ' ';
+          }
+        } else if (this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'GRID') {
+          value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value;
+        }
+        this.startRequestDebagasForm.at(i).setValue(Object.assign({}, ele, {text: value}));
+      }
+      this.validation(ele);
     });
   }
-  setRequestDebagasAfterGetRequestDetails = (node) => {
-    if (this.requestDebagaObj[node.id]) {
-      if (this.requestDebagaObj[node.id].type === 'MULTIDROPDOWNLIST') {
-        if (this.requestDebagaObj[node.id].text) {
-          if (this.requestDebagaObj[node.id].text.includes('|')) {
-            this.requestDebagaForm.get(`${node.id}`).patchValue(this.requestDebagaObj[node.id].text.split('|'));
-          } else {
-            this.requestDebagaForm.get(`${node.id}`).patchValue([this.requestDebagaObj[node.id].text]);
+
+
+  getOtherRadioButtons = (name, node) => {
+    this.checklistSelection.select(node);
+    this.treeControl.expand(node);
+    const radios: any = document.getElementsByName(name);
+    if (radios.length > 0) {
+      for (const r of radios) {
+        if (!r.checked) {
+          this.requestDebagaForm.get(`${r.defaultValue}`).patchValue('');
+          const nod = this.getParticularNode(+r.defaultValue);
+          this.checklistSelection.deselect(nod);
+          this.treeControl.collapse(nod);
+          const children = this.treeControl.getDescendants(nod);
+          if (children.length > 0) {
+            children.forEach(ch => {
+              this.requestDebagaForm.get(`${ch.id}`).patchValue('');
+              this.checklistSelection.deselect(nod);
+              this.treeControl.collapse(nod);
+            });
           }
-        } else {
-          this.requestDebagaForm.get(`${node.id}`).patchValue([]);
         }
-      } else if (this.requestDebagaObj[node.id].type === 'CHECKBOX'
-        || this.requestDebagaObj[node.id].type === 'GRID') {
-        if (this.requestDebagaObj[node.id].text === 'true') {
-          this.requestDebagaForm.get(`${node.id}`).patchValue(true);
-          this.checklistSelection.select(node);
-          this.treeControl.expand(node);
-        } else if (this.requestDebagaObj[node.id].text === 'false') {
-          this.requestDebagaForm.get(`${node.id}`).patchValue(false);
-        }
-      } else if (this.requestDebagaObj[node.id].type === 'RADIOBUTTON') {
-        if (this.requestDebagaObj[node.id].text) {
-          this.requestDebagaForm.get(`${node.id}`).patchValue(this.requestDebagaObj[node.id].text);
-          this.checklistSelection.select(node);
-          this.treeControl.expand(node);
-        }
-      } else if (node.columnType === 'DATE') {
-        const time = this.requestDebagaObj[node.id].text ?
-          moment(new Date(this.requestDebagaObj[node.id].text.split('/').reverse().join('/'))).format('YYYY-MM-DD') : '';
-        this.requestDebagaForm.get(`${node.id}`).patchValue(time);
-      } else {
-        this.requestDebagaForm.get(`${node.id}`).patchValue(this.requestDebagaObj[node.id].text);
       }
     }
   }
 
-  setText = () => {
-    this.text = '';
-    this.parentNodes.forEach(node => {
-      const descendants = this.treeControl.getDescendants(node);
-      descendants.forEach(child => {
-        if ((child.htmlCodeType === 'CHECKBOX' && this.requestDebagaForm.get(`${child.id}`).value === true)
-          || (child.htmlCodeType === 'RADIOBUTTON' && this.requestDebagaForm.get(`${child.id}`).value !== false)
-          || (child.htmlCodeType === 'MULTIDROPDOWNLIST' && this.requestDebagaForm.get(`${child.id}`).value.length > 0)
-          || (child.htmlCodeType === 'TEXT' && this.requestDebagaForm.get(`${child.id}`).value)) {
-          this.getOtherRadioButtons(child.parentDebagaTemplateId, child);
-          switch (child.htmlCodeType) {
-            case 'CHECKBOX' :
-              this.text += child.description + ' ';
-              break;
-            case 'RADIOBUTTON':
-              if (this.requestDebagaForm.get(`${child.id}`).value !== false) {
-                this.text += child.description + ' ';
-              }
-              break;
-            case 'MULTIDROPDOWNLIST':
-              this.text += ' ' + child.description + ' ' + this.requestDebagaForm.get(`${child.id}`).value.join(' و ') + ' ';
-              break;
-            case 'TEXT':
-              if (child.columnType === 'DATE') {
-                this.text += ' '  + child.description + ' ' + this.getDate(child);
-              } else {
-                this.text += ' '  + child.description + ' ' + this.requestDebagaForm.get(`${child.id}`).value;
-              }
-              break;
-            default:
-              this.text += '';
-              break;
-          }
-        }
-      });
+  toggleCheckBoxesValues = (descendants: FlatTree[]) => {
+    descendants.forEach(ele => {
+       this.resetNodeValue(ele);
     });
   }
-  getDate = (child): any => {
-    if (typeof this.requestDebagaForm.get(`${child.id}`).value === 'string') {
-    if (this.requestDebagaForm.get(`${child.id}`).value.includes('-')) {
-      return this.requestDebagaForm.get(`${child.id}`).value.split('-').reverse().join('/');
+  setNodeFormControl = (node: FlatTree) => {
+    if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' || node.htmlCodeType === 'RADIOBUTTON') {
+      this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(false));
+    } else if (node.columnType === 'DATE') {
+      this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(moment(new Date()).format('YYYY-MM-DD')));
+    } else {
+      this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(''));
     }
-  } else {
-     return `${this.requestDebagaForm.get(`${child.id}`).value._i.date}/${this.requestDebagaForm.get(`${child.id}`).value._i.month}/
-          ${this.requestDebagaForm.get(`${child.id}`).value._i.year}` + ' ';
+  }
+  resetNodeValue = (node: FlatTree) => {
+    if (!this.checklistSelection.isSelected(node)) {
+    if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' || node.htmlCodeType === 'RADIOBUTTON') {
+      this.requestDebagaForm.get(`${node.id}`).setValue(false);
+    } else if (node.columnType === 'DATE') {
+      this.requestDebagaForm.get(`${node.id}`).setValue(moment(new Date()).format('YYYY-MM-DD'));
+    } else {
+      this.requestDebagaForm.get(`${node.id}`).setValue('');
+    }
+    } else {
+      if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' ) {
+        this.requestDebagaForm.get(`${node.id}`).setValue(true);
+      }
     }
   }
   getParticularNode = (id): FlatTree => {
     let node = null;
     this.parentNodes.forEach(n => {
+      if (n.id === id) {
+        node = n;
+      } else {
       const descendants = this.treeControl.getDescendants(n);
       descendants.forEach(c => {
         if (c.id === id) {
           node = c;
         }
       });
+    }
     });
     return node;
   }
+
   childrenCheck = (node) => {
-    const descendants = this.treeControl.getDescendants(node);
-    if (descendants.length > 0) {
+    const descendants = this.treeControl.getChildren(node);
+    if (descendants) {
       descendants.forEach(child => {
         const element = document.getElementById(`${child.id}`) as HTMLInputElement;
         if (element) {
@@ -377,49 +481,71 @@ initForms = () => {
       });
     }
   }
-  validation = (): boolean => {
-    let isValid = true;
-    this.parentNodes.forEach(node => {
-      const descendants = this.treeControl.getDescendants(node);
-      descendants.forEach(child => {
-      if (child.htmlCodeType === 'RADIOBUTTON' || child.htmlCodeType === 'CHECKBOX') {
-        if (child.text === true) {
-          const ids = this.getRadioHtmlElements(child.id);
-          if (ids.length > 0) {
-            let count = 0;
-            ids.forEach(ele => {
-              const nod = this.getParticularNode(ele);
-              if (!nod.text) {
-                count += 1;
-              }
-            });
-            if (ids.length === count) {
-              window.alert('' + child.description);
-              isValid = false;
-            }
-          }
-        }
+  validation = (element) => {
+    let childrenValidCount = 0;
+    let parentValidCount = 0;
+    const n = this.getParticularNode(element.debagaTemplate.id);
+    const directChildren = [];
+    const chi = this.treeControl.getDescendants(n);
+    chi.forEach(c => {
+      if (c.level === n.level + 1) {
+        directChildren.push(c);
       }
     });
-  });
-    return isValid;
-  }
-  getRadioHtmlElements = (name): any => {
-    const ids = {};
-    let id = null;
-    const radios = document.getElementsByName(name);
-    radios.forEach((element, index) => {
-      id = +element.id.slice(0, element.id.indexOf('-'));
-      if (!ids[id]) {
-        ids[id] = id;
+    directChildren.forEach(d => {
+      if (!this.requestDebagaForm.get(`${d.id}`).value && this.requestDebagaForm.get(`${element.debagaTemplate.id}`).value) {
+        childrenValidCount += 1;
+      } else if (this.requestDebagaForm.get(`${d.id}`).value && !this.requestDebagaForm.get(`${element.debagaTemplate.id}`).value) {
+        parentValidCount += 1;
       }
     });
-    return ids;
+    if (childrenValidCount && childrenValidCount === directChildren.length) {
+    directChildren.forEach(d => {
+      this.requestDebagaForm.get(`${d.id}`).reset();
+      this.requestDebagaForm.get(`${d.id}`).setValidators([Validators.required]);
+      this.requestDebagaForm.get(`${d.id}`).updateValueAndValidity();
+       });
+    const el =  document.getElementById(element.debagaTemplate.id);
+    el.scrollIntoView();
+     } else if (parentValidCount > 1) {
+      this.requestDebagaForm.get(`${element.id}`).reset();
+      this.requestDebagaForm.get(`${element.id}`).setValidators([Validators.required]);
+      this.requestDebagaForm.get(`${element.id}`).updateValueAndValidity();
+    } else {
+      directChildren.forEach(d => {
+        this.requestDebagaForm.get(`${d.id}`).clearValidators();
+        this.requestDebagaForm.get(`${d.id}`).updateValueAndValidity();
+      });
+    }
   }
-  showAndCalculateFees = (node) => {
 
+
+
+   getCells(data, type) {
+    const arr = Array.from(data);
+    if (type === 'th') {
+    return arr.map(cell => `<${type} height="auto" style="border-collapse:collapse;border:1px solid black;font-family:Helvetica;background-color: #42569c;color: white;text-align:center; ">${cell}</${type}>`).join('');
+  } else if (type === 'td') {
+      return arr.map(cell => `<${type} style='border-collapse:collapse;border:1px solid black;text-align:center; '>${cell}</${type}>`).join('');
+    }
   }
 
+   createBody(data) {
+    return data.map(row => `<tr>${this.getCells(row, 'td')}</tr>`).join('');
+  }
+
+   createTable(data) {
+    if (data[1] && data[1].length > 0) {
+    const [headings, ...rows] = data;
+    return `
+    <table  dir='ltr' cellspacing='0'  width='100%'  style='border-collapse:collapse;font-family:Helvetica; font-size:12px !important; color:black;background-color:#FFFFFF;'><thead style="border-collapse:collapse;border:1px solid black;font-family:Helvetica;background-color: #42569c;color: white;text-align:center; "><tr style='border-collapse:collapse;width:100% !important; text-align:center;'>${this.getCells(headings, 'th')}</TR></thead><tbody>${this.createBody(rows)}</tbody> </table> </BR><STOP/>`;
+  } else {
+      return '';
+    }
+  }
+  getFormControl = (id): AbstractControl => {
+   return  this.requestDebagaForm.get(`${id}`);
+  }
   onChangesDate = (event) => {
 
   }
@@ -435,8 +561,8 @@ initForms = () => {
 
   isExpandable = (node: FlatTree) => node.expandable;
 
-  getChildren = (node: DebagaTemplete): Observable<DebagaTemplete[]> => {
-    return of(node.childDebagaTemplates ? node.childDebagaTemplates : []);
+  getChildren = (node: DebagaTemplete): DebagaTemplete[] => {
+    return node.childDebagaTemplates ? node.childDebagaTemplates : [];
   }
 
   hasChild = (_: number, nodeData: FlatTree) => nodeData.expandable;

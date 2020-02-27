@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit, Optional, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as fromApp from '../../../store';
 import {State} from '../../../store';
@@ -14,9 +14,10 @@ import {AdminTypes} from '../../../DTO`s/admin-types';
 import * as fromAdminTypesSelectors from '../../../store/general/lookups/admin-types/selectors/admin-type.selectors';
 import * as fromRelativesSelectors from '../../../store/general/lookups/relatives/selectors/relatives.selectors';
 import * as fromLawOfficesSelectors from '../../../store/general/lookups/law-offices/selectors/law-office.selectors';
+import * as fromTransactionCustomerTypesSelectors from '../../../store/general/lookups/transaction-cust-types/selectors/transaction-cust-type.selectors';
 import * as fromRequestSelectors from './store/request/selectors/request.selectors';
 import * as fromCustomerSelectors from './store/customer/selectors/customer.selectors';
-import {ControlContainer, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 // tslint:disable-next-line:max-line-length
@@ -27,9 +28,9 @@ import {loadAdminTypes} from '../../../store/general/lookups/admin-types/actions
 import {ActivatedRoute, Router} from '@angular/router';
 import {CreateRequest, GetRequestDetails} from './store/request/actions/request.actions';
 import {Request} from '../../../DTO`s/request';
-import {createCustomer, deleteCustomer, getROPCustomer, updateCustomer} from './store/customer/actions/customer.actions';
+import {createCustomer, deleteCustomer, updateCustomer} from './store/customer/actions/customer.actions';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog} from '@angular/material/dialog';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {TransactionCategories} from '../../data/transactionCategories';
 import {CustomerService} from '../../services/customer.service';
@@ -40,6 +41,10 @@ import {loadRelatives} from '../../../store/general/lookups/relatives/actions/re
 import {loadLawers, loadLawOffices} from '../../../store/general/lookups/law-offices/actions/law-office.actions';
 import {TableDataService} from '../../services/table-data.service';
 import {LawyersModalComponent} from '../../../modal/lawyers-modal/lawyers-modal.component';
+import {loadTransactionCustTypes} from '../../../store/general/lookups/transaction-cust-types/actions/transaction-cust-type.actions';
+import {environment} from '../../../../environments/environment';
+import {CommericalComponent} from '../../../modal/commerical/commerical.component';
+import {RequestService} from '../../services/request.service';
 
 @Component({
   selector: 'app-party',
@@ -51,13 +56,7 @@ import {LawyersModalComponent} from '../../../modal/lawyers-modal/lawyers-modal.
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
     },
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}],
-  viewProviders: [
-    {
-      provide: ControlContainer,
-      useExisting: FormGroupDirective
-    }
-  ]
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}]
 })
 export class PartyComponent implements OnInit {
   @Input() participantType: number;
@@ -75,6 +74,8 @@ export class PartyComponent implements OnInit {
   maxLength = 9;
   institutionId: number;
   lawOfficeName: string;
+  requestCustomerType: any;
+  mociData: any;
   transactionCategories: TransactionCategories = new TransactionCategories();
   appStore$: Observable<fromApp.State>;
   requestCustomerTypes$: Observable<RequestCustomerType[]> = this.store.select(state =>
@@ -84,6 +85,8 @@ export class PartyComponent implements OnInit {
   adminTypes$: Observable<AdminTypes[]> = this.store.select(state => fromAdminTypesSelectors.selectFeatureAdminTypes(state));
   relatives$: Observable<any> = this.store.select(state => fromRelativesSelectors.relativesSelector(state));
   lawOffices$: Observable<any> = this.store.select(state => fromLawOfficesSelectors.lawOfficesSelector(state));
+  transactionCustomerTypes$: Observable<any> = this.store.select(state =>
+    fromTransactionCustomerTypesSelectors.selectTranscationCustomerTypes(state));
   request$: Observable<Request> = this.store.select(state => fromRequestSelectors.selectFeatureRequestState(state));
   customers$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectUserEntities(state));
   customerROP$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectROPCustomer(state));
@@ -97,6 +100,7 @@ export class PartyComponent implements OnInit {
               private encryptDecryptService: EncryptDecryptService,
               private validationMessagesService: ValidationMessagesService,
               private customerService: CustomerService,
+              private requestService: RequestService,
               private activatedRout: ActivatedRoute,
               private router: Router,
               private ref: ChangeDetectorRef,
@@ -144,7 +148,7 @@ export class PartyComponent implements OnInit {
       this.procurationCustomer.get('facilityData').get('commericalRegister').updateValueAndValidity();
       this.procurationCustomer.get('facilityData').get('expiryDate').updateValueAndValidity();
       this.procurationCustomer.get('facilityData').get('facilityName').updateValueAndValidity();
-
+      this.mociData = null;
     });
     this.procurationCustomer.get('procuration').get('manualFlag').valueChanges.subscribe(value => {
       if (value === false) {
@@ -157,14 +161,9 @@ export class PartyComponent implements OnInit {
     });
     this.activatedRout.data.subscribe(params => {
       this.transactionId = params.transactionId;
-      this.request.controls.transactionType.setValue({id: this.transactionId});
     });
     this.activatedRout.params.subscribe(params => {
-      if (!params.requestId) {
-        if (this.participantType === 1) {
-          this.createRequest(this.request.value);
-        }
-      } else {
+      if (params.requestId) {
         this.requestId = params.requestId;
         this.procurationCustomer.controls.request.setValue({id: this.requestId});
         if (this.participantType === 1) {
@@ -183,6 +182,7 @@ export class PartyComponent implements OnInit {
       this.store.dispatch(loadCustomerIdTypes());
       this.store.dispatch(loadNationalities());
       this.store.dispatch(loadAdminTypes());
+      this.store.dispatch(loadTransactionCustTypes({id: {data: {transactionId: this.transactionId}}}));
     }
     this.lawOffices.valueChanges.subscribe(value => {
       if (value && typeof value === 'object' && value.constructor === Object) {
@@ -210,7 +210,7 @@ export class PartyComponent implements OnInit {
         branches: [],
         establishmentPartners: [],
         facilityNo: [],
-        facilityName: ['', [this.validationMessagesService.facilityConditionallyRequiredValidator]],
+        facilityName: [{value: '', disabled: true}, [this.validationMessagesService.facilityConditionallyRequiredValidator]],
         postalBox: [],
         telephone: []
       }),
@@ -288,19 +288,6 @@ export class PartyComponent implements OnInit {
         manualFlag: [false]
       })
     });
-
-    this.request = this.formBuilder.group({
-      requestDate: [null],
-      requestStatusHistory: [{statusReason: ''}],
-      requestNo: [''],
-      isPortal: ['0'],
-      transactionType: [''],
-      requestFinishDate: [''],
-      requestNotes: [''],
-      employeeNotes: [''],
-      userIdApprove: [''],
-      procurationCustomers: [[]]
-    });
   }
   updateProofNoMaxLenght = (id) => {
     switch (id) {
@@ -333,18 +320,11 @@ export class PartyComponent implements OnInit {
         break;
     }
   }
-  createRequest = (searchObj) => {
-    const data = {data: {request: searchObj}};
-    // const encryptData = this.encryption(data);
-   //  this.request$.pipe(take(1)).subscribe(request => {
-   //   if (!Object.entries(request).length) {
-    this.store.dispatch(CreateRequest({request: data, url: this.url}));
-   //   }
-  //  });
-  }
-  creatProcurationCustomer = () => {
-    if (this.procurationCustomer.valid) {
-      const savedCustomer = Object.assign({}, this.procurationCustomer.getRawValue());
+
+  creatProcurationCustomer = (customerObject: FormGroup) => {
+
+    if (customerObject.valid) {
+      const savedCustomer = Object.assign({}, customerObject.getRawValue());
       // const customer = {data: {procurationCustomer: customerObj}};
       if (!savedCustomer.id) {
         delete savedCustomer.id;
@@ -413,8 +393,31 @@ export class PartyComponent implements OnInit {
         }
       });
     }
-   // this.store.dispatch(getROPCustomer({data: {civilNumber: this.procurationCustomer.controls.customer.get('customerCivilId').value,
-   //   dateOfExpiry: `${this.dateFrom.day}-${this.dateFrom.month}-${this.dateFrom.year}`}}));
+  }
+  getCustomerType = (type) => {
+    this.requestCustomerType = type;
+  }
+  getCommercials = () => {
+    if (!this.mociData) {
+    if (environment.production) {
+      this.customerService.getMociData(this.procurationCustomer.controls.facilityData.get('commericalRegister').value).subscribe(res => {
+        this.mociData = res.data;
+      });
+    } else {
+    this.mociData = this.customerService.getMociDataMocaup(this.procurationCustomer.controls.facilityData.get('commericalRegister').value);
+    }
+    this.procurationCustomer.controls.facilityData.get('facilityName').patchValue(this.mociData.data.companySummary.company.arabicName);
+    }
+  }
+  openCommercialDialog = () => {
+    const dialogRef = this.dialog.open(CommericalComponent, {
+      width: '200vh',
+      height: '80%',
+      data:  this.mociData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
   onChangesBirthDate = (event: any) => {
     this.birthDate = {
@@ -555,7 +558,7 @@ export class PartyComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result.length > 0) {
+      if (result && result.length > 0) {
         result.forEach((e, i) => {
           this.clearForm();
           this.procurationCustomer.patchValue({

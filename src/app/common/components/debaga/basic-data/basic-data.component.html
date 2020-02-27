@@ -42,7 +42,7 @@
               <ng-template #TEXT >
                 <mat-form-field class="input-width debaga-fields" [id]="debaga.id">
                   <mat-label>{{debaga.description}}</mat-label>
-                  <input matInput [value]="debaga.text"   [formControlName]="debaga.id" >
+                  <input matInput [value]="debaga.text" [name]="debaga.code"   [formControlName]="debaga.id" (blur)="getCommercials(debaga, $event)">
                 </mat-form-field>
               </ng-template>
               </ng-container>
@@ -53,7 +53,7 @@
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div  >
-            <button mat-raised-button color="Basic" (click)="isEdite ? updateRequestDebaga() : addRequestDebaga()">{{isEdite ? 'تعديل' : 'إضافه'}}</button>
+            <button mat-raised-button color="Basic" [disabled]="!isMulti && !isEdite || !requestId" (click)="isEdite ? updateRequestDebaga() : addRequestDebaga()">{{isEdite ? 'تعديل' : 'إضافه'}}</button>
             <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
           </div>
         </div>
@@ -79,7 +79,7 @@
           </ng-container>
 
           <mat-header-row *matHeaderRowDef="(debagas$ | async) | getColumnsFromDebaga: true"></mat-header-row>
-          <mat-row *matRowDef="let row; let i = index; columns: (debagas$ | async) | getColumnsFromDebaga: true;" (click)="getRowForUpdate(i)"></mat-row>
+          <mat-row *matRowDef="let row; let i = index; columns: (debagas$ | async) | getColumnsFromDebaga: true;"></mat-row>
         </mat-table>
       </mat-card-content>
     </mat-card>

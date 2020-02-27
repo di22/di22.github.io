@@ -4,7 +4,7 @@ import { selectDebagaState } from './debaga.selectors';
 describe('Debaga Selectors', () => {
   it('should select the feature state', () => {
     const result = selectDebagaState({
-      [fromDebaga.debagaFeatureKey]: {}
+      [fromDebaga.debagasFeatureKey]: {}
     });
 
     expect(result).toEqual({});

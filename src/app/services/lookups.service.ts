@@ -11,18 +11,19 @@ import {RequestCustomerType} from '../DTO`s/request-customer-type';
 import {CustomerIdType} from '../DTO`s/customer-id-type';
 import {AdminTypes} from '../DTO`s/admin-types';
 import {RequestAttachments} from '../DTO`s/requestAttachments';
+import {Relative} from '../DTO`s/relative';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LookupsService {
 URL: string;
-relativesURL: string;
+transactionURL: string;
 employeeURL: string;
   constructor(private http: HttpClient,
               private commonService: CommonService) {
    this.URL =  this.commonService.getURL('lookup');
-   this.relativesURL =  this.commonService.getURL('transaction');
+   this.transactionURL =  this.commonService.getURL('transaction');
    this.employeeURL =  this.commonService.getURL('sak-user');
   }
 
@@ -42,8 +43,14 @@ employeeURL: string;
   getAllRequestCustomerTypes = () => {
     return this.http.get<RequestCustomerType[] | any>(`${this.URL}get-request-customer-types.do`);
   }
+  getTransactionCustomerTypes = (id) => {
+    return this.http.post<any>(`${this.transactionURL}get-transaction-cust-types.do`, id);
+  }
   getAllCustomerIdTypes = () => {
     return this.http.get<CustomerIdType[] | any>(`${this.URL}get-customer-id-types.do`);
+  }
+  getAllExemptReasons = () => {
+    return this.http.get<any>(`${this.URL}get-all-excempted-Reasons.do`);
   }
   getNotaryAdminTypes = () => {
     return this.http.get<AdminTypes[] | any>(`${this.commonService.getNotaryURL()}rest/1/notaryAdmin`, {params: {limit: '999999'}});
@@ -52,7 +59,7 @@ employeeURL: string;
     return this.http.post<any>(`${this.URL}get-attachment-types-by-transcation-code.do`, obj);
   }
   getRelativesByTranscationCode = (obj) => {
-    return this.http.post<any>(`${this.relativesURL}get-relatives-by-tranTypeId.do`, obj);
+    return this.http.post<any>(`${this.transactionURL}get-relatives-by-tranTypeId.do`, obj);
   }
   getLawOffices = (resourcId) => {
     return this.http.get<any>(`${this.commonService.getPortalURL()}GetRest`, {headers: {'X-resource-id': resourcId}});

@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {TableDataService} from '../../common/services/table-data.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {Store} from '@ngrx/store';
-import {default as fromApp, State} from '../../store';
+import * as fromApp from '../../store';
 import {Observable} from 'rxjs';
 import * as fromLawOfficesSelectors from '../../store/general/lookups/law-offices/selectors/law-office.selectors';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -20,7 +20,7 @@ export class LawyersModalComponent implements OnInit {
   columns: any;
   lawyersToSave: any = [];
   selection = new SelectionModel<any>(true, []);
-  constructor(private store: Store<State>,
+  constructor(private store: Store<fromApp.State>,
               private tableDataService: TableDataService,
               private dialogRef: MatDialogRef<LawyersModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {

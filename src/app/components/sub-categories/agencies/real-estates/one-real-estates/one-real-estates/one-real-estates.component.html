@@ -1,3 +1,4 @@
+<app-request></app-request>
 <mat-accordion>
   <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" >
     <mat-expansion-panel-header >
@@ -24,9 +25,9 @@
         <mat-icon>person_add</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <ng-template matExpansionPanelContent>
+
     <app-second-party></app-second-party>
-    </ng-template>
+
     <mat-action-row>
       <button mat-button color="warn" (click)="prevStep()">السابق</button>
       <button mat-button color="primary" (click)="nextStep()">التالي</button>
@@ -42,9 +43,9 @@
         <mat-icon>group_add</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <ng-template matExpansionPanelContent>
+
     <app-witnesses></app-witnesses>
-    </ng-template>
+
     <mat-action-row>
       <button mat-button color="warn" (click)="prevStep()">السابق</button>
       <button mat-button color="primary" (click)="nextStep()">التالي</button>
@@ -60,9 +61,7 @@
         <mat-icon>library_books</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <ng-template matExpansionPanelContent>
       <app-debaga></app-debaga>
-    </ng-template>
     <mat-action-row>
       <button mat-button color="warn" (click)="prevStep()">السابق</button>
       <button mat-button color="primary" (click)="nextStep()">التالي</button>
@@ -80,6 +79,23 @@
     </mat-expansion-panel-header>
     <ng-template matExpansionPanelContent>
       <app-request-attachment></app-request-attachment>
+    </ng-template>
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">السابق</button>
+      <button mat-button color="primary" (click)="nextStep()">التالي</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)" >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        تقدير الرسوم والتحصيل
+      </mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>monetization_on</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <ng-template matExpansionPanelContent>
+      <app-complete-request></app-complete-request>
     </ng-template>
     <mat-action-row>
       <button mat-button color="warn" (click)="prevStep()">السابق</button>

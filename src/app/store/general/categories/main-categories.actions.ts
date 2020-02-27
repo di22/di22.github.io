@@ -4,6 +4,11 @@ export const loadMainCategories = createAction(
   '[MainCategories] Load MainCategories'
 );
 
+export const GetSelectedCategory = createAction(
+  '[MainCategories] Load MainCategories',
+  props<{ id: number }>()
+);
+
 export const loadMainCategoriesSuccess = createAction(
   '[MainCategories] Load MainCategories Success',
   props<{ transactions: any }>()

@@ -21,7 +21,7 @@
               <mat-form-field>
                 <mat-label >حالة الطلب</mat-label>
                 <mat-select  value="16px" formControlName="requestStatusId">
-                  <mat-option *ngFor="let requestStatus of (requestStatuses$ | async)" [value]="requestStatus.id">{{requestStatus.description}}</mat-option>
+                  <mat-option *ngFor="let requestStatus of (requestStatuses$ | async)?.data.lookupList" [value]="requestStatus.id">{{requestStatus.description}}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -48,7 +48,7 @@
               <mat-form-field>
                 <mat-label > نوع الطلب</mat-label>
                 <mat-select  formControlName="transactionTypeId" >
-                  <mat-option *ngFor="let requestType of (requestTypes$ | async)" [value]="requestType.id">{{requestType.description}}</mat-option>
+                  <mat-option *ngFor="let requestType of (transactionCategories$ | async)" [value]="requestType.id">{{requestType.description}}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -56,7 +56,7 @@
               <mat-form-field>
                 <mat-label >الموظف</mat-label>
                 <mat-select  formControlName="organizationUnitId" >
-                  <mat-option *ngFor="let employee of (employee$ | async)" [value]="employee.id">{{employee.customerName}}></mat-option>
+                  <mat-option *ngFor="let employee of (employee$ | async)?.data.searchResults.allEmployee.results " [value]="employee.id">{{employee.customerName}}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -74,13 +74,10 @@
           <div >
           <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
         </div>
-          <div  >
-            <button mat-raised-button color="Basic" (click)="captureScreen()">TOPDF</button>
-          </div>
         </div>
       </mat-card-actions>
       <mat-card-content id="contentToConvert" #contentToConvert>
-        <mat-table [dataSource]="searchResult$ | async" class="mat-elevation-z8" >
+        <mat-table [dataSource]="dataSource" class="mat-elevation-z8" >
           <!-- Position Column -->
           <ng-container matColumnDef="position">
             <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
@@ -90,7 +87,7 @@
           <!-- Name Column -->
           <ng-container matColumnDef="request-id">
             <mat-header-cell *matHeaderCellDef> رقم الطلب </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            <mat-cell *matCellDef="let element"><a mat-icon-button (click)="routeToRequest(element.transactionType.code, element.id)"> {{element.id}} </a> </mat-cell>
           </ng-container>
 
           <!-- Weight Column -->
@@ -102,7 +99,7 @@
           <!-- Symbol Column -->
           <ng-container matColumnDef="arrival-date">
             <mat-header-cell *matHeaderCellDef> تاريخ الوصول </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.approvalAssignedDate.day}}/{{element.approvalAssignedDate.month}}/{{element.approvalAssignedDate.year}}  </mat-cell>
+            <mat-cell *matCellDef="let element"> {{element.approvalAssignedDate?.day}}/{{element.approvalAssignedDate?.month}}/{{element.approvalAssignedDate?.year}}  </mat-cell>
           </ng-container>
           <ng-container matColumnDef="request-status">
             <mat-header-cell *matHeaderCellDef>حالة الطلب </mat-header-cell>
@@ -119,7 +116,9 @@
           <ng-container matColumnDef="show">
             <mat-header-cell *matHeaderCellDef>عرض </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <mat-icon matTooltip="عرض" color="primary">remove_red_eye</mat-icon>
+              <a mat-icon-button>
+              <mat-icon matTooltip="عرض" color="primary" (click)="mo7rrReview(element.id)">remove_red_eye</mat-icon>
+              </a>
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="attachments">
@@ -132,6 +131,7 @@
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
       </mat-card-content>
     </mat-card>
   </div>

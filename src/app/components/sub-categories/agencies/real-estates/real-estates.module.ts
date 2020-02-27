@@ -6,6 +6,7 @@ import { RealEstatesComponent } from './real-estates/real-estates.component';
 import {OneRealEstatesModule} from './one-real-estates/one-real-estates.module';
 import {MaterialModule} from '../../../../material/material.module';
 import {CommonSharedModule} from '../../../../common/common.module';
+import {MultiRealEstatesModule} from './multi-real-estates/multi-real-estates.module';
 
 
 @NgModule({
@@ -14,7 +15,7 @@ import {CommonSharedModule} from '../../../../common/common.module';
     CommonModule,
     RealEstatesRoutingModule,
     OneRealEstatesModule,
-    CommonModule,
+    MultiRealEstatesModule,
     MaterialModule,
     CommonSharedModule
   ]

@@ -12,7 +12,7 @@ import {PersonalAffairsComponent} from './components/sub-categories/personal-aff
 import {WillsEndowmentComponent} from './components/sub-categories/wills-endowment/wills-endowment.component';
 import {AcknowledgmentsUndertakingsComponent} from './components/sub-categories/acknowledgments-undertakings/acknowledgments-undertakings.component';
 import {AdminDebagaComponent} from './components/side-menu-pages/admin-debaga/admin-debaga.component';
-import {AgenciesComponent} from './components/sub-categories/agencies/main-categories/agencies.component';
+import {MyRequestsComponent} from './components/side-menu-pages/my-requests/my-requests.component';
 
 const routes: Routes = [
  // { path: '', redirectTo: '/notary', pathMatch: 'full' },
@@ -34,10 +34,10 @@ const routes: Routes = [
       // tslint:disable-next-line:max-line-length
       { path: 'Attestations/:requestId', component: AttestationsComponent, data: { breadcrumb: 'التصديقات', transactionId: 112 }},
       { path: 'inbox', component: InboxComponent, data: { breadcrumb: 'البريد الوارد' }},
+      { path: 'my-requests', component: MyRequestsComponent, data: { breadcrumb: 'معاملاتى' }},
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
-    ]},
- { path: 'route', loadChildren: () => import('./modal/modal.module').then(m => m.ModalModule) }, // { path: 'PageNotAllowed', component: NotAllowedComponent},
+    ]} // { path: 'PageNotAllowed', component: NotAllowedComponent},
  // { path: '**', component: NotFoundComponent}
 ];
 

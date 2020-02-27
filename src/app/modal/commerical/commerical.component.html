@@ -1,0 +1,59 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" >
+    <mat-card class="card"  >
+
+
+      <mat-card-content>
+        <mat-card-title>بيانات الشركاء</mat-card-title>
+      <mat-table [dataSource]="data.data.companySummary.investors" class="mat-elevation-z8">
+        <!-- Position Column -->
+        <ng-container *ngFor="let column of columnsCommercialInvestors" [matColumnDef]="column.columnDef">
+          <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index ">
+            {{column.columnDef === 'position' ? i+1 : column.cell(element)}}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumnsCommercialInvestors"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumnsCommercialInvestors;"></mat-row>
+      </mat-table>
+    </mat-card-content>
+
+      <mat-card-content>
+        <mat-card-title>بيانات المخولين بالتوقيع</mat-card-title>
+        <mat-table [dataSource]="data.data.companySummary.signatories" class="mat-elevation-z8">
+          <!-- Position Column -->
+          <ng-container *ngFor="let column of columnsCommercialSignatories" [matColumnDef]="column.columnDef">
+            <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index ">
+              {{column.columnDef === 'position' ? i+1 : column.cell(element)}}
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumnsCommercialSignatories"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumnsCommercialSignatories;"></mat-row>
+        </mat-table>
+      </mat-card-content>
+
+      <mat-card-content>
+        <mat-card-title>بيانات الفروع</mat-card-title>
+        <mat-table [dataSource]="data.data.companySummary.placeOfActivities" class="mat-elevation-z8">
+          <!-- Position Column -->
+          <ng-container *ngFor="let column of columnsCommercialBranches" [matColumnDef]="column.columnDef">
+            <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index ">
+              {{column.columnDef === 'position' ? i+1 : column.cell(element)}}
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumnsCommercialBranches"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumnsCommercialBranches;"></mat-row>
+        </mat-table>
+      </mat-card-content>
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div class="center">
+            <button mat-raised-button color="Basic" (click)="onNoClick()">غلق</button>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" fxLayoutAlign="center center" >
+    <mat-card class="card" >
+      <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
+        <h5 class="headers-color">المعاملات-لم تكتمل-</h5>
+      </mat-card-title>
+
+      <mat-divider ></mat-divider>
+
+      <mat-card-content>
+        <form [formGroup]="searchForm" novalidate autocomplete="off">
+          <div class="mat-elevation-z8 card-content-space-around" fxLayout="column" fxLayoutAlign="center">
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+              <div fxFlex="25%" fxFlexOffset.gt-lg="10px">
+                <mat-form-field>
+                  <mat-label>رقم الطلب</mat-label>
+                  <input matInput formControlName="id">
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%">
+                <mat-form-field>
+                  <mat-label >نوع الطلب</mat-label>
+                  <mat-select  value="16px" formControlName="transactionTypeId">
+                    <mat-option *ngFor="let requestStatus of (transactionCategories$ | async)" [value]="requestStatus.id">{{requestStatus.description}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%">
+                <mat-form-field>
+                  <mat-label>الفتره من</mat-label>
+                  <input matInput [matDatepicker]="dp" placeholder="Different locale" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
+                  <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                  <mat-datepicker #dp></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%">
+                <mat-form-field>
+                  <mat-label>الفتره إلي</mat-label>
+                  <input matInput [matDatepicker]="dp1" placeholder="Different locale" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
+                  <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+                  <mat-datepicker #dp1></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div  >
+            <button mat-raised-button color="Basic" (click)="search(searchForm.value)">بحث</button>
+          </div>
+          <div >
+            <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
+          </div>
+        </div>
+      </mat-card-actions>
+      <mat-card-content>
+        <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+          <!-- Position Column -->
+          <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+            <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index ">
+              {{column.columnDef === 'position' ? i+1 : column.columnDef !== 'requestId' ? column.cell(element) : ''}}
+              <a *ngIf="column.columnDef === 'requestId'" mat-icon-button (click)="routeToRequest(element.transactionType.code, element.id)"> {{element.id}} </a>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+        <mat-paginator [pageSize]="size" [pageSizeOptions]="[5, 10, 20]"  [length]="searchResultLength" showFirstLastButtons></mat-paginator>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

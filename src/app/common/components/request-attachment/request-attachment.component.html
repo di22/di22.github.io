@@ -45,7 +45,7 @@
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div  >
-            <button mat-raised-button color="Basic" (click)="uploadFiles()">إضافه</button>
+            <button mat-raised-button color="Basic" [disabled]="!requestId" (click)="uploadFiles()">إضافه</button>
           </div>
         </div>
       </mat-card-actions>
