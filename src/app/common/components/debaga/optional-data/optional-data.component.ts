@@ -28,14 +28,7 @@ import {DebagaService} from '../../../services/debaga.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-optional-data',
   templateUrl: './optional-data.component.html',
-  styleUrls: ['./optional-data.component.scss'],
-  providers: [{provide: MAT_DATE_LOCALE, useValue: 'ar-AR'},
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
-    },
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}]
+  styleUrls: ['./optional-data.component.scss']
 })
 export class OptionalDataComponent implements OnInit {
 
@@ -106,6 +99,7 @@ export class OptionalDataComponent implements OnInit {
     this.requestDebaga$.subscribe((requestDebaga: any) => {
       this.basicRequestDebaga = [];
       this.basicRequestDebagaTableValues = [];
+      this.debagaFees = 0;
       if (requestDebaga) {
         if (requestDebaga.length > 0) {
           requestDebaga.forEach((item, i) => {

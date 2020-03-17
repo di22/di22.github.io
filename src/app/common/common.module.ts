@@ -17,7 +17,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { RequestEffects } from './parties/party/store/request/effects/request.effects';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
-import {reducerProvider} from './store';
 import { CustomerEffects } from './parties/party/store/customer/effects/customer.effects';
 import { CustomerParticpantTypePipe } from './pipes/customer-particpant-type.pipe';
 import {DirectivesModule} from '../directives-module/directives.module';
@@ -37,6 +36,9 @@ import {RequestDebagaEffects} from './components/debaga/store/effects/request-de
 import {RequestAttachmentsEffects} from '../store/general/lookups/requestAttachments/effects/request-attachments.effects';
 import { CompleteRequestEffects } from './components/complete-request/store/effects/complete-request.effects';
 import { RequestComponent } from './components/request/request.component';
+import {StoreModule} from '@ngrx/store';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 
 @NgModule({
   declarations: [
@@ -70,7 +72,6 @@ import { RequestComponent } from './components/request/request.component';
     RouterModule,
     MaterialModule,
     DirectivesModule,
-    // StoreModule.forFeature('common', {common: REDUCERS_TOKEN}),
     EffectsModule.forFeature([RequestEffects, CustomerEffects, TransactionRequestAttachmentEffects,
       DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects, CompleteRequestEffects]),
     CKEditorModule
@@ -94,7 +95,13 @@ import { RequestComponent } from './components/request/request.component';
         RequestAttachmentComponent,
         CompleteRequestComponent
     ],
-  providers: [reducerProvider],
+  providers: [{provide: MAT_DATE_LOCALE, useValue: 'ar-AR'},
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}],
   bootstrap: []
 })
 export class CommonSharedModule { }

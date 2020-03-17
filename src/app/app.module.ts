@@ -16,11 +16,9 @@ import { environment } from '../environments/environment';
 
 import { MainCategoriesComponent } from './components/main-categories/main-categories.component';
 import { InboxComponent } from './components/side-menu-pages/inbox/inbox.component';
-import { WillsEndowmentComponent } from './components/sub-categories/wills-endowment/wills-endowment.component';
 import { AttestationsComponent } from './components/sub-categories/attestations/attestations.component';
 import { SellingPledgingGiftComponent } from './components/sub-categories/selling-pledging-gift/selling-pledging-gift.component';
 import { CancellationsComponent } from './components/sub-categories/cancellations/cancellations.component';
-import { AcknowledgmentsUndertakingsComponent } from './components/sub-categories/acknowledgments-undertakings/acknowledgments-undertakings.component';
 import { PersonalAffairsComponent } from './components/sub-categories/personal-affairs/personal-affairs.component';
 import {MainCategoriesEffects} from './store/general/categories/main-categories.effects';
 import {RequestStatusEffects} from './store/general/lookups/request-status/effects/request-status.effects';
@@ -34,7 +32,6 @@ import {AdminTypeEffects} from './store/general/lookups/admin-types/effects/admi
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {DirectivesModule} from './directives-module/directives.module';
 import { AdminDebagaComponent } from './components/side-menu-pages/admin-debaga/admin-debaga.component';
-import {AgenciesModule} from './components/sub-categories/agencies/agencies.module';
 import {ModalModule} from './modal/modal.module';
 import { RelativesEffects } from './store/general/lookups/relatives/effects/relatives.effects';
 import { LawOfficeEffects } from './store/general/lookups/law-offices/effects/law-office.effects';
@@ -42,17 +39,16 @@ import { ExemptReasonEffects } from './store/general/lookups/exemptReasons/effec
 import { TransactionCustTypeEffects } from './store/general/lookups/transaction-cust-types/effects/transaction-cust-type.effects';
 import { UserOrgEffects } from './store/general/user-org-details/effects/user-org.effects';
 import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my-requests.component';
+import { SubCategoriesModule } from './components/sub-categories/sub-categories.module';
 
 
 @NgModule({
   declarations: [
     MainCategoriesComponent,
     InboxComponent,
-    WillsEndowmentComponent,
     AttestationsComponent,
     SellingPledgingGiftComponent,
     CancellationsComponent,
-    AcknowledgmentsUndertakingsComponent,
     PersonalAffairsComponent,
     AdminDebagaComponent,
     MyRequestsComponent],
@@ -64,7 +60,6 @@ import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my
     AuthModule,
     AppRoutingModule,
     CommonSharedModule,
-    AgenciesModule,
     DirectivesModule,
     ModalModule,
     StoreModule.forRoot(REDUCERS_TOKEN, {
@@ -93,7 +88,8 @@ import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
-    })
+    }),
+    SubCategoriesModule
   ],
   providers: [reducerProvider,
     { provide: LocationStrategy, useClass: HashLocationStrategy },

@@ -15,7 +15,7 @@ export class CompleteRequestEffects {
     return this.actions$.pipe(
       ofType(CompleteRequestActions.invoiceEstimation),
       concatMap((action) =>
-        this.completeReqyestService.invoiceEstimation(action.invoice).pipe(
+        this.completeRequestService.invoiceEstimation(action.invoice).pipe(
           map(data => CompleteRequestActions.invoiceEstimationSuccess({ invoice: data })),
           catchError(error => of(CompleteRequestActions.loadCompleteRequestsFailure({ error }))))
       )
@@ -25,6 +25,6 @@ export class CompleteRequestEffects {
 
 
   constructor(private actions$: Actions,
-              private completeReqyestService: CompleteRequestService) {}
+              private completeRequestService: CompleteRequestService) {}
 
 }

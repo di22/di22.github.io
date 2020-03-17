@@ -61,7 +61,10 @@
     "@types/jasmine": "^3.5.3",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.12.26",
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
     "codelyzer": "^5.1.2",
+    "eslint": "^6.8.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.4.1",
@@ -71,7 +74,6 @@
     "karma-jasmine-html-reporter": "^1.5.2",
     "protractor": "~5.4.3",
     "ts-node": "~8.4.1",
-    "tslint": "^5.20.1",
     "typescript": "3.7.5"
   }
 }

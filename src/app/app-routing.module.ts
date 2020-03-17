@@ -9,8 +9,6 @@ import {AttestationsComponent} from './components/sub-categories/attestations/at
 import {CancellationsComponent} from './components/sub-categories/cancellations/cancellations.component';
 import {SellingPledgingGiftComponent} from './components/sub-categories/selling-pledging-gift/selling-pledging-gift.component';
 import {PersonalAffairsComponent} from './components/sub-categories/personal-affairs/personal-affairs.component';
-import {WillsEndowmentComponent} from './components/sub-categories/wills-endowment/wills-endowment.component';
-import {AcknowledgmentsUndertakingsComponent} from './components/sub-categories/acknowledgments-undertakings/acknowledgments-undertakings.component';
 import {AdminDebagaComponent} from './components/side-menu-pages/admin-debaga/admin-debaga.component';
 import {MyRequestsComponent} from './components/side-menu-pages/my-requests/my-requests.component';
 
@@ -23,13 +21,12 @@ const routes: Routes = [
         loadChildren: () => import('./components/sub-categories/agencies/agencies.module').then(mod =>
           mod.AgenciesModule), data: { breadcrumb: 'الوكالات' }
       },
+      { path: 'acknowledgments-undertakings', loadChildren: () => import('./components/sub-categories/acknowledgments-undertakings/acknowledgments-undertakings.module').then(m => m.AcknowledgmentsUndertakingsModule), data: { breadcrumb: 'الإقرارات والتعهدات' } },
       { path: '',  component: MainCategoriesComponent, data: { breadcrumb: 'الرئيسية' }},
       { path: 'Cancellations', component: CancellationsComponent, data: { breadcrumb: 'الإلغاءات' }},
       { path: 'SellingPledgingGift', component: SellingPledgingGiftComponent, data: { breadcrumb: 'عقود البيع و الرهن و الهبه' }},
       { path: 'Personal affairs', component: PersonalAffairsComponent, data: { breadcrumb: 'الأحوال الشخصيه' }},
-      { path: 'WillsEndowment', component: WillsEndowmentComponent, data: { breadcrumb: 'الوصايا والوقف' }},
-      { path: 'AcknowledgmentsUndertakings', component: AcknowledgmentsUndertakingsComponent,
-        data: { breadcrumb: 'الإقرارات والتعهدات' }},
+     /* { path: 'WillsEndowment', component: WillsEndowmentComponent, data: { breadcrumb: 'الوصايا والوقف' }}, */
       { path: 'Attestations', component: AttestationsComponent, data: { breadcrumb: 'التصديقات' , transactionId: 112}},
       // tslint:disable-next-line:max-line-length
       { path: 'Attestations/:requestId', component: AttestationsComponent, data: { breadcrumb: 'التصديقات', transactionId: 112 }},
@@ -37,7 +34,8 @@ const routes: Routes = [
       { path: 'my-requests', component: MyRequestsComponent, data: { breadcrumb: 'معاملاتى' }},
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
-    ]} // { path: 'PageNotAllowed', component: NotAllowedComponent},
+    ]}
+ // { path: 'PageNotAllowed', component: NotAllowedComponent},
  // { path: '**', component: NotFoundComponent}
 ];
 

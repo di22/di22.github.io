@@ -4,7 +4,14 @@
 
 html, body { height: 100%; }
 
-
+@font-face {font-family: 'Sultan';
+  src: url('./assets/resources/fonts/hinted-sultan_mudaimeditmezajeey.eot');
+  src: url('./assets/resources/fonts/hinted-sultan_mudaimeditmezajeey.eot?#iefix') format('embedded-opentype'),
+  url('./assets/resources/fonts/hinted-sultan_mudaimeditmezajeey.woff') format('woff'),
+  url('./assets/resources/fonts/hinted-sultan_mudaimeditmezajeey.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 .content {
   padding: 15px;
@@ -13,9 +20,11 @@ html, body { height: 100%; }
 }
 a {
   cursor: pointer !important;
+  font-family: 'Sultan';
 }
 span {
   font-size: 1.6rem;
+  font-family: 'Sultan';
 }
 
 .card-content-space-around {

@@ -1,4 +1,3 @@
-import {RequiredValidator} from '@angular/forms';
 
 export interface Employee {
   activationDate: Date;

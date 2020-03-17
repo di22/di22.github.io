@@ -7,16 +7,17 @@ import {MaterialModule} from '../material/material.module';
 import { LawyersModalComponent } from './lawyers-modal/lawyers-modal.component';
 import { Mo7rrModalComponent } from './mo7rr-modal/mo7rr-modal.component';
 import { CommericalComponent } from './commerical/commerical.component';
+import { FeesModalComponent } from './fees-modal/fees-modal.component';
 
 
 @NgModule({
-  declarations: [DeleteModalComponent, LawyersModalComponent, Mo7rrModalComponent, CommericalComponent],
+  declarations: [DeleteModalComponent, LawyersModalComponent, Mo7rrModalComponent, CommericalComponent, FeesModalComponent],
   imports: [
     CommonModule,
     MaterialModule,
     ModalRoutingModule
   ],
   exports: [DeleteModalComponent, LawyersModalComponent, Mo7rrModalComponent, CommericalComponent],
-  entryComponents: [DeleteModalComponent, LawyersModalComponent, Mo7rrModalComponent, CommericalComponent]
+  entryComponents: [DeleteModalComponent, LawyersModalComponent, Mo7rrModalComponent, CommericalComponent, FeesModalComponent]
 })
 export class ModalModule { }

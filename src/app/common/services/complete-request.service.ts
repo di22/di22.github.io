@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {CommonService} from '../../services/config/common.service';
 
 @Injectable({
@@ -12,6 +12,12 @@ export class CompleteRequestService {
               private commonService: CommonService) { }
 
   invoiceEstimation = (obj) => {
-    return this.http.post<any>(`${this.commonService.getPortalURL()}InvoiceEstimation`, obj);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        Accept:  'application/json, text/javascript, */*;',
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<any>(`${this.commonService.getPortalURL()}InvoiceEstimation`, obj, httpOptions);
   }
 }

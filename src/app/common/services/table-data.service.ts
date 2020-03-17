@@ -96,10 +96,21 @@ export class TableDataService {
       // tslint:disable-next-line:max-line-length
       { columnDef: 'requestId',     header: 'رقم الطلب',   cell: (element: any) => element.id},
       { columnDef: 'requestDate',   header: 'تاريخ الطلب', cell: (element: any) => `${element.requestDate.day}/${element.requestDate.month}/${element.requestDate.year}`},
-      { columnDef: 'requestStatus',   header: 'حالة الطلب', cell: (element: any) =>  element.requestStatusHistory.requestStatus.description},
+      { columnDef: 'requestStatus',   header: 'حالة الطلب', cell: (element: any) =>
+          element.requestStatusHistory.requestStatus.description},
       { columnDef: 'requestType',   header: 'نوع الطلب', cell: (element: any) => `${element.transactionType.description}`},
       { columnDef: 'requester',   header: 'الموثق', cell: (element: any) => `${element.requesterUser.customerName}`},
       { columnDef: 'complete-request',   header: 'إستكمال الطلب', cell: (element: any) => `إستكمال الطلب`}
+    ];
+    this.displayedColumns = this.columns.map(c => c.columnDef);
+  }
+  getFeesTableModal = () => {
+    this.columns = [
+      { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
+      { columnDef: 'feesType',     header: 'نوع الرسم',   cell: (element: any) => `${element.paymentType.id === 1 ? 'النصوص' : element.paymentType.id === 2 ? 'المعامله' : 'الاطراف'}`},
+      { columnDef: 'value',   header: 'القيمة', cell: (element: any) => `${element.paymentAmount}`},
+      { columnDef: 'count',   header: 'العدد', cell: (element: any) => `${element.itemsCount}`},
+      { columnDef: 'total',   header: 'الإجمالي', cell: (element: any) => `${element.paymentAmount}`}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
   }

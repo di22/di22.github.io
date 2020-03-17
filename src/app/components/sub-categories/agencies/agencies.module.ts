@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { AgenciesRoutingModule } from './agencies-routing.module';
 import { AgenciesComponent } from './main-categories/agencies.component';
 import {CommonSharedModule} from '../../../common/common.module';
-import {MaterialModule} from '../../../material/material.module';
 
 
 @NgModule({
@@ -12,7 +11,6 @@ import {MaterialModule} from '../../../material/material.module';
   imports: [
     AgenciesRoutingModule,
     CommonModule,
-    MaterialModule,
     CommonSharedModule
   ]
 })

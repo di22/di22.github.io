@@ -12,7 +12,7 @@
 
             <div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="5%" >
               <ng-container *ngFor="let debaga of (debagas$ | async) | debagaFilter: true; let i=index">
-              <ng-container *ngTemplateOutlet="debaga.htmlComponentLu.code === 'RADIOBUTTON' ? RADIOBUTTON : debaga.htmlComponentLu.code === 'DROPDOWNLIST' ? DROPDOWNLIST : debaga.htmlComponentLu.code === 'TEXT' && debaga.columnType === 'ALPHANUMERIC'  ? TEXT : debaga.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
+              <ng-container *ngTemplateOutlet="debaga.htmlComponentLu.code === 'RADIOBUTTON' ? RADIOBUTTON : debaga.htmlComponentLu.code === 'DROPDOWNLIST' ? DROPDOWNLIST : debaga.htmlComponentLu.code === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST :  debaga.htmlComponentLu.code === 'TEXT' && (debaga.columnType === 'ALPHANUMERIC' || debaga.columnType === 'MONEY' || debaga.columnType === 'DIGIT' || debaga.columnType === 'CHAR')  ? TEXT : debaga.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
               <ng-template #CHECKBOX>
                 <mat-label>{{debaga.description}}</mat-label>
                 <mat-checkbox  [id]="debaga.id"  [formControlName]="debaga.id"></mat-checkbox>
@@ -30,7 +30,13 @@
                   </mat-select>
                 </mat-form-field>
               </ng-template>
-
+                <ng-template #MULTIDROPDOWNLIST >
+                  <mat-form-field class="debaga-fields">
+                    <mat-select [formControlName]="debaga.id"  multiple >
+                      <mat-option *ngFor="let element of (debaga.text | stringToArray)" [value]="element">{{element}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ng-template>
               <ng-template #DATE>
                 <mat-form-field class="input-width debaga-fields" [id]="debaga.id">
                   <mat-label>{{debaga.description}}</mat-label>

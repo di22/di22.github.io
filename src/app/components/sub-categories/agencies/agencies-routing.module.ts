@@ -2,10 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AgenciesComponent } from './main-categories/agencies.component';
-import {OutSultantComponent} from './out-sultant/out-sultant/out-sultant.component';
-import {VehiclesComponent} from './vehicles/vehicles/vehicles.component';
-import {CompaniesComponent} from './companies/companies/companies.component';
-import {PersonalIssuesComponent} from './personal-issues/personal-issues/personal-issues.component';
 
 const routes: Routes = [
   { path: '', component: AgenciesComponent, data: { breadcrumb: 'الوكالات' }},

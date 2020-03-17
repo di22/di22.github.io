@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {State} from '../../../store';
 import * as fromExemptReasonsSelector from '../../../store/general/lookups/exemptReasons/selectors/exempt-reason.selectors';
@@ -7,7 +7,6 @@ import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.se
 import {ValidationMessagesService} from '../../../services/config/validation-messages.service';
 import {CustomerService} from '../../services/customer.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TableDataService} from '../../services/table-data.service';
 import {Observable} from 'rxjs';
 import {loadExemptReasons} from '../../../store/general/lookups/exemptReasons/actions/exempt-reason.actions';
 import * as fromTransactionCategoriesSelector from '../../../store/general/categories/main-categories-selector';
@@ -20,8 +19,10 @@ import {loadUserDetails} from '../../../store/general/user-org-details/actions/u
 import * as fromRelativesSelectors from '../../../store/general/lookups/relatives/selectors/relatives.selectors';
 import * as fromCustomerSelectors from '../../parties/party/store/customer/selectors/customer.selectors';
 import {Relative} from '../../../DTO`s/relative';
-import {invoiceEstimation} from './store/actions/complete-request.actions';
 import {PDFService} from '../../services/pdf`s.service';
+import {CompleteRequestService} from '../../services/complete-request.service';
+import {MatDialog} from '@angular/material/dialog';
+import {FeesModalComponent} from '../../../modal/fees-modal/fees-modal.component';
 
 
 @Component({
@@ -58,7 +59,9 @@ export class CompleteRequestComponent implements OnInit {
               private encryptDecryptService: EncryptDecryptService,
               private validationMessagesService: ValidationMessagesService,
               private customerService: CustomerService,
+              private completeRequestService: CompleteRequestService,
               private pdfService: PDFService,
+              private dialog: MatDialog,
               private authService: AuthService,
               private activatedRout: ActivatedRoute,
               private router: Router) { }
@@ -124,13 +127,13 @@ export class CompleteRequestComponent implements OnInit {
       endNextPeriod = endNextPeriod.setMonth(endNextPeriod.getMonth() + this.expirationPeriod);
       endDateArray.push(new Date(endNextPeriod));
     }
-    endDateArray.forEach((e, i) => {
+    endDateArray.forEach((e) => {
       if (this.expiryDate.setHours(0, 0, 0, 0) > e.setHours(0, 0, 0, 0)) {
         countDateExceeds++;
       }
     });
     return countDateExceeds;
-  }
+  };
 
   getRelatives = (): Relative => {
     let relative = null;
@@ -140,7 +143,7 @@ export class CompleteRequestComponent implements OnInit {
       }
     });
     return relative;
-}
+};
 
 getRelativeAmount = (): number => {
     let relativeAmount = 0;
@@ -151,7 +154,7 @@ getRelativeAmount = (): number => {
       if (this.getRelatives().className === 4) { relativeAmount = this.transaction.showFourthClassRelation; }
     }
     return relativeAmount;
-}
+};
   estimate = () => {
     const  data = {
       data: {
@@ -213,13 +216,21 @@ getRelativeAmount = (): number => {
       }
     }
     return data;
-  }
+  };
 
 
   feesEstimation = () => {
     const envelop = JSON.stringify({data: JSON.stringify(this.estimate())});
-    this.store.dispatch(invoiceEstimation({invoice: envelop}));
-  }
+    this.completeRequestService.invoiceEstimation(envelop).subscribe(() => {
+      const dialogRef = this.dialog.open(FeesModalComponent, {
+        width: '500px',
+        data: this.estimate().data.paymentInvoices
+      });
+
+      dialogRef.afterClosed().subscribe(() => {
+      });
+    });
+  };
 
   mo7rrReview = () => {
     const params = {x__RepName: 'POA_REPORT',
