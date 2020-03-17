@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-marriage-carrying-duties-commitments',
-  templateUrl: './marriage-carrying-duties-commitments.component.html',
-  styleUrls: ['./marriage-carrying-duties-commitments.component.scss']
+  templateUrl: './marriage-carrying-duties.component.html',
+  styleUrls: ['./marriage-carrying-duties.component.scss']
 })
-export class MarriageCarryingDutiesCommitmentsComponent implements OnInit {
+export class MarriageCarryingDutiesComponent implements OnInit {
   step = 0;
   constructor() { }
 

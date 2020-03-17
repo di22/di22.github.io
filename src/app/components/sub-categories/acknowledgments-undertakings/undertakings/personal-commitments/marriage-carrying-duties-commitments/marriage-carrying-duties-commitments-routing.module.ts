@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { MarriageCarryingDutiesCommitmentsComponent } from './marriage-carrying-duties-commitments/marriage-carrying-duties-commitments.component';
+import { MarriageCarryingDutiesComponent } from './marriage-carrying-duties-commitments/marriage-carrying-duties.component';
 
 const routes: Routes = [
-  { path: '', component: MarriageCarryingDutiesCommitmentsComponent, data: { breadcrumb: 'تعهد تحمل تكاليف زواج', transactionId: 16801 }   },
-  { path: ':requestId', component: MarriageCarryingDutiesCommitmentsComponent, data: { breadcrumb: 'تعهد تحمل تكاليف زواج', transactionId: 16801 }   }
+  { path: '', component: MarriageCarryingDutiesComponent, data: { breadcrumb: 'تعهد تحمل تكاليف زواج', transactionId: 16801 }   },
+  { path: ':requestId', component: MarriageCarryingDutiesComponent, data: { breadcrumb: 'تعهد تحمل تكاليف زواج', transactionId: 16801 }   }
   ];
 
 @NgModule({
