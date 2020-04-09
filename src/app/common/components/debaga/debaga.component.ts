@@ -7,6 +7,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromDebagaSelectors from '../../../components/side-menu-pages/admin-debaga/store/selectors/debaga.selectors';
 import {loadDebagas} from '../../../components/side-menu-pages/admin-debaga/store/actions/debaga.actions';
+import {TransactionService} from '../../../services/transaction.service';
 
 @Component({
   selector: 'app-debaga',
@@ -15,21 +16,22 @@ import {loadDebagas} from '../../../components/side-menu-pages/admin-debaga/stor
 })
 export class DebagaComponent implements OnInit {
 
-  appStore$: Observable<fromApp.State>;
   debagas$: Observable<any> = this.store.select(state => fromDebagaSelectors.selectDebagaEntities(state));
 
+  transactionService: TransactionService;
   transactionId: number;
+  requestId: number;
   constructor(private store: Store<fromApp.State>,
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
-              private activatedRout: ActivatedRoute) { }
+               activatedRout: ActivatedRoute) {
+    this.transactionService = new TransactionService(store, activatedRout);
+  }
 
   ngOnInit() {
-    this.appStore$ = this.store.select(state => state);
-    this.activatedRout.data.subscribe(params => {
-      this.transactionId = params.transactionId;
-      this.getTransactionDebaga(this.transactionId);
-    });
+   this.transactionId = this.transactionService.transactionID;
+   this.requestId = this.transactionService.requestID;
+   this.getTransactionDebaga(this.transactionId);
   }
 
   getTransactionDebaga = (transactionId) => {

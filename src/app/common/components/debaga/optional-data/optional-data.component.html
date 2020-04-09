@@ -52,7 +52,7 @@
 
       <ng-template #DATE>
         <mat-form-field class="input-width debaga-fields">
-          <input matInput [formControlName]="node.id" [id]="node.id"  [min]="startDate() " [max]="endDate(node.maxValue)" [matDatepicker]="dp" (dateChange)="onChangesDate($event)" >
+          <input matInput [formControlName]="node.id" [id]="node.id"  [min]="startDate() " [max]="endDate(node.maxValue, node.code)" [matDatepicker]="dp" (dateChange)="onChangesDate($event, node.code)" >
           <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
           <mat-datepicker #dp></mat-datepicker>
             <mat-error  *ngFor="let type of (validationTypes$ | async)">
@@ -120,7 +120,7 @@
 
         <ng-template #DATE >
           <mat-form-field class="input-width debaga-fields">
-            <input [formControlName]="node.id" [id]="node.id" matInput [min]="startDate()" [max]="node.maxValue" [matDatepicker]="dp" placeholder="تاريخ سربان الوكاله" (dateChange)="onChangesDate($event)" >
+            <input [formControlName]="node.id" [id]="node.id" matInput [min]="startDate()" [max]="node.maxValue" [matDatepicker]="dp" placeholder="تاريخ سربان الوكاله" (dateChange)="onChangesDate($event, node.code)" >
             <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
             <mat-datepicker #dp></mat-datepicker>
             <mat-error *ngFor="let type of (validationTypes$ | async)">

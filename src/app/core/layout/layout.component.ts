@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -11,16 +11,11 @@ export class LayoutComponent implements OnInit {
   url: string;
   routes = ['Agencies'];
   isMain: boolean;
-  constructor(private router: Router,
-              private activatedRout: ActivatedRoute) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
     this.url = this.router.url.slice(this.router.url.lastIndexOf('/'), this.router.url.length).substr(1);
-    if (this.routes.includes(this.url)) {
-      this.isMain = false;
-    } else {
-      this.isMain = true;
-    }
+    this.isMain = !this.routes.includes(this.url);
   }
 
 }

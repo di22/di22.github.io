@@ -107,10 +107,10 @@ export class TableDataService {
   getFeesTableModal = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
-      { columnDef: 'feesType',     header: 'نوع الرسم',   cell: (element: any) => `${element.paymentType.id === 1 ? 'النصوص' : element.paymentType.id === 2 ? 'المعامله' : 'الاطراف'}`},
-      { columnDef: 'value',   header: 'القيمة', cell: (element: any) => `${element.paymentAmount}`},
-      { columnDef: 'count',   header: 'العدد', cell: (element: any) => `${element.itemsCount}`},
-      { columnDef: 'total',   header: 'الإجمالي', cell: (element: any) => `${element.paymentAmount}`}
+      { columnDef: 'feesType',     header: 'نوع الرسم',   cell: (element: any) => element.feesType},
+      { columnDef: 'value',   header: 'القيمة', cell: (element: any) => `${element.value}`},
+      { columnDef: 'count',   header: 'العدد', cell: (element: any) => `${element.count}`},
+      { columnDef: 'total',   header: 'الإجمالي', cell: (element: any) => `${element.total}`}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
   }

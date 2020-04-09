@@ -3,15 +3,16 @@ import {Store} from '@ngrx/store';
 import * as fromApp from '../../../../store';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
-import { deleteRequestDebaga} from '../store/actions/request-debaga.actions';
+import {deleteRequestDebaga} from '../store/actions/request-debaga.actions';
 import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
 import {DebagaService} from '../../../services/debaga.service';
 import {MessageService} from '../../../../services/config/message.service';
 import {environment} from '../../../../../environments/environment';
 import {CustomerService} from '../../../services/customer.service';
+import moment from 'moment';
 
 @Component({
   selector: 'app-basic-data',
@@ -21,13 +22,14 @@ import {CustomerService} from '../../../services/customer.service';
 export class BasicDataComponent implements OnInit {
 
   @Input() debagas$: Observable<any>;
+  @Input() requestId: number;
   row = 0;
-  requestId: number;
   mociData: any;
   requestDebagas = new Set();
   debagaForm: FormGroup;
   isEdite: boolean;
   isMulti: boolean;
+  dateInputs = {};
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
 
 
@@ -37,17 +39,11 @@ export class BasicDataComponent implements OnInit {
               private messageService: MessageService,
               private customerService: CustomerService,
               private encryptDecryptService: EncryptDecryptService,
-              private activatedRout: ActivatedRoute,
               private router: Router) { }
 
   ngOnInit() {
     this.isMulti = true;
     this.initForms();
-    this.activatedRout.params.subscribe(params => {
-      if (params.requestId) {
-        this.requestId = params.requestId;
-      }
-    });
     this.debagas$.subscribe(value => {
       const filteredValues = [];
       if (value.length > 0) {
@@ -56,6 +52,9 @@ export class BasicDataComponent implements OnInit {
           if (ele.staticTemplate === true) {
             this.debagaForm.addControl(ele.id, this.formBuilder.control(''));
             this.drawObjectForSave(ele);
+          }
+          if (ele.columnType === 'DATE') {
+            this.dateInputs[ele.id] = ele.id;
           }
         });
       }
@@ -98,7 +97,7 @@ export class BasicDataComponent implements OnInit {
 
   initForms = () => {
     this.debagaForm = this.formBuilder.group({});
-  }
+  };
   get f() { return this.debagaForm.controls; }
   get t() { return this.f.formArray as FormArray; }
 
@@ -106,17 +105,21 @@ export class BasicDataComponent implements OnInit {
 
   setValue = () => {
     this.requestDebagas.forEach((ele: any, i) => {
-        ele = Object.assign(ele, {text: this.debagaForm.get(`${ele.debagaTemplate.id}`).value,
+     const value = this.isInputDates(ele.debagaTemplate.id);
+     if (value) {
+       this.debagaForm.get(`${ele.debagaTemplate.id}`).patchValue(`${value._i.year}/${value._i.month}/${value._i.date}`);
+     }
+     ele = Object.assign(ele, {text: this.debagaForm.get(`${ele.debagaTemplate.id}`).value,
           groupNumber: this.row});
     });
-  }
+  };
   drawObjectForSave = (value) => {
     const obj = Object.assign({request: {id: this.requestId},
       debagaTemplate: {id: value.id},
       sortOrder: value.sortOrder
     });
     this.requestDebagas.add(obj);
-  }
+  };
   addRequestDebaga = () => {
     if (this.debagaForm.dirty && this.debagaForm.touched) {
       this.row++;
@@ -132,7 +135,7 @@ export class BasicDataComponent implements OnInit {
         this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
       });
     }
-  }
+  };
   updateRequestDebaga = () => {
     this.setValue();
     const requestDebaga = {
@@ -147,17 +150,23 @@ export class BasicDataComponent implements OnInit {
       this.clearForm();
       this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
     });
-  }
+  };
 
 // fetch data from table to inputs
   fetchDebagaData = (ele) => {
     this.debagaForm.patchValue(ele);
+    for (const i in ele ) {
+      const value = this.isInputDates(i);
+      if (value) {
+        this.debagaForm.get(`${i}`).patchValue(`${moment(new Date(ele[i].split('/').reverse().join('/'))).format('YYYY-MM-DD')}`);
+      }
+    }
     this.isEdite = true;
-  }
+  };
 
   deleteDebaga = (ele, i) => {
     this.store.dispatch(deleteRequestDebaga({id: {data: {requestId: this.requestId, groupNo: i + 1}}}));
-  }
+  };
 
   getCommercials = (debaga, event) => {
     if (!this.mociData) {
@@ -177,12 +186,22 @@ export class BasicDataComponent implements OnInit {
       }
       }
     }
-  }
+  };
 
+  isInputDates = (id) => {
+    let value = null;
+        if (this.debagaForm.contains(`${this.dateInputs[id]}`)) {
+           value = this.debagaForm.get(`${this.dateInputs[id]}`).value;
+        }
+        return value;
+  }
+  onChangesDate = (event, id) => {
+   // this.dateInputs[id] = id;
+  };
 // set value to cells of the table
   cellValue = (val, matchVal): string => {
     return val[matchVal];
-  }
+  };
 
   clearForm = () => {
     this.debagaForm.reset();

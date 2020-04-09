@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {TableDataService} from '../../common/services/table-data.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-fees-modal',
@@ -23,10 +23,11 @@ export class FeesModalComponent implements OnInit {
   displayedColumns: string[];
   columns: any;
   fees: any;
+  total: number;
   constructor(private tableDataService: TableDataService,
-              private dialogRef: MatDialogRef<FeesModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.fees = data;
+    this.fees = data.array;
+    this.total = data.total;
     this.tableDataService.getFeesTableModal();
     this.columns = this.tableDataService.tableColumns;
     this.displayedColumns = this.tableDataService.displayColumns;

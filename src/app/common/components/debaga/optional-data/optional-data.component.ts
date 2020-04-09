@@ -1,12 +1,10 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DebagaTemplete} from '../../../../DTO`s/debaga-templete';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTree} from '../../../../DTO`s/flatTree';
-import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import moment from 'moment';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
@@ -23,20 +21,24 @@ import {ValidationMessagesService} from '../../../../services/config/validation-
 import {MessageService} from '../../../../services/config/message.service';
 import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
 import {DebagaService} from '../../../services/debaga.service';
+import {TransactionService} from '../../../../services/transaction.service';
+import {GetBasicDataValuesPipe} from '../../../pipes/get-basic-data-values.pipe';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-optional-data',
   templateUrl: './optional-data.component.html',
-  styleUrls: ['./optional-data.component.scss']
+  styleUrls: ['./optional-data.component.scss'],
+  providers: [GetBasicDataValuesPipe]
 })
-export class OptionalDataComponent implements OnInit {
+export class OptionalDataComponent implements OnInit, OnDestroy {
 
   @Input() debagas$: Observable<any>;
 
+  @Input() transaction: TransactionService;
+
   requestDebagaForm: FormGroup;
   startRequestDebagasForm: FormArray;
-  appStore$: Observable<fromApp.State>;
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
   debaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectDebaga(state));
   validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
@@ -54,17 +56,16 @@ export class OptionalDataComponent implements OnInit {
   parentNodesIds = [];
   requestDebagaType = {};
 
-  requestDebagas: any[] = [];
-  basicRequestDebaga: any[] = [];
+  requestDebagas = [];
+  basicRequestDebaga = [];
   basicRequestDebagaHeaders = new Set();
 
-  basicRequestDebagaTableValues: any[] = [];
+  basicRequestDebagaTableValues = [];
   text = '';
   debagaId: number;
   textExtension = new FormControl('');
   textResult = new FormControl({value: '', disabled: true});
   Editor = ClassicEditor;
-
   debagaFees = 0;
   constructor(private store: Store<fromApp.State>,
               private debagaService: DebagaService,
@@ -72,23 +73,20 @@ export class OptionalDataComponent implements OnInit {
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
               private activatedRout: ActivatedRoute,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private basicDataValuesPipe: GetBasicDataValuesPipe) {
     this.initForms();
   }
 
   ngOnInit() {
-    this.activatedRout.params.subscribe(params => {
-      if (params.requestId) {
-        this.requestId = params.requestId;
-      }
-    });
-    this.appStore$ = this.store.select(state => state);
+    this.requestId = this.transaction.requestID;
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<FlatTree>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     this.debagas$.subscribe(value => {
       const filteredValues = [];
+      this.startRequestDebagasForm = this.formBuilder.array([]);
       if (value.length > 0) {
         value.filter(type => {
           filteredValues.push(type.debagaTemplate);
@@ -100,32 +98,21 @@ export class OptionalDataComponent implements OnInit {
       this.basicRequestDebaga = [];
       this.basicRequestDebagaTableValues = [];
       this.debagaFees = 0;
-      if (requestDebaga) {
-        if (requestDebaga.length > 0) {
+        if (requestDebaga && requestDebaga.length > 0) {
           requestDebaga.forEach((item, i) => {
             if (!item.groupNumber) {
               this.setRequestDebagasAfterGetRequestDetails(item);
             } else {
-              if (item) {
+                  if (this.transaction.transaction.percentField && this.transaction.transaction.percentField === item.debagaTemplate.code) {
+                    this.debagaFees = +item.text;
+                  }
                 this.basicRequestDebaga.push(item);
                 this.basicRequestDebagaHeaders.add(item.debagaTemplate.description);
-              }
             }
           });
-          requestDebaga.forEach((ele, i1) => {
-            const arr = [];
-            this.basicRequestDebaga.forEach((ele2, i2) => {
-              if (ele2.groupNumber === i1 + 1) {
-                arr.push(ele2.text ? ele2.text : '');
-              }
-            });
-            if (arr.length > 0) {
-              this.basicRequestDebagaTableValues.push(arr);
-            }
-          });
+          this.basicRequestDebagaTableValues = this.basicDataValuesPipe.transform(requestDebaga, true);
           this.store.dispatch(getDebagaFees({fees: this.debagaFees}));
         }
-      }
     });
     this.debaga$.subscribe((debaga: any) => {
       if (debaga.id) {
@@ -136,10 +123,13 @@ export class OptionalDataComponent implements OnInit {
       }
     });
   }
+  ngOnDestroy(): void {
+
+  }
 initForms = () => {
     this.requestDebagaForm = this.formBuilder.group({});
     this.startRequestDebagasForm = this.formBuilder.array([]);
-}
+};
   transformer = (node: DebagaTemplete, level: number) => {
     const flatNode = this.nestedNodeMap.has(node) && this.nestedNodeMap.get(node).description === node.description
       ? this.nestedNodeMap.get(node)
@@ -157,6 +147,7 @@ initForms = () => {
     flatNode.parentDebagaTemplateId = node.parentDebagaTemplate ? node.parentDebagaTemplate.id : null;
     flatNode.level = level;
     flatNode.expandable = !!node.childDebagaTemplates;
+    flatNode.code = node.code;
     this.setNodeFormControl(flatNode);
     this.startRequestDebagasForm.push(this.formBuilder.control(this.setDebagas(node)));
     if (node.code === 'POA_EXPIRY_DATE') {
@@ -172,7 +163,7 @@ initForms = () => {
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
-  }
+  };
 
   itemSelectionToggle(node: FlatTree) {
     const descendants = this.treeControl.getDescendants(node);
@@ -207,7 +198,7 @@ initForms = () => {
     } else {
       this.validationMessagesService.validateAllFormFields(this.requestDebagaForm);
     }
-  }
+  };
   addDebaga = () => {
     let  date: any = new Date();
     date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
@@ -227,7 +218,7 @@ initForms = () => {
     this.debagaService.createDebaga(debaga).subscribe(res => {
       this.messageService.successMessage('تم إضافة النموذج النصي بنجاح');
     });
-  }
+  };
   updateDebaga = () => {
     let  date: any = new Date();
     date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
@@ -248,7 +239,7 @@ initForms = () => {
     this.debagaService.updateDebaga(debaga).subscribe(res => {
       this.messageService.successMessage('تم تعديل النموذج النصي بنجاح');
     });
-  }
+  };
   addRequestDebaga = () => {
     if (this.startRequestDebagasForm.value && this.startRequestDebagasForm.value.length > 0) {
       const requestDebaga = {
@@ -261,7 +252,7 @@ initForms = () => {
         this.messageService.successMessage('تم إضافة النماذج بنجاح');
       });
     }
-  }
+  };
   updateRequestDebaga = () => {
     if (this.startRequestDebagasForm.value && this.startRequestDebagasForm.value.length > 0) {
       const requestDebaga = {
@@ -274,7 +265,7 @@ initForms = () => {
         this.messageService.successMessage('تم تعديل النماذج بنجاح');
       });
     }
-  }
+  };
 
 
 
@@ -292,7 +283,7 @@ initForms = () => {
       sortOrder: node.sortOrder
     };
     return requestDebaga;
-  }
+  };
 
   // set values from returned saved requestDebagas
   setRequestDebagasAfterGetRequestDetails = (node) => {
@@ -314,13 +305,11 @@ initForms = () => {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(true);
           this.checklistSelection.select(n);
           this.treeControl.expand(n);
-         // this.treeControl.toggle(n);
           node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
         } else if (node.text === 'false') {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(false);
           this.checklistSelection.deselect(n);
           this.treeControl.collapse(n);
-         // this.treeControl.toggle(n);
         }
       } else if (node.debagaTemplate.htmlComponentLu.code === 'RADIOBUTTON') {
         if (node.text && node.text == node.debagaTemplate.id) {
@@ -340,13 +329,13 @@ initForms = () => {
         this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(time);
         node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
         if (node.debagaTemplate.code === 'POA_EXPIRY_DATE') {
-          this.store.dispatch(getExpiryDate({date: new Date(node.texttime)}));
+          this.store.dispatch(getExpiryDate({date: node.text}));
         }
       } else {
         node.text ? node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0 : this.debagaFees += 0;
         this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(node.text);
       }
-  }
+  };
 
 
   setValues = () => {
@@ -358,7 +347,7 @@ initForms = () => {
           if (typeof this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value === 'string') {
             value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value.split('-').reverse().join('/');
           } else {
-            value = `${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.date}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.month}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.year}`;
+            value = `${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.date}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.month+1}/${this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value._i.year}`;
           }
           this.text += this.requestDebagaType[ele.debagaTemplate.id].description + ' ' + value;
         } else if (this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'MULTIDROPDOWNLIST') {
@@ -387,7 +376,7 @@ initForms = () => {
       }
       this.validation(ele);
     });
-  }
+  };
 
 
   getOtherRadioButtons = (name, node) => {
@@ -412,13 +401,13 @@ initForms = () => {
         }
       }
     }
-  }
+  };
 
   toggleCheckBoxesValues = (descendants: FlatTree[]) => {
     descendants.forEach(ele => {
        this.resetNodeValue(ele);
     });
-  }
+  };
   setNodeFormControl = (node: FlatTree) => {
     if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' || node.htmlCodeType === 'RADIOBUTTON') {
       this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(false));
@@ -427,7 +416,7 @@ initForms = () => {
     } else {
       this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(''));
     }
-  }
+  };
   resetNodeValue = (node: FlatTree) => {
     if (!this.checklistSelection.isSelected(node)) {
     if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' || node.htmlCodeType === 'RADIOBUTTON') {
@@ -442,7 +431,7 @@ initForms = () => {
         this.requestDebagaForm.get(`${node.id}`).setValue(true);
       }
     }
-  }
+  };
   getParticularNode = (id): FlatTree => {
     let node = null;
     this.parentNodes.forEach(n => {
@@ -458,7 +447,7 @@ initForms = () => {
     }
     });
     return node;
-  }
+  };
 
   childrenCheck = (node) => {
     const descendants = this.treeControl.getChildren(node);
@@ -474,7 +463,7 @@ initForms = () => {
         }
       });
     }
-  }
+  };
   validation = (element) => {
     let childrenValidCount = 0;
     let parentValidCount = 0;
@@ -511,53 +500,67 @@ initForms = () => {
         this.requestDebagaForm.get(`${d.id}`).updateValueAndValidity();
       });
     }
-  }
+  };
 
 
 
    getCells(data, type) {
     const arr = Array.from(data);
+    arr.reverse();
     if (type === 'th') {
     return arr.map(cell => `<${type} height="auto" style="border-collapse:collapse;border:1px solid black;font-family:Helvetica;background-color: #42569c;color: white;text-align:center; ">${cell}</${type}>`).join('');
   } else if (type === 'td') {
-      return arr.map(cell => `<${type} style='border-collapse:collapse;border:1px solid black;text-align:center; '>${cell}</${type}>`).join('');
+      return arr.map(cell => `<${type} style='border-collapse:collapse;border:1px solid black;text-align:center; '>${cell ? cell : ''}</${type}>`).join('');
     }
-  }
+  };
 
    createBody(data) {
-    return data.map(row => `<tr>${this.getCells(row, 'td')}</tr>`).join('');
-  }
+    return data.map(row => `<tr style='text-align:center; '>${this.getCells(Object.values(row), 'td')}</tr>`).join('');
+  };
 
    createTable(data) {
-    if (data[1] && data[1].length > 0) {
+    if (data[1] && Object.entries(data[1]).length > 0) {
     const [headings, ...rows] = data;
+    rows.reverse();
     return `
-    <table  dir='ltr' cellspacing='0'  width='100%'  style='border-collapse:collapse;font-family:Helvetica; font-size:12px !important; color:black;background-color:#FFFFFF;'><thead style="border-collapse:collapse;border:1px solid black;font-family:Helvetica;background-color: #42569c;color: white;text-align:center; "><tr style='border-collapse:collapse;width:100% !important; text-align:center;'>${this.getCells(headings, 'th')}</TR></thead><tbody>${this.createBody(rows)}</tbody> </table> </BR><STOP/>`;
+    <table cellspacing='0'  width='100%'  style='border-collapse:collapse;font-family:Helvetica; font-size:12px !important; color:black;background-color:#FFFFFF; position: relative; top: 50px'><thead style="border-collapse:collapse;border:1px solid black;font-family:Helvetica;background-color: #42569c;color: white;text-align:center; "><tr style='border-collapse:collapse;width:100% !important; text-align:center;'>${this.getCells(headings, 'th')}</TR></thead><tbody>${this.createBody(rows)}</tbody> </table> </BR><STOP/>`;
   } else {
       return '';
     }
-  }
+  };
   getFormControl = (id): AbstractControl => {
    return  this.requestDebagaForm.get(`${id}`);
-  }
-  onChangesDate = (event) => {
+  };
+  onChangesDate = (event, code) => {
+    const Exceeds = this.transaction.Exceed(`${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`);
+    // this.store.dispatch(getExpiryDate({date: `${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`}));
+    if (code === 'POA_EXPIRY_DATE' &&  Exceeds > 0) {
+      this.messageService.errorMessage(`لقد تعديت مدة صلاحية التوكيل سيتم إحتساب عدد ${Exceeds + 1} مضاعف قيمة رسوم المعاملة`);
+    }
 
-  }
+  };
   startDate = (): any => {
     return moment(new Date()).format('YYYY-MM-DD');
-  }
-  endDate = (date): any => {
+  };
+  endDate = (date, code): any => {
+    const expirationPeriodCount = this.transaction.transaction.expirationPeriodCount ? this.transaction.transaction.expirationPeriodCount : 1;
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + date);
+    if (code === 'POA_EXPIRY_DATE') {
+      endDate.setMonth(endDate.getMonth() + (this.transaction.transaction.expirationPeriod * expirationPeriodCount));
+    } else {
+      endDate.setDate(endDate.getDate() + date);
+    }
     return moment(endDate).format('YYYY-MM-DD');
-  }
+  };
   getLevel = (node: FlatTree) => node.level;
 
   isExpandable = (node: FlatTree) => node.expandable;
 
   getChildren = (node: DebagaTemplete): DebagaTemplete[] => {
     return node.childDebagaTemplates ? node.childDebagaTemplates : [];
-  }
+  };
 
   hasChild = (_: number, nodeData: FlatTree) => nodeData.expandable;
+
+
 }

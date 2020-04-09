@@ -40,7 +40,7 @@
               <ng-template #DATE>
                 <mat-form-field class="input-width debaga-fields" [id]="debaga.id">
                   <mat-label>{{debaga.description}}</mat-label>
-                  <input matInput [value]="debaga.text"  [matDatepicker]="dp" [formControlName]="debaga.id">
+                  <input matInput [value]="debaga.text"  [matDatepicker]="dp" [formControlName]="debaga.id" (dateChange)="onChangesDate($event, debaga.id)" >
                   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                   <mat-datepicker #dp></mat-datepicker>
                 </mat-form-field>

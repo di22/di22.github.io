@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {CreateRequest, GetRequestDetails} from '../../parties/party/store/request/actions/request.actions';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import moment from 'moment';
-import {loadRelatives} from '../../../store/general/lookups/relatives/actions/relatives.actions';
-import {loadLawOffices} from '../../../store/general/lookups/law-offices/actions/law-office.actions';
+import {CreateRequest} from '../../parties/party/store/request/actions/request.actions';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {State} from '../../../store';
 import {ActivatedRoute} from '@angular/router';

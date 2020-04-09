@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {loadMainCategories, loadMainCategoriesFailure, loadMainCategoriesSuccess} from './main-categories.actions';
-import {catchError, concatMap, map, mergeMap} from 'rxjs/operators';
+import {catchError, concatMap, map} from 'rxjs/operators';
 import {MainCategoriesService} from '../../../services/main-categories.service';
 import {of} from 'rxjs';
+import {GetBasicDataValuesPipe} from '../../../common/pipes/get-basic-data-values.pipe';
 
 
 

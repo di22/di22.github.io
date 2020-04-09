@@ -16,8 +16,8 @@ export const selectDebaga = createSelector(
 );
 
 export const selectExpiryDate = createSelector(
-  selectAllRequestDebaga,
-  (requestDebaga) => requestDebaga.find(rd => rd.debagaTemplate.id === 8771)
+  selectRequestDebagaState,
+  (state) => state.expiryDate
 );
 
 export const selectDebagaFees = createSelector(

@@ -6,23 +6,21 @@ import {FormBuilder, FormControl} from '@angular/forms';
 import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 import {ValidationMessagesService} from '../../../services/config/validation-messages.service';
 import {CustomerService} from '../../services/customer.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {loadExemptReasons} from '../../../store/general/lookups/exemptReasons/actions/exempt-reason.actions';
-import * as fromTransactionCategoriesSelector from '../../../store/general/categories/main-categories-selector';
 import * as fromUser_ORGSelector from '../../../store/general/user-org-details/selectors/user-org.selectors';
-import {loadMainCategories} from '../../../store/general/categories/main-categories.actions';
-import * as fromRequestDebagaSelectors from '../debaga/store/selectors/request-debaga.selectors';
 import {DatePipe} from '@angular/common';
 import {AuthService} from '../../../auth/services/auth.service';
 import {loadUserDetails} from '../../../store/general/user-org-details/actions/user-org.actions';
-import * as fromRelativesSelectors from '../../../store/general/lookups/relatives/selectors/relatives.selectors';
-import * as fromCustomerSelectors from '../../parties/party/store/customer/selectors/customer.selectors';
-import {Relative} from '../../../DTO`s/relative';
 import {PDFService} from '../../services/pdf`s.service';
 import {CompleteRequestService} from '../../services/complete-request.service';
 import {MatDialog} from '@angular/material/dialog';
 import {FeesModalComponent} from '../../../modal/fees-modal/fees-modal.component';
+import {FeesService} from '../../../services/fees.service';
+import {PartiesFeesService} from '../../../services/parties-fees.service';
+import {TransactionService} from '../../../services/transaction.service';
+import {MessageService} from '../../../services/config/message.service';
 
 
 @Component({
@@ -33,6 +31,10 @@ import {FeesModalComponent} from '../../../modal/fees-modal/fees-modal.component
 })
 export class CompleteRequestComponent implements OnInit {
 
+  feess: FeesService;
+  partiesFees: PartiesFeesService;
+  transactionClass: TransactionService;
+
   autoCalc: FormControl;
   isExempt: FormControl;
   exemptReasons: FormControl;
@@ -41,19 +43,10 @@ export class CompleteRequestComponent implements OnInit {
   requestId: number;
   orgId: number;
   transaction: any;
-  relatives: Relative[] = [];
-  customers = [];
-  expirationPeriodCount: number;
-  expirationPeriod: number;
-  expiryDate: any;
-  fees: number;
-  transactionCategories$: Observable<any> = this.store.select(state => fromTransactionCategoriesSelector.selectCategories(state));
+
   exemptReasons$: Observable<any> = this.store.select(state => fromExemptReasonsSelector.selectAllExemptReasons(state));
-  expiryDate$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectExpiryDate(state));
-  debagaFees$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectDebagaFees(state));
   userDetails$: Observable<any> = this.store.select(state => fromUser_ORGSelector.selectUserDetails(state));
-  relatives$: Observable<any> = this.store.select(state => fromRelativesSelectors.relativesSelector(state));
-  customers$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectUserEntities(state));
+
   constructor(private store: Store<State>,
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
@@ -63,15 +56,24 @@ export class CompleteRequestComponent implements OnInit {
               private pdfService: PDFService,
               private dialog: MatDialog,
               private authService: AuthService,
-              private activatedRout: ActivatedRoute,
-              private router: Router) { }
+              private activatedRout: ActivatedRoute) {
+    this.transactionClass = new TransactionService(store, activatedRout);
+  }
 
   ngOnInit(): void {
+    this.transaction = this.transactionClass.transaction;
+    this.transactionId = this.transactionClass.transactionID;
+    this.requestId = this.transactionClass.requestID;
+
+
     this.user = this.authService.getUserFromSession();
     this.store.dispatch(loadUserDetails({userId: this.user.id}));
     this.autoCalc = this.formBuilder.control({value: '', disabled: true});
     this.isExempt = this.formBuilder.control(false);
     this.exemptReasons = this.formBuilder.control({value: '', disabled: true});
+
+
+
     this.isExempt.valueChanges.subscribe(value => {
       if (value) {
         this.exemptReasons.enable();
@@ -80,82 +82,20 @@ export class CompleteRequestComponent implements OnInit {
       }
     });
     this.store.dispatch(loadExemptReasons());
-    this.activatedRout.data.subscribe(params => {
-      this.transactionId = params.transactionId;
-    //  this.store.dispatch(GetSelectedCategory({id: this.transactionId}));
-    });
-    this.transactionCategories$
-      .subscribe(
-        (transactions: any) => {
-          if (transactions.length === 0) {
-            this.store.dispatch(loadMainCategories());
-          } else {
-            this.transaction = transactions.find(tr => tr.id === this.transactionId);
-            this.expirationPeriodCount = this.transaction.expirationPeriodCount ? this.transaction.expirationPeriodCount : 1;
-            this.expirationPeriod = this.transaction.expirationPeriod;
-          }});
 
-    this.activatedRout.params.subscribe(params => {
-        this.requestId = params.requestId;
-    });
-
-    this.expiryDate$.subscribe(ex => {
-      if (ex && ex.text) {
-      const date = ex.text.split('/');
-      this.expiryDate = new Date(date[2], date[1], date[0]);
-      }
-    });
-    this.debagaFees$.subscribe(fee => {
-      this.fees = fee;
-    });
     this.userDetails$.subscribe(user => {
       this.orgId = user ? user.OrganizationUnitId : null;
     });
-    this.customers$.subscribe(cust => {
-      this.customers = cust;
-    });
-    this.relatives$.subscribe(re => {
-      this.relatives = re;
-    });
   }
 
-  getExceeds = (): number => {
-    let endNextPeriod: any = new Date();
-    const endDateArray = [];
-    let countDateExceeds = 1;
-    for (let i = 0; i < this.expirationPeriodCount; i++) {
-      endNextPeriod = endNextPeriod.setMonth(endNextPeriod.getMonth() + this.expirationPeriod);
-      endDateArray.push(new Date(endNextPeriod));
-    }
-    endDateArray.forEach((e) => {
-      if (this.expiryDate.setHours(0, 0, 0, 0) > e.setHours(0, 0, 0, 0)) {
-        countDateExceeds++;
-      }
-    });
-    return countDateExceeds;
-  };
-
-  getRelatives = (): Relative => {
-    let relative = null;
-    this.customers.forEach(cust => {
-      if (cust.relativeRelation) {
-      relative = this.relatives.find(re => re.id === +cust.relativeRelation && re.className < 4);
-      }
-    });
-    return relative;
-};
-
-getRelativeAmount = (): number => {
-    let relativeAmount = 0;
-    if (this.getRelatives()) {
-      if (this.getRelatives().className === 1) { relativeAmount = this.transaction.showFirstClassRelation; }
-      if (this.getRelatives().className === 2) { relativeAmount = this.transaction.showSecondClassRelation; }
-      if (this.getRelatives().className === 3) { relativeAmount = this.transaction.showThirdClassRelation; }
-      if (this.getRelatives().className === 4) { relativeAmount = this.transaction.showFourthClassRelation; }
-    }
-    return relativeAmount;
+  partiesFee = () => {
+  this.partiesFees = new PartiesFeesService(this.store, this.transaction, this.transactionClass.Exceeds);
+  this.partiesFees.calc();
+  this.feess = new FeesService(this.partiesFees);
+  return this.feess.showFees();
 };
   estimate = () => {
+
     const  data = {
       data: {
         requestId: this.requestId,
@@ -174,13 +114,8 @@ getRelativeAmount = (): number => {
               id: 3   // عدد الاطراف
             }
           },
-          {
-            itemsCount: 1,        // ستعتمد مستقبلا على تكرار الفترة
-            paymentAmount: -1,    // سيتم حساب القيمة الثابتة الأصلية مبدئياً
-            paymentType: {
-              id: 2
-            }
-          }
+           this.partiesFee()
+
         ],
         paymentSource: {
           id: 1
@@ -200,38 +135,59 @@ getRelativeAmount = (): number => {
       }
     };
 
-    if (this.getRelativeAmount()) {
-      data.data.paymentInvoices[2].paymentAmount = this.getRelativeAmount();
-      if (this.router.url.includes('POA_FOR_RELATIVES')) {
-        data.data.paymentInvoices[2].itemsCount = 1;
-      }
-    } else {
-      if (this.transaction.percent && this.transaction.percent > 0) {
-
-      } else {
-        if (this.fees && this.fees > 0) {
-          data.data.paymentInvoices[2].paymentAmount = this.fees;
-          data.data.paymentInvoices[2].itemsCount = this.getExceeds();
-        }
-      }
-    }
     return data;
   };
 
 
   feesEstimation = () => {
     const envelop = JSON.stringify({data: JSON.stringify(this.estimate())});
-    this.completeRequestService.invoiceEstimation(envelop).subscribe(() => {
+    this.completeRequestService.invoiceEstimation(envelop).subscribe((res) => {
+      const paymentInvoices = JSON.parse(res.d);
+      const filterData = this.filterPaymentInvoices(paymentInvoices.data.paymentInvoices);
       const dialogRef = this.dialog.open(FeesModalComponent, {
         width: '500px',
-        data: this.estimate().data.paymentInvoices
+        data: filterData
       });
 
       dialogRef.afterClosed().subscribe(() => {
       });
     });
   };
+filterPaymentInvoices = (data) => {
+  const estimatedInvoice = [];
+  let totalInvoice = 0;
+  data.forEach((per, i) => {
+    totalInvoice += per.paidValue * per.itemsCount;
+    if (per.paymentTypeLu.id == '2' && per.itemsCount > 0) {
+      estimatedInvoice.push({
+         'feesType': this.partiesFees.fixedValue
+        , 'value': per.paidValue
+        , 'count': per.itemsCount
+        , 'total': per.paidValue * per.itemsCount
+      });
+    }
+    if (per.paymentTypeLu.id == '3') {
+      if (per.itemsCount > 0)
+        estimatedInvoice.push({
+          'feesType': ' الأطراف'
+          , 'value': per.paidValue
+          , 'count': per.itemsCount
+          , 'total': per.paidValue * per.itemsCount
+        });
+    }
+    if (per.paymentTypeLu.id == '1') {
+      if (per.itemsCount > 0)
+        estimatedInvoice.push({
+          'feesType': ' النصوص'
+          , 'value': per.paidValue
+          , 'count': per.itemsCount
+          , 'total': per.paidValue * per.itemsCount
+        });
+    }
 
+  });
+  return {array: estimatedInvoice, total: totalInvoice};
+}
   mo7rrReview = () => {
     const params = {x__RepName: 'POA_REPORT',
       p___REQUEST_ID: this.encryptDecryptService.encryptUsingAES256(this.requestId),

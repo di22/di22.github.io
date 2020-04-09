@@ -36,9 +36,9 @@ import {RequestDebagaEffects} from './components/debaga/store/effects/request-de
 import {RequestAttachmentsEffects} from '../store/general/lookups/requestAttachments/effects/request-attachments.effects';
 import { CompleteRequestEffects } from './components/complete-request/store/effects/complete-request.effects';
 import { RequestComponent } from './components/request/request.component';
-import {StoreModule} from '@ngrx/store';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
+import {TransactionService} from '../services/transaction.service';
 
 @NgModule({
   declarations: [

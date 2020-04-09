@@ -208,8 +208,8 @@
 
             <mat-form-field class="input-width" *ngIf="participantType === 2 && (relatives$ | async)?.length > 0">
               <mat-label > صلة القرابة</mat-label>
-              <mat-select   formControlName="relativeRelation">
-                <mat-option *ngFor="let relative of (relatives$ | async)" [value]="relative.Id">{{relative.arabicName}}</mat-option>
+              <mat-select formControlName="relativeRelation">
+                <mat-option *ngFor="let relative of (relatives$ | async)" [value]="relative.id">{{relative.arabicName}}</mat-option>
               </mat-select>
             </mat-form-field>
             <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center" formGroupName="facilityData"

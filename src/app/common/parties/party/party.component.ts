@@ -3,9 +3,7 @@ import {Observable} from 'rxjs';
 import * as fromApp from '../../../store';
 import {State} from '../../../store';
 import {RequestCustomerType} from '../../../DTO`s/request-customer-type';
-// tslint:disable-next-line:import-spacing
-import * as fromRequestCustomerTypes
-  from '../../../store/general/lookups/request-custiomer-types/reducers/get-request-customer-type.reducer';
+import * as fromRequestCustomerTypes from '../../../store/general/lookups/request-custiomer-types/reducers/get-request-customer-type.reducer';
 import {CustomerIdType} from '../../../DTO`s/customer-id-type';
 import * as fromCustomerIdTypes from '../../../store/general/lookups/customer-id-types/reducers/custiomer-id-type.reducer';
 import {Nationality} from '../../../DTO`s/nationality';
@@ -15,19 +13,16 @@ import * as fromAdminTypesSelectors from '../../../store/general/lookups/admin-t
 import * as fromRelativesSelectors from '../../../store/general/lookups/relatives/selectors/relatives.selectors';
 import * as fromLawOfficesSelectors from '../../../store/general/lookups/law-offices/selectors/law-office.selectors';
 import * as fromTransactionCustomerTypesSelectors from '../../../store/general/lookups/transaction-cust-types/selectors/transaction-cust-type.selectors';
-import * as fromRequestSelectors from './store/request/selectors/request.selectors';
 import * as fromCustomerSelectors from './store/customer/selectors/customer.selectors';
 import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
-// tslint:disable-next-line:max-line-length
 import {loadGetRequestCustomerTypes} from '../../../store/general/lookups/request-custiomer-types/actions/get-request-customer-type.actions';
 import {loadCustomerIdTypes} from '../../../store/general/lookups/customer-id-types/actions/custiomer-id-type.actions';
 import {loadNationalities} from '../../../store/general/lookups/nationalites/actions/nationalites.actions';
 import {loadAdminTypes} from '../../../store/general/lookups/admin-types/actions/admin-type.actions';
 import {ActivatedRoute, Router} from '@angular/router';
-import {CreateRequest, GetRequestDetails} from './store/request/actions/request.actions';
-import {Request} from '../../../DTO`s/request';
+import { GetRequestDetails} from './store/request/actions/request.actions';
 import {createCustomer, deleteCustomer, updateCustomer} from './store/customer/actions/customer.actions';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialog} from '@angular/material/dialog';
@@ -87,9 +82,7 @@ export class PartyComponent implements OnInit {
   lawOffices$: Observable<any> = this.store.select(state => fromLawOfficesSelectors.lawOfficesSelector(state));
   transactionCustomerTypes$: Observable<any> = this.store.select(state =>
     fromTransactionCustomerTypesSelectors.selectTranscationCustomerTypes(state));
-  request$: Observable<Request> = this.store.select(state => fromRequestSelectors.selectFeatureRequestState(state));
   customers$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectUserEntities(state));
-  customerROP$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectROPCustomer(state));
   displayedColumns: string[];
   columns: any;
   validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
@@ -168,12 +161,7 @@ export class PartyComponent implements OnInit {
         this.procurationCustomer.controls.request.setValue({id: this.requestId});
         if (this.participantType === 1) {
         this.store.dispatch(GetRequestDetails( {requestId: this.requestId}));
-          } else if (this.participantType === 2) {
-          this.store.dispatch(loadRelatives({transactionId: {data: {transactionId: this.transactionId}}}));
-         // if (this.router.url.includes('POA_LAWYER')) {
-          this.store.dispatch(loadLawOffices({resourc_id: window.btoa('LawyerCompanyPartner')}));
-        //  }
-        }
+          }
       }
     });
     this.procurationCustomer.controls.particpantType.setValue({id: this.participantType});
@@ -183,6 +171,11 @@ export class PartyComponent implements OnInit {
       this.store.dispatch(loadNationalities());
       this.store.dispatch(loadAdminTypes());
       this.store.dispatch(loadTransactionCustTypes({id: {data: {transactionId: this.transactionId}}}));
+    } else if (this.participantType === 2) {
+      this.store.dispatch(loadRelatives({transactionId: {data: {transactionId: this.transactionId}}}));
+      if (this.router.url.includes('POA_LAWYER')) {
+        this.store.dispatch(loadLawOffices({resourc_id: window.btoa('LawyerCompanyPartner')}));
+      }
     }
     this.lawOffices.valueChanges.subscribe(value => {
       if (value && typeof value === 'object' && value.constructor === Object) {
