@@ -40,6 +40,8 @@ import { TransactionCustTypeEffects } from './store/general/lookups/transaction-
 import { UserOrgEffects } from './store/general/user-org-details/effects/user-org.effects';
 import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my-requests.component';
 import { SubCategoriesModule } from './components/sub-categories/sub-categories.module';
+import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
+
 
 
 @NgModule({
@@ -51,11 +53,15 @@ import { SubCategoriesModule } from './components/sub-categories/sub-categories.
     CancellationsComponent,
     PersonalAffairsComponent,
     AdminDebagaComponent,
-    MyRequestsComponent],
+    MyRequestsComponent,
+    FeesSettingComponent
+  ],
+  
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     MaterialModule,
+  
     CoreModule,
     AuthModule,
     AppRoutingModule,

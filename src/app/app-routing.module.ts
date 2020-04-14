@@ -11,6 +11,7 @@ import {SellingPledgingGiftComponent} from './components/sub-categories/selling-
 import {PersonalAffairsComponent} from './components/sub-categories/personal-affairs/personal-affairs.component';
 import {AdminDebagaComponent} from './components/side-menu-pages/admin-debaga/admin-debaga.component';
 import {MyRequestsComponent} from './components/side-menu-pages/my-requests/my-requests.component';
+import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
 
 const routes: Routes = [
  // { path: '', redirectTo: '/notary', pathMatch: 'full' },
@@ -33,6 +34,7 @@ const routes: Routes = [
       { path: 'inbox', component: InboxComponent, data: { breadcrumb: 'البريد الوارد' }},
       { path: 'my-requests', component: MyRequestsComponent, data: { breadcrumb: 'معاملاتى' }},
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
+      {path:'fees-setting',component:FeesSettingComponent,data:{breadcrumb:'إعدادات الرسوم'}},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
     ]}
  // { path: 'PageNotAllowed', component: NotAllowedComponent},

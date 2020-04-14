@@ -1,0 +1,35 @@
+
+// .mat-raised-button.mat-blue, .mat-flat-button.mat-blue{
+//   background-color: blue;
+//   color: white;
+// }
+
+.field_set{
+  border-color: rgb(214, 210, 210);
+  // border-style: ;
+  border-radius: 8px;
+}
+fieldset legend {
+  font-weight: bold;
+  margin-left:-0.1875rem;
+  margin: 0;
+  color:#856b4b;
+  padding: 0 0.1875rem;
+  font-size: large;
+}
+table {
+  width: 100%;
+  // overflow-x: auto;
+  // overflow-y: hidden;
+  min-width: 500px;
+  margin-top: 50px;
+}
+
+// th.mat-header-cell {
+//   text-align: left;
+//   max-width: 300px;
+// }
+mat-paginator
+{
+  margin-top:50px;
+}
