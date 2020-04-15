@@ -1,0 +1,75 @@
+
+<ul>
+    <li>إعدادت أكواد النظام</li>
+</ul>
+
+<mat-card class="example-card mat-elevation-z8">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>إعدادات أكواد النظام</mat-card-title>
+    </mat-card-header>
+     
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="example-container">
+
+        <mat-form-field appearance="fill">
+          <mat-label>نوع الكود</mat-label>
+          <mat-select>
+            <mat-option value="option">Option</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <br>
+
+       <fieldset>
+            <legend>قائمه</legend>
+    <div class="mat-elevation-z8">
+         <table mat-table >
+
+                <ng-container matColumnDef="position">
+                  <th mat-header-cell *matHeaderCellDef>الترتيب </th>
+                </ng-container>
+              
+                <ng-container matColumnDef="arabicName">
+                  <th mat-header-cell *matHeaderCellDef> الإسم باللغه العربيه </th>
+                </ng-container>
+              
+                <ng-container matColumnDef="englishName">
+                  <th mat-header-cell *matHeaderCellDef> الإسم باللغه الإنجليزيه </th>
+                </ng-container>
+              
+                <ng-container matColumnDef="englishSymbol">
+                  <th mat-header-cell *matHeaderCellDef> الكود باللغه الإنجليزيه </th>
+                </ng-container>
+
+                <ng-container matColumnDef="statues">
+                    <th mat-header-cell *matHeaderCellDef>الحالة </th>
+                </ng-container>
+
+                <ng-container matColumnDef="edit">
+                    <th mat-header-cell *matHeaderCellDef> تعديل </th>
+                </ng-container>
+
+                <ng-container matColumnDef="delete">
+                    <th mat-header-cell *matHeaderCellDef> حذف </th>
+                </ng-container>
+              
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <mat-paginator [pageSize]="2" [pageSizeOptions]="[2, 4, 6, 10, 20]">
+            </mat-paginator>
+            
+        </div> 
+
+            
+
+
+        </fieldset>
+      </div>
+    </mat-card-content>
+  </mat-card>
+

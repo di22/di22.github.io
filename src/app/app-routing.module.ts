@@ -12,6 +12,7 @@ import {PersonalAffairsComponent} from './components/sub-categories/personal-aff
 import {AdminDebagaComponent} from './components/side-menu-pages/admin-debaga/admin-debaga.component';
 import {MyRequestsComponent} from './components/side-menu-pages/my-requests/my-requests.component';
 import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
+import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/admin-tipes.component';
 
 const routes: Routes = [
  // { path: '', redirectTo: '/notary', pathMatch: 'full' },
@@ -36,8 +37,10 @@ const routes: Routes = [
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
       {path:'fees-setting',component:FeesSettingComponent,data:{breadcrumb:'إعدادات الرسوم'}},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
+  
+      { path:  'adminTipes', component:  AdminTipesComponent}
     ]}
- // { path: 'PageNotAllowed', component: NotAllowedComponent},
+  // { path: 'PageNotAllowed', component: NotAllowedComponent},
  // { path: '**', component: NotFoundComponent}
 ];
 

@@ -1,0 +1,44 @@
+ul {  
+    margin-top: -0.75em;  
+    padding-right: 1.5em;  
+    list-style: none; 
+    font-size: 14px; 
+}  
+li:before {   
+    content: '\25C0';
+    color: #966e44;
+    font-size: 15px !important;    
+    padding-left: 9px;
+} 
+mat-card{
+    margin-top: 15px;
+}
+mat-card-title{
+    color: #966e44 !important;
+    margin-right: -30px !important;
+}
+// mat-form-field{
+//     width: 600px !important;
+// }
+fieldset{
+    border-radius: 8px !important;
+    padding: 20px 10px;
+}
+legend{
+    color: #966e44 !important;
+    font-size: 18px;
+}
+.mat-table
+{
+  background-color:transparent!important;  
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 1em;
+}
+table th{
+    // color:#fff;
+    font-weight: bold;
+  }
+
