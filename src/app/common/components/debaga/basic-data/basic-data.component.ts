@@ -13,6 +13,7 @@ import {MessageService} from '../../../../services/config/message.service';
 import {environment} from '../../../../../environments/environment';
 import {CustomerService} from '../../../services/customer.service';
 import moment from 'moment';
+import {DebagaFilterPipe} from '../../../pipes/debaga-filter.pipe';
 
 @Component({
   selector: 'app-basic-data',
@@ -21,7 +22,7 @@ import moment from 'moment';
 })
 export class BasicDataComponent implements OnInit {
 
-  @Input() debagas$: Observable<any>;
+  @Input() debagas: any[];
   @Input() requestId: number;
   row = 0;
   mociData: any;
@@ -44,21 +45,16 @@ export class BasicDataComponent implements OnInit {
   ngOnInit() {
     this.isMulti = true;
     this.initForms();
-    this.debagas$.subscribe(value => {
-      const filteredValues = [];
-      if (value.length > 0) {
-        value.filter(type => {filteredValues.push(type.debagaTemplate); });
-        filteredValues.forEach(ele => {
-          if (ele.staticTemplate === true) {
+
+       this.debagas.forEach((ele: any) => {
             this.debagaForm.addControl(ele.id, this.formBuilder.control(''));
             this.drawObjectForSave(ele);
-          }
           if (ele.columnType === 'DATE') {
             this.dateInputs[ele.id] = ele.id;
           }
         });
-      }
-    });
+
+
     this.requestDebaga$.subscribe(requestDebaga => {
       if (requestDebaga && requestDebaga.length > 0) {
         requestDebaga.forEach((item, i) => {

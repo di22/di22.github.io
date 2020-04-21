@@ -3,7 +3,7 @@ import {Observable} from 'rxjs';
 import * as fromTransactionCategoriesSelector from '../../../store/general/categories/main-categories-selector';
 import {Store} from '@ngrx/store';
 import {State} from '../../../store';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Router} from '@angular/router';
 import {take} from 'rxjs/operators';
 import {loadMainCategories} from '../../../store/general/categories/main-categories.actions';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -21,11 +21,9 @@ export class CategoriesComponent implements OnInit {
   url: string;
   routes = [];
   constructor(private store: Store<State>,
-              private router: Router,
-              private activatedRout: ActivatedRoute) {}
+              private router: Router) {}
 
   ngOnInit() {
-    // this.url = this.router.url.slice(this.router.url.lastIndexOf('/'), this.router.url.length).substr(1);
      this.url = this.router.url;
      this.routes = ['RealEstates'];
      this.appStore$ = this.store.select(state => state);

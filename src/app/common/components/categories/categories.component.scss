@@ -36,6 +36,7 @@
     width:160px;
     text-align:center;
   }
+
   .ih-item.circle.effect1 .info h3{
     color: #fff;
     position: relative;
@@ -193,4 +194,61 @@
 .space-in-icon {
   margin: 1% 30px 1% 1.6%;
 }
+.links__link {
+  opacity: 0;
+  animation: on-load .3s ease-in-out forwards;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+.links__icon {
+  width: calc(8px*8);
+  height: calc(8px*8);
+  transition: all .3s ease-in-out;
+  fill: #1a1a1a;
+}
+@for $var from 1 through 7 {
+  ul:nth-child(#{$var}) {
+    animation-delay: .25s * $var;
+  }
+}
 
+@keyframes on-load {
+  0% {
+    opacity: 0;
+    transform: scale(.3);
+  }
+  70% {
+    opacity: .7;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.shake{
+  &:hover{
+    li, img {
+      animation: shake 1200ms ;
+    }
+  }
+}
+@keyframes shake{
+  0%{transform: rotateZ(0);}
+  $pos: 1;
+  @for $i from 1 through 9 {
+    $pos: $pos * -1;
+    $m: (50 / $i) * $pos;
+    #{$i*10%}{transform:  rotateZ($m * 1deg)}
+  }
+  100%{transform: rotateZ(0);}
+}

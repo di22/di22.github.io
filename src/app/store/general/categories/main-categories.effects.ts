@@ -4,7 +4,6 @@ import {loadMainCategories, loadMainCategoriesFailure, loadMainCategoriesSuccess
 import {catchError, concatMap, map} from 'rxjs/operators';
 import {MainCategoriesService} from '../../../services/main-categories.service';
 import {of} from 'rxjs';
-import {GetBasicDataValuesPipe} from '../../../common/pipes/get-basic-data-values.pipe';
 
 
 
@@ -14,7 +13,7 @@ export class MainCategoriesEffects {
   this.actions$.pipe(ofType(loadMainCategories),
     concatMap(() =>
     this.mainCategoriesService.getTransactions().pipe(
-      map((transactions: any) => this.mainCategoriesService.flatTransactions(transactions.data.lookupList)),
+      map((transactions: any) => transactions.data.lookupList),
       map(transactions => loadMainCategoriesSuccess({transactions})),
       catchError(error => of(loadMainCategoriesFailure({error})))
     ))));

@@ -58,12 +58,11 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
     FeesSettingComponent,
     AdminTipesComponent
   ],
-  
+
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     MaterialModule,
-  
     CoreModule,
     AuthModule,
     AppRoutingModule,
@@ -106,8 +105,8 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
     ],
     exports: [
         MainCategoriesComponent,
-      DirectivesModule,
-      ModalModule
+        DirectivesModule,
+        ModalModule
     ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]

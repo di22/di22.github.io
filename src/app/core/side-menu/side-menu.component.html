@@ -6,7 +6,7 @@
 
   <mat-sidenav-content [@onMainContentChange]="onSideNavChange ? 'open': 'close'">
     <app-header [sidenav]="sidenav"></app-header>
-    <!--<app-bread-crumbs></app-bread-crumbs>-->
+    <app-bread-crumbs></app-bread-crumbs>
 
 <ng-content></ng-content>
     <app-footer gdArea="footer"></app-footer>

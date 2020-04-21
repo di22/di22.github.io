@@ -2,8 +2,8 @@
   <section class="main-section">
 
     <ul class="all_icons">
-      <ng-container *ngFor="let transaction of transactionCategories$|async"  >
-        <div *ngIf="transaction.parentTransactionCategory" >
+      <ng-container *ngFor="let transaction of (transactionCategories$|async) | transactionsFlat"  >
+        <div *ngIf="transaction.parentTransactionCategory" class="shake">
           <li class=" col space-in-icon" *ngIf="transaction.parentTransactionCategory?.id === parentId && transaction.id !== 2 && transaction.id !== 230">
             <div class="ih-item circle effect1">
               <a (click)="routeToSubCategories(transaction)">

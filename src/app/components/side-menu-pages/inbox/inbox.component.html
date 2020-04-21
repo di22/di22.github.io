@@ -19,7 +19,7 @@
             </div>
             <div fxFlex="25%">
               <mat-form-field>
-                <mat-label >حالة الطلب</mat-label>
+                <mat-label>حالة الطلب</mat-label>
                 <mat-select  value="16px" formControlName="requestStatusId">
                   <mat-option *ngFor="let requestStatus of (requestStatuses$ | async)?.data.lookupList" [value]="requestStatus.id">{{requestStatus.description}}</mat-option>
                 </mat-select>

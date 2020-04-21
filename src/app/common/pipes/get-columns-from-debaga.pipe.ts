@@ -6,12 +6,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class GetColumnsFromDebagaPipe implements PipeTransform {
 
-  transform(value: any, args: boolean): any {
-    const filteredValues = [];
+  transform(value: any): any {
+    let filteredValues = [];
     const filteredColumns = [];
-    if (value.length > 0) {
-      value.filter(type => {filteredValues.push(type.debagaTemplate); });
-      filteredValues.map(type =>  type.staticTemplate === args);
+    if (value && value.length > 0) {
+      filteredValues = value;
       filteredValues.forEach(ele => {
         if (ele.staticTemplate) {
           filteredColumns.push(`${ele.id}`);

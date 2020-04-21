@@ -38,7 +38,7 @@ import { CompleteRequestEffects } from './components/complete-request/store/effe
 import { RequestComponent } from './components/request/request.component';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
-import {TransactionService} from '../services/transaction.service';
+import {PipesModule} from '../pipes-module/pipes.module';
 
 @NgModule({
   declarations: [
@@ -74,7 +74,8 @@ import {TransactionService} from '../services/transaction.service';
     DirectivesModule,
     EffectsModule.forFeature([RequestEffects, CustomerEffects, TransactionRequestAttachmentEffects,
       DebagaEffects, RequestDebagaEffects, RequestAttachmentsEffects, CompleteRequestEffects]),
-    CKEditorModule
+    CKEditorModule,
+    PipesModule
   ],
     exports: [
         CommonModule,
@@ -93,7 +94,8 @@ import {TransactionService} from '../services/transaction.service';
         WitnessesComponent,
         DebagaComponent,
         RequestAttachmentComponent,
-        CompleteRequestComponent
+        CompleteRequestComponent,
+      PipesModule
     ],
   providers: [{provide: MAT_DATE_LOCALE, useValue: 'ar-AR'},
     {

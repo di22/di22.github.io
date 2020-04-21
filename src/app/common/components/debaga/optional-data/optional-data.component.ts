@@ -13,7 +13,6 @@ import * as fromApp from '../../../../store';
 import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute} from '@angular/router';
 import {
-  getDebagaFees,
   getExpiryDate,
 } from '../store/actions/request-debaga.actions';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
@@ -23,21 +22,22 @@ import {GetRequestDetails} from '../../../parties/party/store/request/actions/re
 import {DebagaService} from '../../../services/debaga.service';
 import {TransactionService} from '../../../../services/transaction.service';
 import {GetBasicDataValuesPipe} from '../../../pipes/get-basic-data-values.pipe';
+import {DebagaFilterPipe} from '../../../pipes/debaga-filter.pipe';
+import {PartiesFeesService} from '../../../../services/parties-fees.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-optional-data',
   templateUrl: './optional-data.component.html',
   styleUrls: ['./optional-data.component.scss'],
-  providers: [GetBasicDataValuesPipe]
+  providers: [GetBasicDataValuesPipe, DebagaFilterPipe]
 })
 export class OptionalDataComponent implements OnInit, OnDestroy {
 
   @Input() debagas$: Observable<any>;
 
-  @Input() transaction: TransactionService;
-
-  requestDebagaForm: FormGroup;
+   transaction: TransactionService;
+   requestDebagaForm: FormGroup;
   startRequestDebagasForm: FormArray;
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
   debaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectDebaga(state));
@@ -74,24 +74,25 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
               private encryptDecryptService: EncryptDecryptService,
               private activatedRout: ActivatedRoute,
               private messageService: MessageService,
-              private basicDataValuesPipe: GetBasicDataValuesPipe) {
+              private basicDataValuesPipe: GetBasicDataValuesPipe,
+              private debagaFilter: DebagaFilterPipe) {
+
     this.initForms();
   }
 
   ngOnInit() {
-    this.requestId = this.transaction.requestID;
+    this.activatedRout.params.subscribe(params => {
+      if (params.requestId) {
+        this.requestId = params.requestId;
+      }
+    });
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<FlatTree>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-
+    this.startRequestDebagasForm = this.formBuilder.array([]);
     this.debagas$.subscribe(value => {
-      const filteredValues = [];
-      this.startRequestDebagasForm = this.formBuilder.array([]);
       if (value.length > 0) {
-        value.filter(type => {
-          filteredValues.push(type.debagaTemplate);
-        });
-        this.dataSource.data = filteredValues.filter(type => type.staticTemplate === false);
+        this.dataSource.data = this.debagaFilter.transform(value, false);
       }
     });
     this.requestDebaga$.subscribe((requestDebaga: any) => {
@@ -103,7 +104,7 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
             if (!item.groupNumber) {
               this.setRequestDebagasAfterGetRequestDetails(item);
             } else {
-                  if (this.transaction.transaction.percentField && this.transaction.transaction.percentField === item.debagaTemplate.code) {
+                  if (TransactionService.transaction.percentField && TransactionService.transaction.percentField === item.debagaTemplate.code) {
                     this.debagaFees = +item.text;
                   }
                 this.basicRequestDebaga.push(item);
@@ -111,7 +112,7 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
             }
           });
           this.basicRequestDebagaTableValues = this.basicDataValuesPipe.transform(requestDebaga, true);
-          this.store.dispatch(getDebagaFees({fees: this.debagaFees}));
+          PartiesFeesService.Fees = this.debagaFees;
         }
     });
     this.debaga$.subscribe((debaga: any) => {
@@ -532,7 +533,7 @@ initForms = () => {
    return  this.requestDebagaForm.get(`${id}`);
   };
   onChangesDate = (event, code) => {
-    const Exceeds = this.transaction.Exceed(`${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`);
+    const Exceeds = TransactionService.Exceed(`${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`);
     // this.store.dispatch(getExpiryDate({date: `${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`}));
     if (code === 'POA_EXPIRY_DATE' &&  Exceeds > 0) {
       this.messageService.errorMessage(`لقد تعديت مدة صلاحية التوكيل سيتم إحتساب عدد ${Exceeds + 1} مضاعف قيمة رسوم المعاملة`);
@@ -543,10 +544,10 @@ initForms = () => {
     return moment(new Date()).format('YYYY-MM-DD');
   };
   endDate = (date, code): any => {
-    const expirationPeriodCount = this.transaction.transaction.expirationPeriodCount ? this.transaction.transaction.expirationPeriodCount : 1;
+    const expirationPeriodCount = TransactionService.transaction.expirationPeriodCount ? TransactionService.transaction.expirationPeriodCount : 1;
     const endDate = new Date();
     if (code === 'POA_EXPIRY_DATE') {
-      endDate.setMonth(endDate.getMonth() + (this.transaction.transaction.expirationPeriod * expirationPeriodCount));
+      endDate.setMonth(endDate.getMonth() + (TransactionService.transaction.expirationPeriod * expirationPeriodCount));
     } else {
       endDate.setDate(endDate.getDate() + date);
     }

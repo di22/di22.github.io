@@ -1,7 +1,7 @@
 import {CalcFees} from './CalcFees';
 
 
-export class DebagaFeesService implements CalcFees{
+export class DebagaFees implements CalcFees{
 
   constructor() { }
 

@@ -24,14 +24,19 @@ export class DebagaComponent implements OnInit {
   constructor(private store: Store<fromApp.State>,
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
-               activatedRout: ActivatedRoute) {
+              private activatedRout: ActivatedRoute) {
     this.transactionService = new TransactionService(store, activatedRout);
   }
 
   ngOnInit() {
+    this.activatedRout.params.subscribe(params => {
+      if (params.requestId) {
+        this.requestId = params.requestId;
+      }
+    });
    this.transactionId = this.transactionService.transactionID;
-   this.requestId = this.transactionService.requestID;
    this.getTransactionDebaga(this.transactionId);
+
   }
 
   getTransactionDebaga = (transactionId) => {

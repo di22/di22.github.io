@@ -11,7 +11,7 @@
           <div class="mat-elevation-z8 card-content-space-around" fxLayout="column" fxLayoutGap="1%"  fxLayoutAlign="center">
 
             <div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutGap="5%" >
-              <ng-container *ngFor="let debaga of (debagas$ | async) | debagaFilter: true; let i=index">
+              <ng-container *ngFor="let debaga of debagas; let i=index">
               <ng-container *ngTemplateOutlet="debaga.htmlComponentLu.code === 'RADIOBUTTON' ? RADIOBUTTON : debaga.htmlComponentLu.code === 'DROPDOWNLIST' ? DROPDOWNLIST : debaga.htmlComponentLu.code === 'MULTIDROPDOWNLIST' ? MULTIDROPDOWNLIST :  debaga.htmlComponentLu.code === 'TEXT' && (debaga.columnType === 'ALPHANUMERIC' || debaga.columnType === 'MONEY' || debaga.columnType === 'DIGIT' || debaga.columnType === 'CHAR')  ? TEXT : debaga.columnType === 'DATE' ? DATE : CHECKBOX"></ng-container>
               <ng-template #CHECKBOX>
                 <mat-label>{{debaga.description}}</mat-label>
@@ -72,7 +72,7 @@
             <mat-cell *matCellDef="let element; let i = index "> {{i+1}} </mat-cell>
           </ng-container>
 
-          <ng-container *ngFor="let col of (debagas$ | async) | debagaFilter: true" matColumnDef="{{col.id}}">
+          <ng-container *ngFor="let col of debagas" matColumnDef="{{col.id}}">
             <mat-header-cell *matHeaderCellDef>{{col.description}} </mat-header-cell>
             <mat-cell *matCellDef="let element; let i = index">{{cellValue(element, col.id)}} </mat-cell>
           </ng-container>
@@ -84,8 +84,8 @@
             </mat-cell>
           </ng-container>
 
-          <mat-header-row *matHeaderRowDef="(debagas$ | async) | getColumnsFromDebaga: true"></mat-header-row>
-          <mat-row *matRowDef="let row; let i = index; columns: (debagas$ | async) | getColumnsFromDebaga: true;"></mat-row>
+          <mat-header-row *matHeaderRowDef="debagas | getColumnsFromDebaga: true"></mat-header-row>
+          <mat-row *matRowDef="let row; let i = index; columns: debagas | getColumnsFromDebaga;"></mat-row>
         </mat-table>
       </mat-card-content>
     </mat-card>

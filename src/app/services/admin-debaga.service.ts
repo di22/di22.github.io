@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import {from, Observable, of} from 'rxjs';
+import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CommonService} from './config/common.service';
-import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

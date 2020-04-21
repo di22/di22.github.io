@@ -2,30 +2,32 @@ import {ActivatedRoute} from '@angular/router';
 import {loadMainCategories} from '../store/general/categories/main-categories.actions';
 import {Store} from '@ngrx/store';
 import {State} from '../store';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable} from 'rxjs';
 import * as fromTransactionCategoriesSelector from '../store/general/categories/main-categories-selector';
 import * as fromRequestDebagaSelectors from '../common/components/debaga/store/selectors/request-debaga.selectors';
+import {TransactionsFlatPipe} from '../pipes-module/transactions-flat.pipe';
 
 
 export class TransactionService {
-  private transactionSubject = new ReplaySubject<any>(2);
-  private transactionRequestId: Observable<any> = this.transactionSubject.asObservable();
-  private requestId: number;
+
   private transactionId: number;
-  private transactionType: any;
-  private expirationPeriodCount: number;
-  private expirationPeriod: number;
+  private static transactionType: any;
+  private static expirationPeriodCount: number;
+  private static expirationPeriod: number;
   private expiryDate: any;
   private transactionCategories$: Observable<any> = this.store.select(state => fromTransactionCategoriesSelector.selectCategories(state));
   private expiryDate$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectExpiryDate(state));
-  constructor(private store: Store<State>,
-              private activatedRout: ActivatedRoute) {
+  constructor(private store: Store<State>, private activatedRout: ActivatedRoute) {
     this.activatedRout.data.subscribe(params => {
       this.transactionId = params.transactionId;
+      this.getTransaction();
     });
-    this.activatedRout.params.subscribe(params => {
-      this.requestId = params.requestId;
+
+    this.expiryDate$.subscribe(ex => {
+        this.expiryDate = TransactionService.stringToDate(ex);
     });
+  }
+  getTransaction = () => {
     this.transactionCategories$
       .subscribe(
         (transactions: any) => {
@@ -33,22 +35,16 @@ export class TransactionService {
             this.store.dispatch(loadMainCategories());
           } else {
             if (this.transactionId) {
-            this.transactionType = transactions.find(tr => tr.id === this.transactionId);
-            this.expirationPeriodCount = this.transaction.expirationPeriodCount ? this.transaction.expirationPeriodCount : 1;
-            this.expirationPeriod = this.transaction.expirationPeriod;
-          }
+              TransactionService.transactionType = TransactionsFlatPipe.prototype.transform(transactions).find(tr => tr.id === this.transactionId);
+              TransactionService.expirationPeriodCount = TransactionService.transaction.expirationPeriodCount ? TransactionService.transaction.expirationPeriodCount : 1;
+              TransactionService.expirationPeriod = TransactionService.transaction.expirationPeriod;
+            }
           }});
-    this.expiryDate$.subscribe(ex => {
-        this.expiryDate = this.stringToDate(ex);
-    });
   }
   get transactionID () {
     return this.transactionId;
   }
-  get requestID () {
-    return this.requestId;
-  }
-get transaction () {
+static get transaction () {
     return this.transactionType;
 }
 
@@ -60,8 +56,8 @@ get ExpiryDate () {
     const endDateArray = [];
     let countDateExceeds = 0;
     if (this.expiryDate) {
-      for (let i = 0; i < this.expirationPeriodCount; i++) {
-        endNextPeriod = new Date(endNextPeriod).setMonth(new Date(endNextPeriod).getMonth() + this.expirationPeriod);
+      for (let i = 0; i < TransactionService.expirationPeriodCount; i++) {
+        endNextPeriod = new Date(endNextPeriod).setMonth(new Date(endNextPeriod).getMonth() + TransactionService.expirationPeriod);
         endDateArray.push(new Date(endNextPeriod));
       }
       endDateArray.forEach((e) => {
@@ -72,7 +68,7 @@ get ExpiryDate () {
     }
     return countDateExceeds;
   };
-   Exceed (expiryDate): number {
+  static Exceed (expiryDate): number {
      expiryDate = this.stringToDate(expiryDate);
     let endNextPeriod: any = new Date();
     const endDateArray = [];
@@ -90,7 +86,7 @@ get ExpiryDate () {
     }
     return countDateExceeds;
   };
-private stringToDate = (stringDate) => {
+private static stringToDate = (stringDate) => {
   let date = null;
   if (stringDate && typeof stringDate === 'string') {
      date = stringDate.split('/');

@@ -7,7 +7,7 @@ fees: CalcFees;
   constructor(fees: CalcFees) {
     this.fees = fees;
   }
-  showFees = () => {
+ showFees = () => {
     return this.fees.calc();
   }
 }

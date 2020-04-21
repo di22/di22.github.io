@@ -1,3 +1,3 @@
-<app-basic-data [debagas$]="debagas$" *ngIf="((debagas$ | async) | debagaFilter: true).length > 0" [requestId]="requestId"></app-basic-data>
+<app-basic-data [debagas]="(debagas$ | async) | debagaFilter: true" *ngIf="((debagas$ | async) | debagaFilter: true).length > 0" [requestId]="requestId"></app-basic-data>
 <br>
-<app-optional-data [debagas$]="debagas$" [transaction]="transactionService"></app-optional-data>
+<app-optional-data [debagas$]="debagas$"></app-optional-data>

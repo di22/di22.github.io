@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {State} from '../../../store';
 import {ActivatedRoute} from '@angular/router';
+import {TransactionService} from '../../../services/transaction.service';
 
 @Component({
   selector: 'app-request',
@@ -14,9 +15,12 @@ export class RequestComponent implements OnInit {
   transactionId: number;
   requestId: number;
   request: FormGroup;
+  transaction: TransactionService;
   constructor(private store: Store<State>,
               private formBuilder: FormBuilder,
-              private activatedRout: ActivatedRoute) { }
+              private activatedRout: ActivatedRoute) {
+    this.transaction = new TransactionService(store, activatedRout);
+  }
 
   ngOnInit(): void {
     this.initForms();

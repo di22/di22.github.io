@@ -33,7 +33,6 @@ export class CompleteRequestComponent implements OnInit {
 
   feess: FeesService;
   partiesFees: PartiesFeesService;
-  transactionClass: TransactionService;
 
   autoCalc: FormControl;
   isExempt: FormControl;
@@ -57,13 +56,16 @@ export class CompleteRequestComponent implements OnInit {
               private dialog: MatDialog,
               private authService: AuthService,
               private activatedRout: ActivatedRoute) {
-    this.transactionClass = new TransactionService(store, activatedRout);
   }
 
   ngOnInit(): void {
-    this.transaction = this.transactionClass.transaction;
-    this.transactionId = this.transactionClass.transactionID;
-    this.requestId = this.transactionClass.requestID;
+    this.activatedRout.params.subscribe(params => {
+      if (params.requestId) {
+        this.requestId = params.requestId;
+      }
+    });
+    this.transaction = TransactionService.transaction;
+    this.transactionId = TransactionService.prototype.transactionID;
 
 
     this.user = this.authService.getUserFromSession();
@@ -89,7 +91,7 @@ export class CompleteRequestComponent implements OnInit {
   }
 
   partiesFee = () => {
-  this.partiesFees = new PartiesFeesService(this.store, this.transaction, this.transactionClass.Exceeds);
+  this.partiesFees = new PartiesFeesService(this.store, this.transaction, TransactionService.prototype.Exceeds);
   this.partiesFees.calc();
   this.feess = new FeesService(this.partiesFees);
   return this.feess.showFees();
