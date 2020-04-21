@@ -21,24 +21,43 @@ mat-card-title{
 //     width: 600px !important;
 // }
 fieldset{
-    border-radius: 8px !important;
+    // border-radius: 8px !important;
     padding: 20px 10px;
+
+    border: 0;
 }
 legend{
     color: #966e44 !important;
     font-size: 18px;
 }
-.mat-table
-{
-  background-color:transparent!important;  
-}
+// .mat-table
+// {
+//   background-color:transparent!important;  
+// }
 table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 1em;
+    background-color:transparent!important;  
+
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 1em;
+
+    min-width: 450px;
 }
-table th{
+mat-table mat-header-cell{
     // color:#fff;
     font-weight: bold;
-  }
+}
+
+// @media only screen and (max-width: 736px) and (orientation:portrait) {
+//     mat-header-row, mat-row {
+//       width: 200%;
+//     }   
+// }
+
+// .mat-elevation-z8 {    
+//     overflow-x: auto;
+//   }
+//  .mat-table {
+//     min-width: 450px;
+//   }
 
