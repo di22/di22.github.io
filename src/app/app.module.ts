@@ -42,6 +42,7 @@ import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my
 import { SubCategoriesModule } from './components/sub-categories/sub-categories.module';
 import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
 import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/admin-tipes.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 
@@ -63,6 +64,7 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
     BrowserModule,
     BrowserAnimationsModule,
     MaterialModule,
+    FlexLayoutModule,
     CoreModule,
     AuthModule,
     AppRoutingModule,

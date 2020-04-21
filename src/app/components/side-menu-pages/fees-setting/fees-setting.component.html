@@ -1,56 +1,62 @@
-<div class="container">
+<div class="container" fxFlexFill>
     <div fxLayout="row" fxLayoutAlign="center center" >
         <mat-card class="card">
            <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
               <h5 class="headers-color">الرسوم</h5>
            </mat-card-title>
-          <mat-divider [inset]="true"></mat-divider>
-            <mat-card-content >
-                <fieldset class="mat-elevation-z8 card-content-space-around field_set">
+          <mat-divider></mat-divider>
+            <mat-card-content>
                     <legend>تفاصيل الرسوم</legend>
+                    <div class="mat-elevation-z8 card-content-space-around">
                     <form>
-                        <div flexLayout="row" fxLayout.xs="column">
-                            <mat-form-field>
-                                <mat-label >الجهة</mat-label>
-                                <mat-select>
-                                    <mat-option  *ngFor="let direct of directions" >
-                                        {{direct.name}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                      <div flexLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center" fxLayout.ms="column">
+                        <div fxFlex="30">
+                          <mat-form-field>
+                              <mat-label >الجهة</mat-label>
+                              <mat-select>
+                                  <mat-option  *ngFor="let direct of directions" >
+                                      {{direct.name}}
+                                  </mat-option>
+                              </mat-select>
+                          </mat-form-field>
                         </div>
-                        <div flexLayout="row"  fxLayout.xs="column">
-                            <mat-form-field>
-                                <mat-label >النوع</mat-label>
-                                <mat-select>
-                                    <mat-option  *ngFor="let direct of directions" >
-                                        {{direct.name}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                        <div fxFlex="30">
+                          <mat-form-field>
+                              <mat-label >النوع</mat-label>
+                              <mat-select>
+                                  <mat-option  *ngFor="let direct of directions" >
+                                      {{direct.name}}
+                                  </mat-option>
+                              </mat-select>
+                          </mat-form-field>
                         </div>
-                        <div flexLayout="row" class="card-content-space-around" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
-                            <div fxFlex="%33">
-                                <mat-form-field>
-                                    <mat-label >قيمة رسوم الاطراف</mat-label>
-                                    <input matInput  placeholder="xxxxxxx">
-                                </mat-form-field> 
-                            </div>
-                            <div fxFlex="%33">
-                                <mat-form-field>
-                                    <mat-label >قيمة رسوم النسخ</mat-label>
-                                    <input matInput  placeholder="xxxxxxx">
-                                </mat-form-field> 
-                            </div>
-                            <div fxFlex="%33">
-                                <mat-form-field>
-                                    <mat-label >قيمة رسوم الطلب</mat-label>
-                                    <input matInput  placeholder="xxxxxxx">
-                                </mat-form-field> 
-                            </div>
+                        <div fxFlex="30">
+                          <mat-form-field>
+                              <mat-label >قيمة رسوم الاطراف</mat-label>
+                              <input matInput  placeholder="xxxxxxx">
+                          </mat-form-field> 
+                      </div>
+                     
+
+                      </div>
+                      <div flexLayout="row" fxLayout.xs="column" fxLayoutAlign="center">
+                        <div fxFlex="30">
+                          <mat-form-field>
+                              <mat-label >قيمة رسوم النسخ</mat-label>
+                              <input matInput  placeholder="xxxxxxx">
+                          </mat-form-field> 
+                      </div>
+                        <div fxFlex="30">
+                          <mat-form-field>
+                              <mat-label >قيمة رسوم الطلب</mat-label>
+                              <input matInput  placeholder="xxxxxxx">
+                          </mat-form-field> 
                         </div>
+                        <div fxFlex="30">
+                        </div>
+                      </div>
                     </form>
-                </fieldset>
+                    </div>
             </mat-card-content>
             <mat-card-actions>
                 <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
@@ -63,80 +69,78 @@
                 </div>
             </mat-card-actions>
 
+
             <mat-card-content>
-                <fieldset class="mat-elevation-z8 card-content-space-around field_set">
                     <legend>المعاملات</legend>
-                    <div fxLayout>
+                    <!-- <div  flexLayout="row" fxLayout.xs="column"> -->
                     <mat-form-field>
                         <mat-label>بحث</mat-label>
                            <input matInput  placeholder="بحث عن موظف">
                       </mat-form-field>
-                      </div>
-
-                      <table mat-table class="mat-elevation-z8">
-                        <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
-                          <th mat-header-cell *matHeaderCellDef> {{column.header}} </th>
-                          <tr mat-cell *matCellDef="let element; let i = index ">
-                             <a *ngIf="column.columnDef === 'requestId'" mat-icon-button (click)="routeToRequest(element.transactionType.code, element.id)"> {{element.id}} </a> 
-                          </tr>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                      </table>
-
                       
+                      
+                      
+                      <mat-table class="mat-elevation-z8">
+                        <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+                          <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
+                          <mat-cell>
+                  
+                          </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                      </mat-table>
+                    <!-- </div> -->
                 
                 
-                
-<!-- <div flexLayout="row" fxLayout.xs="column">
-<table mat-table matSort>
+<!-- <div flexLayout="row" fxLayout.xs="column"> 
+<mat-table matSort>
   <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> الجهه </th>
-    <td mat-cell *matCellDef="let element"> 5 </td>
+    <mat-header-cell *matHeaderCellDef> الجهه </mat-header-cell>
+    <mat-cell *matCellDef="let element"> 5 </mat-cell>
   </ng-container>
  
   <ng-container matColumnDef="dateOfBirth">
-    <th mat-header-cell *matHeaderCellDef>نوع الطلب </th>
-    <td mat-cell *matCellDef="let element">3 </td>
+    <mat-header-cell *matHeaderCellDef>نوع الطلب </mat-header-cell>
+    <mat-cell *matCellDef="let element">3 </mat-cell>
   </ng-container>
  
   <ng-container matColumnDef="address">
-    <th mat-header-cell *matHeaderCellDef> قيمةرسوم الاطراف </th>
-    <td mat-cell *matCellDef="let element"> s </td>
+    <mat-header-cell *matHeaderCellDef> قيمةرسوم الاطراف </mat-header-cell>
+    <mat-cell *matCellDef="let element"> s </mat-cell>
   </ng-container>
   <ng-container matColumnDef="address1">
-    <th mat-header-cell *matHeaderCellDef> قيمةرسوم النسخ </th>
-    <td mat-cell *matCellDef="let element"> 3 </td>
+    <mat-header-cell *matHeaderCellDef> قيمةرسوم النسخ </mat-header-cell>
+    <mat-cell *matCellDef="let element"> 3 </mat-cell>
   </ng-container>
   <ng-container matColumnDef="address2">
-    <th mat-header-cell *matHeaderCellDef> قيمةرسوم الطلب </th>
-    <td mat-cell *matCellDef="let element"> 1 </td>
+    <mat-header-cell *matHeaderCellDef> قيمةرسوم الطلب </mat-header-cell>
+    <mat-cell *matCellDef="let element"> 1 </mat-cell>
   </ng-container>
   <ng-container matColumnDef="update">
-      <th mat-header-cell *matHeaderCellDef> # </th>
-      <td mat-cell *matCellDef="let element">
+      <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+      <mat-cell *matCellDef="let element">
         <button mat-icon-button color="blue" (click)="redirectToUpdate(element.id)">
             <mat-icon class="mat-18">system_update</mat-icon>
         </button>
-      </td>
+      </mat-cell>
     </ng-container>
  
     <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef> # </th>
-        <td mat-cell *matCellDef="let element">
+        <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+        <mat-cell *matCellDef="let element">
           <button mat-icon-button color="warn" (click)="redirectToDelete(element.id)">
               <mat-icon class="mat-18">delete</mat-icon>
           </button>
-        </td>
+        </mat-cell>
       </ng-container>
  
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
-</div> -->
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+</div>  -->
 <mat-paginator  showFirstLastButtons [pageSize]="2" [pageSizeOptions]="[2, 4, 6, 10, 20]">
 </mat-paginator>
-                </fieldset>
             </mat-card-content>
         </mat-card>
     </div>

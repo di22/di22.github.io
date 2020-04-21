@@ -4,32 +4,104 @@
 //   color: white;
 // }
 
-.field_set{
-  border-color: rgb(214, 210, 210);
-  // border-style: ;
-  border-radius: 8px;
-}
-fieldset legend {
+// .field_set{
+//   // border-color: rgb(214, 210, 210);
+//   // border-style: ;
+//   border-radius: 8px;
+// }
+ legend {
   font-weight: bold;
   margin-left:-0.1875rem;
   margin: 0;
   color:#856b4b;
   padding: 0 0.1875rem;
   font-size: large;
+  padding-top: 50px;
+  padding-bottom: 20px;
 }
-table {
-  width: 100%;
-  // overflow-x: auto;
-  // overflow-y: hidden;
-  min-width: 500px;
-  margin-top: 50px;
-}
-
 // th.mat-header-cell {
 //   text-align: left;
 //   max-width: 300px;
 // }
-mat-paginator
-{
-  margin-top:50px;
+// mat-paginator
+// {
+//   margin-top:50px;
+// }
+mat-table{
+  margin-top: 50px;
 }
+.card
+{
+  width: 100% !important;
+}
+
+
+// @media only screen and (max-width: 736px) {
+  
+//   //   .field_set{
+//   //   border-color: red;
+
+//   // }
+//   mat-form-field{
+//     width:100px;
+//     font-weight: 100;
+//   }
+//   mat-lebal{
+//     width:100px;
+   
+//   }
+//   mat-table{
+//     width:200px;
+//     justify-content: center;
+//   }
+
+//   mat-cell
+//   {
+//      width:50%;
+//   }
+ 
+// }
+
+// @media only screen 
+//   and (max-device-width: 375px) 
+//   and (min-device-width: 667px) 
+//   // and (-webkit-min-device-pixel-ratio: 2)
+//    { 
+//     mat-table{
+//       width:250px;
+//       justify-content: center;
+//     }
+//     // mat-icon-button{
+//     //   width:10px;
+//     // }
+
+// }
+
+// @media only screen 
+//   and (max-device-width: 500px) 
+//   and (min-device-width: 411px) 
+//   and (-webkit-min-device-pixel-ratio: 2) { 
+//     mat-table{
+//       width:250px;
+//       justify-content: center;
+//     }
+//     // mat-icon-button{
+//     //   width:5px;
+//     // }
+
+// }
+// @media only screen 
+//   and (max-device-width: 320px)  { 
+//     mat-icon-button {
+//       width:10px;
+//       color:red;
+//       background-color: red;
+
+//     }
+//     mat-table{
+//       width:170px;
+//       justify-content: center;
+//     }
+   
+//   }
+
