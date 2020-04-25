@@ -6,25 +6,34 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class GetBasicDataValuesPipe implements PipeTransform {
 
   transform(value: any, args: boolean): any {
-    const filteredValues = [];
+    let filteredValues = [];
     const tableValues = [];
+    let obj = {};
     if (value.length > 0) {
-      value.forEach(ele => {
-        if (ele.debagaTemplate.staticTemplate === args) {
-          filteredValues.push(ele);
-        }
-      });
-      value.forEach((ele, i1) => {
-        const obj = {};
-        filteredValues.forEach((ele2, i2) => {
-          if (ele2.groupNumber === i1 + 1) {
-            obj[ele2.debagaTemplate.id] = ele2.text;
+      filteredValues =  value.filter(ele => ele.debagaTemplate.staticTemplate === args);
+   //   value.forEach((ele, i1) => {
+
+        filteredValues.reduce((acc, ele, i) => {
+         // acc = ele.groupNumber;
+
+          if(acc == ele.groupNumber) {
+            obj[ele.debagaTemplate.id] = ele;
+          } else if (ele.groupNumber > acc) {
+            if (Object.entries(obj).length > 0) {
+              tableValues.push(obj)
+            }
+            obj = {};
+            acc = ele.groupNumber;
+            obj[ele.debagaTemplate.id] = ele;
           }
-          });
-        if (Object.entries(obj).length > 0) {
-          tableValues.push(obj);
-        }
-      });
+          if ((i + 1) === filteredValues.length) {
+            tableValues.push(obj)
+          }
+          return acc;
+        }, 1)
+
+
+  //    });
       return tableValues;
     } else {
       return [];

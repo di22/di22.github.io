@@ -74,13 +74,13 @@
 
           <ng-container *ngFor="let col of debagas" matColumnDef="{{col.id}}">
             <mat-header-cell *matHeaderCellDef>{{col.description}} </mat-header-cell>
-            <mat-cell *matCellDef="let element; let i = index">{{cellValue(element, col.id)}} </mat-cell>
+            <mat-cell *matCellDef="let element; let i = index">{{cellValue(element, col)}} </mat-cell>
           </ng-container>
           <ng-container matColumnDef="edit-delete">
             <mat-header-cell *matHeaderCellDef>حذف/تعديل </mat-header-cell>
             <mat-cell *matCellDef="let element; let i = index">
               <a mat-icon-button><mat-icon matTooltip="تعديل" color="primary" (click)="fetchDebagaData(element)">edit</mat-icon></a>
-              <a mat-icon-button><mat-icon matTooltip="حذف" color="warn" (click)="deleteDebaga(element, i)">delete</mat-icon></a>
+              <a mat-icon-button><mat-icon matTooltip="حذف" color="warn" (click)="deleteDebaga(element)">delete</mat-icon></a>
             </mat-cell>
           </ng-container>
 

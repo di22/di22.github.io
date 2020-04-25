@@ -10,7 +10,7 @@ export class RealEstatesComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log('dddd');
+
   }
 
 }

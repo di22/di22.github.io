@@ -13,6 +13,8 @@ import {MessageService} from '../../../../services/config/message.service';
 import {environment} from '../../../../../environments/environment';
 import {CustomerService} from '../../../services/customer.service';
 import moment from 'moment';
+import {DeleteModalComponent} from '../../../../modal/delete-modal/delete-modal.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-basic-data',
@@ -23,8 +25,10 @@ export class BasicDataComponent implements OnInit {
 
   @Input() debagas: any[];
   @Input() requestId: number;
-  row = 0;
+  addGroupNumber = 0;
+  editDeleteGroupNumber = 0;
   mociData: any;
+  debagaList = [];
   requestDebagas = new Set();
   debagaForm: FormGroup;
   isEdite: boolean;
@@ -38,6 +42,7 @@ export class BasicDataComponent implements OnInit {
               private debagaService: DebagaService,
               private messageService: MessageService,
               private customerService: CustomerService,
+              private dialog: MatDialog,
               private encryptDecryptService: EncryptDecryptService,
               private router: Router) { }
 
@@ -56,12 +61,13 @@ export class BasicDataComponent implements OnInit {
 
     this.requestDebaga$.subscribe(requestDebaga => {
       if (requestDebaga && requestDebaga.length > 0) {
+        this.debagaList = requestDebaga;
         requestDebaga.forEach((item, i) => {
           if (item.groupNumber) {
             if (this.router.url.includes('POA_PASSPORT_ISSUANCE')) {
               this.isMulti = false;
             }
-            this.row = item.groupNumber;
+            this.addGroupNumber = item.groupNumber;
           }
         });
       }
@@ -98,14 +104,14 @@ export class BasicDataComponent implements OnInit {
 
 
 
-  setValue = () => {
+  setValue = (groupNumber) => {
     this.requestDebagas.forEach((ele: any, i) => {
      const value = this.isInputDates(ele.debagaTemplate.id);
      if (value) {
        this.debagaForm.get(`${ele.debagaTemplate.id}`).patchValue(`${value._i.year}/${value._i.month}/${value._i.date}`);
      }
      ele = Object.assign(ele, {text: this.debagaForm.get(`${ele.debagaTemplate.id}`).value,
-          groupNumber: this.row});
+          groupNumber: groupNumber});
     });
   };
   drawObjectForSave = (value) => {
@@ -117,8 +123,8 @@ export class BasicDataComponent implements OnInit {
   };
   addRequestDebaga = () => {
     if (this.debagaForm.dirty && this.debagaForm.touched) {
-      this.row++;
-      this.setValue();
+      this.addGroupNumber++;
+      this.setValue(this.addGroupNumber);
       const requestDebaga = {
         data: {
           requestDebaga: Array.from(this.requestDebagas)
@@ -132,15 +138,15 @@ export class BasicDataComponent implements OnInit {
     }
   };
   updateRequestDebaga = () => {
-    this.setValue();
+    this.setValue(this.editDeleteGroupNumber);
     const requestDebaga = {
       data: {
         requestId: this.requestId,
-        groupNo: this.row,
+        groupNo: this.editDeleteGroupNumber,
         requestDebaga: Array.from(this.requestDebagas)
       }
     };
-    this.debagaService.updaterequestDebaga(requestDebaga).subscribe(res => {
+    this.debagaService.updateRequestDebagaByGroup(requestDebaga).subscribe(res => {
       this.messageService.successMessage('تم تعديل النماذج بنجاح');
       this.clearForm();
       this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
@@ -149,7 +155,8 @@ export class BasicDataComponent implements OnInit {
 
 // fetch data from table to inputs
   fetchDebagaData = (ele) => {
-    this.debagaForm.patchValue(ele);
+    this.getEditDeleteGroupNumber(ele);
+    this.debagaForm.patchValue(this.getDebagasForFetch(ele));
     for (const i in ele ) {
       const value = this.isInputDates(i);
       if (value) {
@@ -159,10 +166,34 @@ export class BasicDataComponent implements OnInit {
     this.isEdite = true;
   };
 
-  deleteDebaga = (ele, i) => {
-    this.store.dispatch(deleteRequestDebaga({id: {data: {requestId: this.requestId, groupNo: i + 1}}}));
-  };
+  deleteDebaga = (ele: Object) => {
+    this.getEditDeleteGroupNumber(ele);
+    const dialogRef = this.dialog.open(DeleteModalComponent, {
+      width: '550px',
+      data: {message: 'هل انت متأكد ؟'}
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.store.dispatch(deleteRequestDebaga({id: {data: {requestId: this.requestId, groupNo: this.editDeleteGroupNumber}}}));
+      }
+    });
+
+  };
+getDebagasForFetch = (elements) => {
+  const data = {...elements};
+  for(let e in data) {
+    data[e] = data[e].text
+  }
+  return data;
+}
+getEditDeleteGroupNumber = (elements) => {
+  const data = {...elements};
+  for(let e in data) {
+    this.editDeleteGroupNumber = data[e].groupNumber;
+  }
+   this.editDeleteGroupNumber;
+}
   getCommercials = (debaga, event) => {
     if (!this.mociData) {
       if (debaga.code.includes('CR_NUMBER')) {
@@ -195,7 +226,7 @@ export class BasicDataComponent implements OnInit {
   };
 // set value to cells of the table
   cellValue = (val, matchVal): string => {
-    return val[matchVal];
+    return val[matchVal.id].text;
   };
 
   clearForm = () => {

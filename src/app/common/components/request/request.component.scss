@@ -1,7 +1,9 @@
 .icon-size {
-  font-size: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #856b4b;
+  width: 70%;
+  height: 70%;
+  top: 50%;
+  left: 50%;
+  display: block;
+  position: absolute;
+  transform: translate(-50%, -50%);
 }
