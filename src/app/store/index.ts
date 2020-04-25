@@ -1,8 +1,5 @@
 import {
-  ActionReducer,
   ActionReducerMap,
-  createFeatureSelector,
-  createSelector,
   MetaReducer
 } from '@ngrx/store';
 import { environment } from '../../environments/environment';
@@ -12,8 +9,6 @@ import * as fromSideMenu from '../core/side-menu/store/side-menu.reducer';
 import * as fromInbox from '../components/side-menu-pages/inbox/store/reducers/inbox.reducer';
 
 import {InjectionToken} from '@angular/core';
-import * as fromLookups from './general/lookups/lookups.reducer';
-import * as fromCommon from '../common/store/index';
 import * as fromRequestStatuses from './general/lookups/request-status/reducers/request-status.reducer';
 import * as fromRequestTypes from './general/lookups/request-types/reducers/request-type.reducer';
 import * as fromEmployees from './general/lookups/employee/reducers/employees.reducer';
@@ -21,8 +16,8 @@ import * as fromNationalities from './general/lookups/nationalites/reducers/nati
 import * as fromGetRequestCustomerType from './general/lookups/request-custiomer-types/reducers/get-request-customer-type.reducer';
 import * as fromCustomerIdType from './general/lookups/customer-id-types/reducers/custiomer-id-type.reducer';
 import * as fromAdminType from './general/lookups/admin-types/reducers/admin-type.reducer';
-import * as fromRequest from '../common/parties/party/store/request/reducers/request.reducer';
-import * as fromCustomer from '../common/parties/party/store/customer/reducers/customer.reducer';
+import * as fromRequest from '../common/components/request/store/reducers/request.reducer';
+import * as fromCustomer from '../common/components/parties/party/store/reducers/customer.reducer';
 import * as fromDebaga from '../components/side-menu-pages/admin-debaga/store/reducers/debaga.reducer';
 import * as fromRequestDebaga from '../common/components/debaga/store/reducers/request-debaga.reducer';
 import * as fromRequestAttachments from './general/lookups/requestAttachments/reducers/request-attachments.reducer';

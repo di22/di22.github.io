@@ -1,57 +1,41 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import * as fromApp from '../../../store';
 import {State} from '../../../store';
-import {RequestCustomerType} from '../../../DTO`s/request-customer-type';
-import * as fromRequestCustomerTypes from '../../../store/general/lookups/request-custiomer-types/reducers/get-request-customer-type.reducer';
-import {CustomerIdType} from '../../../DTO`s/customer-id-type';
-import * as fromCustomerIdTypes from '../../../store/general/lookups/customer-id-types/reducers/custiomer-id-type.reducer';
-import {Nationality} from '../../../DTO`s/nationality';
-import * as fromNationalities from '../../../store/general/lookups/nationalites/reducers/nationalites.reducer';
-import {AdminTypes} from '../../../DTO`s/admin-types';
-import * as fromAdminTypesSelectors from '../../../store/general/lookups/admin-types/selectors/admin-type.selectors';
-import * as fromRelativesSelectors from '../../../store/general/lookups/relatives/selectors/relatives.selectors';
-import * as fromLawOfficesSelectors from '../../../store/general/lookups/law-offices/selectors/law-office.selectors';
-import * as fromTransactionCustomerTypesSelectors from '../../../store/general/lookups/transaction-cust-types/selectors/transaction-cust-type.selectors';
-import * as fromCustomerSelectors from './store/customer/selectors/customer.selectors';
+import {RequestCustomerType} from '../../../../DTO`s/request-customer-type';
+import * as fromRequestCustomerTypes from '../../../../store/general/lookups/request-custiomer-types/reducers/get-request-customer-type.reducer';
+import {CustomerIdType} from '../../../../DTO`s/customer-id-type';
+import * as fromCustomerIdTypes from '../../../../store/general/lookups/customer-id-types/reducers/custiomer-id-type.reducer';
+import {Nationality} from '../../../../DTO`s/nationality';
+import * as fromNationalities from '../../../../store/general/lookups/nationalites/reducers/nationalites.reducer';
+import {AdminTypes} from '../../../../DTO`s/admin-types';
+import * as fromAdminTypesSelectors from '../../../../store/general/lookups/admin-types/selectors/admin-type.selectors';
+import * as fromRelativesSelectors from '../../../../store/general/lookups/relatives/selectors/relatives.selectors';
+import * as fromLawOfficesSelectors from '../../../../store/general/lookups/law-offices/selectors/law-office.selectors';
+import * as fromTransactionCustomerTypesSelectors from '../../../../store/general/lookups/transaction-cust-types/selectors/transaction-cust-type.selectors';
+import * as fromCustomerSelectors from './store/selectors/customer.selectors';
 import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
-import {loadGetRequestCustomerTypes} from '../../../store/general/lookups/request-custiomer-types/actions/get-request-customer-type.actions';
-import {loadCustomerIdTypes} from '../../../store/general/lookups/customer-id-types/actions/custiomer-id-type.actions';
-import {loadNationalities} from '../../../store/general/lookups/nationalites/actions/nationalites.actions';
-import {loadAdminTypes} from '../../../store/general/lookups/admin-types/actions/admin-type.actions';
+import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import { GetRequestDetails} from './store/request/actions/request.actions';
-import {createCustomer, deleteCustomer, updateCustomer} from './store/customer/actions/customer.actions';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { GetRequestDetails} from '../../request/store/actions/request.actions';
+import {createCustomer, deleteCustomer, updateCustomer} from './store/actions/customer.actions';
 import { MatDialog} from '@angular/material/dialog';
-import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
-import {TransactionCategories} from '../../data/transactionCategories';
-import {CustomerService} from '../../services/customer.service';
-import {ValidationMessagesService} from '../../../services/config/validation-messages.service';
+import {TransactionCategories} from '../../../data/transactionCategories';
+import {CustomerService} from '../../../services/customer.service';
+import {ValidationMessagesService} from '../../../../services/config/validation-messages.service';
 import moment from 'moment';
-import {DeleteModalComponent} from '../../../modal/delete-modal/delete-modal.component';
-import {loadRelatives} from '../../../store/general/lookups/relatives/actions/relatives.actions';
-import {loadLawers, loadLawOffices} from '../../../store/general/lookups/law-offices/actions/law-office.actions';
-import {TableDataService} from '../../services/table-data.service';
-import {LawyersModalComponent} from '../../../modal/lawyers-modal/lawyers-modal.component';
-import {loadTransactionCustTypes} from '../../../store/general/lookups/transaction-cust-types/actions/transaction-cust-type.actions';
-import {environment} from '../../../../environments/environment';
-import {CommericalComponent} from '../../../modal/commerical/commerical.component';
-import {RequestService} from '../../services/request.service';
+import {DeleteModalComponent} from '../../../../modal/delete-modal/delete-modal.component';
+import {loadLawers} from '../../../../store/general/lookups/law-offices/actions/law-office.actions';
+import {TableDataService} from '../../../services/table-data.service';
+import {LawyersModalComponent} from '../../../../modal/lawyers-modal/lawyers-modal.component';
+import {environment} from '../../../../../environments/environment';
+import {CommericalComponent} from '../../../../modal/commerical/commerical.component';
+import {RequestService} from '../../../services/request.service';
 
 @Component({
   selector: 'app-party',
   templateUrl: './party.component.html',
-  styleUrls: ['./party.component.scss'],
-  providers: [{provide: MAT_DATE_LOCALE, useValue: 'ar-AR'},
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
-    },
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}]
+  styleUrls: ['./party.component.scss']
 })
 export class PartyComponent implements OnInit {
   @Input() participantType: number;
@@ -72,7 +56,6 @@ export class PartyComponent implements OnInit {
   requestCustomerType: any;
   mociData: any;
   transactionCategories: TransactionCategories = new TransactionCategories();
-  appStore$: Observable<fromApp.State>;
   requestCustomerTypes$: Observable<RequestCustomerType[]> = this.store.select(state =>
     state[fromRequestCustomerTypes.getRequestCustomerTypeFeatureKey].types);
   customerIdTypes$: Observable<CustomerIdType[]> = this.store.select(state => state[fromCustomerIdTypes.customerIdTypeFeatureKey].Id);
@@ -109,10 +92,8 @@ export class PartyComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.appStore$ = this.store.select(state => state);
     this.url = this.router.url.slice(this.router.url.lastIndexOf('/', this.router.url.length));
     this.initForms();
-    this.procurationCustomer.controls.particpantType.setValue({id: this.participantType});
     this.procurationCustomer.get('customer').get('customerName').disable();
     this.procurationCustomer.get('customer').get('birthDate').disable();
     this.procurationCustomer.get('customer').get('nationality').disable();
@@ -126,7 +107,7 @@ export class PartyComponent implements OnInit {
         this.procurationCustomer.controls.customer.get('birthDate').enable();
         this.procurationCustomer.controls.customer.get('nationality').enable();
       }
-      this.updateProofNoMaxLenght(value);
+      this.updateProofNoMaxLength(value);
       this.procurationCustomer.get('customer').get('idExpiryDate').updateValueAndValidity();
       this.procurationCustomer.get('customer').get('customerCivilId').updateValueAndValidity();
     });
@@ -159,24 +140,9 @@ export class PartyComponent implements OnInit {
       if (params.requestId) {
         this.requestId = params.requestId;
         this.procurationCustomer.controls.request.setValue({id: this.requestId});
-        if (this.participantType === 1) {
-        this.store.dispatch(GetRequestDetails( {requestId: this.requestId}));
-          }
       }
     });
     this.procurationCustomer.controls.particpantType.setValue({id: this.participantType});
-    if (this.participantType === 1) {
-      this.store.dispatch(loadGetRequestCustomerTypes());
-      this.store.dispatch(loadCustomerIdTypes());
-      this.store.dispatch(loadNationalities());
-      this.store.dispatch(loadAdminTypes());
-      this.store.dispatch(loadTransactionCustTypes({id: {data: {transactionId: this.transactionId}}}));
-    } else if (this.participantType === 2) {
-      this.store.dispatch(loadRelatives({transactionId: {data: {transactionId: this.transactionId}}}));
-      if (this.router.url.includes('POA_LAWYER')) {
-        this.store.dispatch(loadLawOffices({resourc_id: window.btoa('LawyerCompanyPartner')}));
-      }
-    }
     this.lawOffices.valueChanges.subscribe(value => {
       if (value && typeof value === 'object' && value.constructor === Object) {
       this.institutionId = value.InstitutionId;
@@ -267,7 +233,7 @@ export class PartyComponent implements OnInit {
       request: [],
       requestNo: [''],
       customerType: [{id: 1}],
-      particpantType: [],
+      particpantType: [{id: this.participantType}],
       requestCustomerType: [],
       procuration: this.formBuilder.group({
         repProcurationSerial: [0, [this.validationMessagesService.repProcurationSerialConditionallyRequiredValidator]],
@@ -282,7 +248,7 @@ export class PartyComponent implements OnInit {
       })
     });
   }
-  updateProofNoMaxLenght = (id) => {
+  updateProofNoMaxLength = (id) => {
     switch (id) {
       case 1:
         this.maxLength = 9;
@@ -314,14 +280,16 @@ export class PartyComponent implements OnInit {
     }
   }
 
+  getRequestDetails = () =>  {
+    setTimeout(() => {
+    this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
+  }, 1000);
+  }
   creatProcurationCustomer = (customerObject: FormGroup) => {
 
     if (customerObject.valid) {
       const savedCustomer = Object.assign({}, customerObject.getRawValue());
-      // const customer = {data: {procurationCustomer: customerObj}};
-      if (!savedCustomer.id) {
-        delete savedCustomer.id;
-      }
+      !savedCustomer.id ? delete savedCustomer.id : null;
       savedCustomer.requestCustomerType = Object.assign({}, {id: JSON.parse(JSON.stringify(savedCustomer.customer.customerCategory))});
       savedCustomer.customer.customerCategory = Object.assign({}, {id: 1});
       savedCustomer.customer.customerIDType = {id: savedCustomer.customer.customerIDType};
@@ -329,6 +297,7 @@ export class PartyComponent implements OnInit {
       savedCustomer.customer.idExpiryDate = this.expiryDate ? this.expiryDate : null;
       savedCustomer.id ? this.store.dispatch(updateCustomer({customer: savedCustomer, savedCustomer}))
         : this.store.dispatch(createCustomer({customer: savedCustomer}));
+      this.getRequestDetails();
       this.clearForm();
     } else {
       this.validationMessagesService.validateAllFormFields(this.procurationCustomer);
@@ -387,7 +356,7 @@ export class PartyComponent implements OnInit {
       });
     }
   }
-  getCustomerType = (type) => {
+ set customerType (type) {
     this.requestCustomerType = type;
   }
   getCommercials = () => {
@@ -579,6 +548,7 @@ export class PartyComponent implements OnInit {
           });
           this.store.dispatch(createCustomer({customer: this.procurationCustomer.getRawValue() }));
         });
+        this.getRequestDetails();
       }
     });
   }

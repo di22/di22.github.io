@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import {Request} from '../../../../../../DTO`s/request';
+import {Request} from '../../../../../DTO`s/request';
 
 export const CreateRequest = createAction(
   '[Request] Create Request',

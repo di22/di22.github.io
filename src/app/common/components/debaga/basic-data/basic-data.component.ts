@@ -7,13 +7,12 @@ import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
 import {deleteRequestDebaga} from '../store/actions/request-debaga.actions';
-import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
+import {GetRequestDetails} from '../../request/store/actions/request.actions';
 import {DebagaService} from '../../../services/debaga.service';
 import {MessageService} from '../../../../services/config/message.service';
 import {environment} from '../../../../../environments/environment';
 import {CustomerService} from '../../../services/customer.service';
 import moment from 'moment';
-import {DebagaFilterPipe} from '../../../pipes/debaga-filter.pipe';
 
 @Component({
   selector: 'app-basic-data',

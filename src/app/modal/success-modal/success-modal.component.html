@@ -1,19 +1,15 @@
 <mat-dialog-content >
   <div class="center">
 
-    <mat-icon class="svg-size" svgIcon="undraw_alert_mc7b"></mat-icon>
+    <mat-icon class="svg-size" svgIcon="undraw_done_a34v"></mat-icon>
   </div>
   <div class="center">
     <h3>
       {{data?.message}}
     </h3>
-    <h3>
-      هذا الإجراء لا يمكن التراجع عنه !
-    </h3>
 
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="center">
-  <button mat-raised-button color="warn" (click)="onNoClick()" tabindex="1">مسح</button>
   <button mat-raised-button mat-dialog-close tabindex="-1">غلق</button>
 </mat-dialog-actions>

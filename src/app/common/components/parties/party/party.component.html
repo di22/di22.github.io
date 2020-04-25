@@ -26,7 +26,7 @@
               <mat-form-field class="input-width">
                 <mat-label >نوع الوثيفه</mat-label>
                 <mat-select  formControlName="customerIDType">
-                  <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id" (onSelectionChange)="getCustomerType(cId)">{{cId.description}}</mat-option>
+                  <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id" (onSelectionChange)="customerType = cId">{{cId.description}}</mat-option>
                 </mat-select>
                 <mat-error *ngFor="let type of (validationTypes$ | async)">
                   <mat-error *ngIf="getFormControlCustomer('customerIDType').hasError(type) && (getFormControlCustomer('customerIDType').dirty

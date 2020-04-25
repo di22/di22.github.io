@@ -4,7 +4,7 @@ import {catchError, map, concatMap, switchMap, tap} from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 
 import * as CustomerActions from '../actions/customer.actions';
-import * as RequestActions from '../../request/actions/request.actions';
+import * as RequestActions from '../../../../request/store/actions/request.actions';
 import {CustomerService} from '../../../../../services/customer.service';
 import {MessageService} from '../../../../../../services/config/message.service';
 

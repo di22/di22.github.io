@@ -4,10 +4,10 @@ import {catchError, map, concatMap, tap, switchMap} from 'rxjs/operators';
 import { of } from 'rxjs';
 
 import * as RequestActions from '../actions/request.actions';
-import * as CustomerActions from '../../customer/actions/customer.actions';
-import * as RequestDebagaActions from '../../../../../components/debaga/store/actions/request-debaga.actions';
-import * as transactionRequestAttachmentsActions from '../../../../../components/request-attachment/store/actions/transaction-request-attachment.actions';
-import {RequestService} from '../../../../../services/request.service';
+import * as CustomerActions from '../../../parties/party/store/actions/customer.actions';
+import * as RequestDebagaActions from '../../../../components/debaga/store/actions/request-debaga.actions';
+import * as transactionRequestAttachmentsActions from '../../../../components/request-attachment/store/actions/transaction-request-attachment.actions';
+import {RequestService} from '../../../../services/request.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
 

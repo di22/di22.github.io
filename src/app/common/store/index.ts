@@ -1,21 +1,19 @@
 import {
-  ActionReducer,
   ActionReducerMap,
-  createFeatureSelector,
-  createSelector,
   MetaReducer
 } from '@ngrx/store';
 import { environment } from '../../../environments/environment';
-import * as fromRequest from '../parties/party/store/request/reducers/request.reducer';
+import * as fromRequest from '../components/request/store/reducers/request.reducer';
 import {InjectionToken} from '@angular/core';
-import * as fromCustomer from '../parties/party/store/customer/reducers/customer.reducer';
+import * as fromCustomer from '../components/parties/party/store/reducers/customer.reducer';
 import * as fromCompleteRequest from '../components/complete-request/store/reducers/complete-request.reducer';
 
 export const commonFeatureKey = 'common';
 
 export interface State {
   [fromRequest.requestFeatureKey]: fromRequest.State;
-  [fromCustomer.customerFeatureKey]: fromCustomer.State;  [fromCompleteRequest.completeRequestFeatureKey]: fromCompleteRequest.State;
+  [fromCustomer.customerFeatureKey]: fromCustomer.State;
+  [fromCompleteRequest.completeRequestFeatureKey]: fromCompleteRequest.State;
 
 }
 

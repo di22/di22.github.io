@@ -14,7 +14,7 @@ export class AutoCompleteFilterPipe implements PipeTransform {
       args = args.toLowerCase();
     }
     return value.filter( it => {
-      return it.InstitutionName.toLowerCase().includes(args);
+      return it?.InstitutionName?.includes(args);
     });
   }
 

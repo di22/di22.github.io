@@ -10,8 +10,8 @@ export const environment = {
   // ROPURL : 'http://192.168.0.47:888/QueryROP.ashx',
    ROPURL : 'https://ews.moj.gov.om/QueryROP.ashx',
   asmxURL: 'http://192.168.0.47:8001/',
-  PORTAL_BASE_URL: 'https://iwsstg.moj.gov.om/PortalWebService.asmx/',
- //  PORTAL_BASE_URL: 'http://192.168.0.47:8001/PortalWebService.asmx/',
+   PORTAL_BASE_URL: 'https://iwsstg.moj.gov.om/PortalWebService.asmx/',
+ // PORTAL_BASE_URL: 'http://192.168.0.47:8001/PortalWebService.asmx/',
   paymentURLService: 'https://192.168.0.47:888/pay.ashx', // url param (amount)
   paymentURLServiceMok: 'http://192.168.0.47:888/pay.ashx', // url param (amount)
   INTG_MOSD_URL: 'http://192.168.0.47:888/QueryMOSD.ashx', // url param (civilid)

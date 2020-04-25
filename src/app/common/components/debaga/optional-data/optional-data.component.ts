@@ -18,7 +18,7 @@ import {
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
 import {ValidationMessagesService} from '../../../../services/config/validation-messages.service';
 import {MessageService} from '../../../../services/config/message.service';
-import {GetRequestDetails} from '../../../parties/party/store/request/actions/request.actions';
+import {GetRequestDetails} from '../../request/store/actions/request.actions';
 import {DebagaService} from '../../../services/debaga.service';
 import {TransactionService} from '../../../../services/transaction.service';
 import {GetBasicDataValuesPipe} from '../../../pipes/get-basic-data-values.pipe';

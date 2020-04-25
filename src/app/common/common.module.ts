@@ -5,19 +5,19 @@ import {HttpClientModule} from '@angular/common/http';
 import {FlexLayoutModule, FlexModule} from '@angular/flex-layout';
 import { CategoriesComponent } from './components/categories/categories.component';
 import {RouterModule} from '@angular/router';
-import { FirstPartyComponent } from './parties/first-party/first-party.component';
-import { SecondPartyComponent } from './parties/second-party/second-party.component';
-import { WitnessesComponent } from './parties/witnesses/witnesses.component';
+import { FirstPartyComponent } from './components/parties/first-party/first-party.component';
+import { SecondPartyComponent } from './components/parties/second-party/second-party.component';
+import { WitnessesComponent } from './components/parties/witnesses/witnesses.component';
 import { DebagaComponent } from './components/debaga/debaga.component';
 import {MaterialModule} from '../material/material.module';
 
 import { AdminTypesPipe } from './pipes/admin-types.pipe';
-import { PartyComponent } from './parties/party/party.component';
+import { PartyComponent } from './components/parties/party/party.component';
 import { EffectsModule } from '@ngrx/effects';
-import { RequestEffects } from './parties/party/store/request/effects/request.effects';
+import { RequestEffects } from './components/request/store/effects/request.effects';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
-import { CustomerEffects } from './parties/party/store/customer/effects/customer.effects';
+import { CustomerEffects } from './components/parties/party/store/effects/customer.effects';
 import { CustomerParticpantTypePipe } from './pipes/customer-particpant-type.pipe';
 import {DirectivesModule} from '../directives-module/directives.module';
 import { BasicDataComponent } from './components/debaga/basic-data/basic-data.component';
