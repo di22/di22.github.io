@@ -14,7 +14,7 @@
                           <mat-form-field>
                               <mat-label >الجهة</mat-label>
                               <mat-select>
-                                  <mat-option  *ngFor="let direct of directions" >
+                                  <mat-option  *ngFor="let direct of directions" [value]="direct.name">
                                       {{direct.name}}
                                   </mat-option>
                               </mat-select>
@@ -23,11 +23,17 @@
                         <div fxFlex="30">
                           <mat-form-field>
                               <mat-label >النوع</mat-label>
-                              <mat-select>
+                              <!-- <mat-select>
                                   <mat-option  *ngFor="let direct of directions" >
                                       {{direct.name}}
                                   </mat-option>
-                              </mat-select>
+                              </mat-select> -->
+                              <input type="text" placeholder="xxxxxx"   [formControl]="myControl" matInput [matAutocomplete]="auto">
+                              <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                  <mat-option *ngFor="let option of filteredOptions | async " [value]="option">
+                                  {{ option}}
+                              </mat-option>
+                              </mat-autocomplete>
                           </mat-form-field>
                         </div>
                         <div fxFlex="30">
