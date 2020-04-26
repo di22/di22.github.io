@@ -21,7 +21,7 @@ export class RightMenuComponent implements OnInit {
     {name: 'البحث', link: '/search', icon: 'search'},
     {name: 'إعدادات المعاملات', link: '/requests-setting', icon: 'settings_applications'},
     {name: 'إعدادات أكواد النظام', link: '/requests-code-setting', icon: 'code'},
-    {name: 'إعدادات قوالب التوثيق', link: 'adminDebaga', icon: 'settings_input_component'},
+    {name: 'إعدادات قوالب التوثيق', link: 'adminDebagaa', icon: 'settings_input_component'},
     {name: 'إعدادات الرسوم', link: 'fees-setting', icon: 'monetization_on'},
     {name: 'إعدادات أكواد النظام', link: 'adminTipes', icon: 'code'},
     {name: 'تسجيل الموظفين', link: '/add-employee', icon: 'group_add'},

@@ -38,7 +38,7 @@ const routes: Routes = [
       {path:'fees-setting',component:FeesSettingComponent,data:{breadcrumb:'إعدادات الرسوم'}},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
   
-      { path:  'adminTipes', component:  AdminTipesComponent}
+      { path:  'adminTipes', component:  AdminTipesComponent},
     ]}
   // { path: 'PageNotAllowed', component: NotAllowedComponent},
  // { path: '**', component: NotFoundComponent}
