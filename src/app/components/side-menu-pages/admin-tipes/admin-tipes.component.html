@@ -18,7 +18,8 @@
             <mat-form-field appearance="fill">
             <mat-label>نوع الكود</mat-label>
             <mat-select>
-                <mat-option value="option">Option</mat-option>
+                <!-- <mat-option value="option">Option</mat-option> -->
+                <mat-option *ngFor="let adminTipes of (adminTypes$ | async)?.items" [value]="adminTipes.AdminTypeId">{{adminTipes.AdminTypeNameAr}}</mat-option>
             </mat-select>
             </mat-form-field>
         </mat-card-content>

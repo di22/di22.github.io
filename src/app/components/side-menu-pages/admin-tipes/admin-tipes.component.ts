@@ -1,4 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import {NotaryAdminsService} from '../../../services/notary-admins.service';
+import {Observable} from 'rxjs';
+import {AdminTypes} from '../../../DTO`s/admin-types';
 //import {MatPaginator, MatTableDataSource} from '@angular/material';
 
 @Component({
@@ -8,9 +11,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 })
 export class AdminTipesComponent implements OnInit {
 
+  adminTypes$: Observable<AdminTypes[]> = this.adminTypes.getNotaryAdmins();
 
-
-  constructor() {
+  constructor(private adminTypes: NotaryAdminsService) {
    }
 
   ngOnInit() {
