@@ -20,7 +20,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { GetRequestDetails} from '../../request/store/actions/request.actions';
 import {createCustomer, deleteCustomer, updateCustomer} from './store/actions/customer.actions';
 import { MatDialog} from '@angular/material/dialog';
-import {TransactionCategories} from '../../../data/transactionCategories';
+import {TransactionCategories} from '../../../transaction-data/transactionCategories';
 import {CustomerService} from '../../../services/customer.service';
 import {ValidationMessagesService} from '../../../../services/config/validation-messages.service';
 import moment from 'moment';
@@ -94,6 +94,16 @@ export class PartyComponent implements OnInit {
   ngOnInit() {
     this.url = this.router.url.slice(this.router.url.lastIndexOf('/', this.router.url.length));
     this.initForms();
+    this.activatedRout.data.subscribe(params => {
+      this.transactionId = params.transactionId;
+    });
+    this.activatedRout.params.subscribe(params => {
+      if (params.requestId) {
+        this.requestId = params.requestId;
+        this.procurationCustomer.controls.request.setValue({id: this.requestId});
+      }
+    });
+
     this.procurationCustomer.get('customer').get('customerName').disable();
     this.procurationCustomer.get('customer').get('birthDate').disable();
     this.procurationCustomer.get('customer').get('nationality').disable();
@@ -133,15 +143,7 @@ export class PartyComponent implements OnInit {
       this.procurationCustomer.get('procuration').get('repProcurationSerial').updateValueAndValidity();
       this.procurationCustomer.get('procuration').get('procurationNote').updateValueAndValidity();
     });
-    this.activatedRout.data.subscribe(params => {
-      this.transactionId = params.transactionId;
-    });
-    this.activatedRout.params.subscribe(params => {
-      if (params.requestId) {
-        this.requestId = params.requestId;
-        this.procurationCustomer.controls.request.setValue({id: this.requestId});
-      }
-    });
+
     this.procurationCustomer.controls.particpantType.setValue({id: this.participantType});
     this.lawOffices.valueChanges.subscribe(value => {
       if (value && typeof value === 'object' && value.constructor === Object) {
@@ -280,13 +282,8 @@ export class PartyComponent implements OnInit {
     }
   }
 
-  getRequestDetails = () =>  {
-    setTimeout(() => {
-    this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
-  }, 1000);
-  }
-  creatProcurationCustomer = (customerObject: FormGroup) => {
 
+  creatProcurationCustomer = (customerObject: FormGroup) => {
     if (customerObject.valid) {
       const savedCustomer = Object.assign({}, customerObject.getRawValue());
       !savedCustomer.id ? delete savedCustomer.id : null;
@@ -297,7 +294,6 @@ export class PartyComponent implements OnInit {
       savedCustomer.customer.idExpiryDate = this.expiryDate ? this.expiryDate : null;
       savedCustomer.id ? this.store.dispatch(updateCustomer({customer: savedCustomer, savedCustomer}))
         : this.store.dispatch(createCustomer({customer: savedCustomer}));
-      this.getRequestDetails();
       this.clearForm();
     } else {
       this.validationMessagesService.validateAllFormFields(this.procurationCustomer);
@@ -548,7 +544,7 @@ export class PartyComponent implements OnInit {
           });
           this.store.dispatch(createCustomer({customer: this.procurationCustomer.getRawValue() }));
         });
-        this.getRequestDetails();
+
       }
     });
   }

@@ -49,7 +49,7 @@ export class LawyersModalComponent implements OnInit {
   }
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-   // const numRows = this.dataSource.data.length;
+   // const numRows = this.dataSource.fees-package.length;
   //  return numSelected === numRows;
   }
 
@@ -57,7 +57,7 @@ export class LawyersModalComponent implements OnInit {
   masterToggle() {
   //  this.isAllSelected() ?
   //    this.selection.clear() :
-     // this.dataSource.data.forEach(row => this.selection.select(row));
+     // this.dataSource.fees-package.forEach(row => this.selection.select(row));
   }
 
   /** The label for the checkbox on the passed row */

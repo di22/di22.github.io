@@ -87,7 +87,7 @@ export class MyRequestsComponent implements OnInit {
       this.dataSource.data = res.data.searchResults.ossNoneCompletedRequests.results;
       this.searchResultLength = res.data.searchResults.ossNoneCompletedRequests.results.length;
     });
-   // this.store.dispatch(loadInbox({data: this.searchObj}));
+   // this.store.dispatch(loadInbox({fees-package: this.searchObj}));
   }
   onChangesFromDate = (event: any) => {
     this.dateFrom = {

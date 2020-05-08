@@ -41,7 +41,7 @@ export class BreadCrumbsComponent implements OnInit {
         continue;
       }
 
-      // verify the custom data property "breadcrumb" is specified on the route
+      // verify the custom fees-package property "breadcrumb" is specified on the route
       if (!child.snapshot.data.hasOwnProperty(ROUTE_DATA_BREADCRUMB)) {
         return this.getBreadcrumbs(child, url, breadcrumbs);
       }

@@ -1,1 +1,40 @@
 
+.canvas  {
+  transition: .5s cubic-bezier(.91,.06,.47,1.05) transform;
+}
+
+.canvas.show-nav   {
+
+  .fa-window-close {
+    display: block;
+  }
+  .fa-bars {
+    display:none;
+  }
+}
+
+// style the side navigation
+.canvas .side-nav  {
+  position: fixed;
+  height: 100%;
+  display: block;
+  color: #E6E9F7;
+  //background-image: linear-gradient(to right bottom, #2998ff, #5643fa);
+ // background: linear-gradient(to bottom right, #50a3a2 0%, #53e3a6 100%);
+  background-image: linear-gradient(to bottom right,#002f4b,#dc4225);
+  opacity: .6;
+  // background-color: #253781;
+  padding-top: 20px;
+  min-height: 100%;
+
+  a       {
+    color: #EEE;
+    display: block;
+    padding: 5px 10px;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+}
+

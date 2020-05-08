@@ -6,7 +6,7 @@
         <a  mat-button [routerLink]="[breadcrumb.url]" [queryParams]="breadcrumb.params" >{{breadcrumb.label}}
 
         </a>
-        <mat-icon fxFlex="10" *ngIf="i !== (breadcrumbs.length - 1)">keyboard_arrow_left</mat-icon>
+        <mat-icon fxFlex="10" svgIcon="left" *ngIf="i !== (breadcrumbs.length - 1)"></mat-icon>
       </li>
     </ul>
   </mat-toolbar-row>

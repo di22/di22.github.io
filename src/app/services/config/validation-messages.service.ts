@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {TransactionCategories} from '../../common/data/transactionCategories';
+import {TransactionCategories} from '../../common/transaction-data/transactionCategories';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Injectable({

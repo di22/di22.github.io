@@ -97,12 +97,3 @@ export const clearRequestDebagas = createAction(
   '[RequestDebaga/API] Clear RequestDebagas'
 );
 
-export const getExpiryDate = createAction(
-  '[RequestDebaga/API] Get ExpiryDate',
-  props<{ date: any }>()
-);
-
-export const getDebagaFees = createAction(
-  '[RequestDebaga/API] Get Debaga Fees',
-  props<{ fees: any }>()
-);

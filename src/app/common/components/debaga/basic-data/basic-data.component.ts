@@ -153,7 +153,7 @@ export class BasicDataComponent implements OnInit {
     });
   };
 
-// fetch data from table to inputs
+// fetch fees-package from table to inputs
   fetchDebagaData = (ele) => {
     this.getEditDeleteGroupNumber(ele);
     this.debagaForm.patchValue(this.getDebagasForFetch(ele));

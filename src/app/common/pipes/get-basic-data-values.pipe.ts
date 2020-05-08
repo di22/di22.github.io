@@ -11,11 +11,7 @@ export class GetBasicDataValuesPipe implements PipeTransform {
     let obj = {};
     if (value.length > 0) {
       filteredValues =  value.filter(ele => ele.debagaTemplate.staticTemplate === args);
-   //   value.forEach((ele, i1) => {
-
         filteredValues.reduce((acc, ele, i) => {
-         // acc = ele.groupNumber;
-
           if(acc == ele.groupNumber) {
             obj[ele.debagaTemplate.id] = ele;
           } else if (ele.groupNumber > acc) {
@@ -32,8 +28,6 @@ export class GetBasicDataValuesPipe implements PipeTransform {
           return acc;
         }, 1)
 
-
-  //    });
       return tableValues;
     } else {
       return [];

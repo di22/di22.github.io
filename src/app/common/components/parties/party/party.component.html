@@ -357,10 +357,9 @@
             <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
             <mat-cell *matCellDef="let element; let i = index ">
               {{column.columnDef === 'position' ? i+1 : column.cell(element)}}
-              <mat-icon *ngIf="column.columnDef === 'check'" matTooltip="عرض" color="primary">remove_red_eye</mat-icon>
               <div *ngIf="column.columnDef === 'edit-delete'">
-                <a mat-icon-button><mat-icon matTooltip="تعديل" color="primary" (click)="fetchProcurationCustomer(element)">edit</mat-icon></a>
-                <a mat-icon-button><mat-icon matTooltip="حذف" color="warn" (click)="deleteProcurationCustomer(element.customer.id, element.id)">delete</mat-icon></a>
+                <a mat-icon-button><mat-icon matTooltip="تعديل" color="primary" svgIcon="edit" (click)="fetchProcurationCustomer(element)"></mat-icon></a>
+                <a mat-icon-button><mat-icon matTooltip="حذف" color="warn" svgIcon="delete" (click)="deleteProcurationCustomer(element.customer.id, element.id)"></mat-icon></a>
               </div>
             </mat-cell>
           </ng-container>

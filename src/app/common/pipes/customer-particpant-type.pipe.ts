@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {PartiesFeesService} from '../../services/parties-fees.service';
+import {PartiesFees} from '../fees-package/Parties-Fees';
 
 @Pipe({
   name: 'customerParticpantType',
@@ -9,7 +9,8 @@ export class CustomerParticpantTypePipe implements PipeTransform {
 
   transform(value: any, args: number): any {
     if (value && value.length > 0) {
-      PartiesFeesService.part_relative = value.find(e => e.relativeRelation);
+      if (args === 1) {
+      }
       return value.filter(type => type.particpantType.id === args);
     } else {
       return [];

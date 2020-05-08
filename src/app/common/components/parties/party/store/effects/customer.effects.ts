@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {catchError, map, concatMap, switchMap, tap} from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import {catchError, map, concatMap, tap} from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import * as CustomerActions from '../actions/customer.actions';
-import * as RequestActions from '../../../../request/store/actions/request.actions';
 import {CustomerService} from '../../../../../services/customer.service';
 import {MessageService} from '../../../../../../services/config/message.service';
+import * as RequestActions from '../../../../request/store/actions/request.actions';
 
 
 
@@ -27,9 +27,9 @@ export class CustomerEffects {
   createCustomer$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(CustomerActions.createCustomer),
-      concatMap((action) =>
+      concatMap((action: any) =>
         this.customerService.createCustomer({data: {procurationCustomer: action.customer}}).pipe(
-          map(customers => CustomerActions.createCustomerSuccess({customer: action.customer})),
+          map(data => RequestActions.GetRequestDetails({requestId: action.data.procurationCustomer.request.id})),
           tap( customers => this.messageService.successMessage('تم إضافة الطرف بنجاح')),
           catchError(error => of(CustomerActions.loadCustomersFailure({ error }))))
       )
@@ -40,9 +40,9 @@ export class CustomerEffects {
   updateCustomer$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(CustomerActions.updateCustomer),
-      concatMap((action) =>
+      concatMap((action: any) =>
         this.customerService.updateCustomer({data: {procurationCustomer: action.customer}}).pipe(
-          map(customers => CustomerActions.updateCustomerSuccess({customer: action.savedCustomer})),
+          map(data => RequestActions.GetRequestDetails({requestId: action.data.procurationCustomer.request.id})),
           tap( customers => this.messageService.successMessage('تم تعديل الطرف بنجاح')),
           catchError(error => of(CustomerActions.loadCustomersFailure({ error }))))
       )

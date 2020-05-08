@@ -27,6 +27,7 @@ import * as fromLawOffice from './general/lookups/law-offices/reducers/law-offic
 import * as fromExemptReason from './general/lookups/exemptReasons/reducers/exempt-reason.reducer';
 import * as fromTransactionCustType from './general/lookups/transaction-cust-types/reducers/transaction-cust-type.reducer';
 import * as fromUserOrg from './general/user-org-details/reducers/user-org.reducer';
+import * as fromConfig from './general/config/config.reducer';
 
 export interface State {
   [fromAuth.authFeatureKey]: fromAuth.State;
@@ -51,6 +52,7 @@ export interface State {
   [fromExemptReason.exemptReasonFeatureKey]: fromExemptReason.State;
   [fromTransactionCustType.transactionCustTypeFeatureKey]: fromTransactionCustType.State;
   [fromUserOrg.userOrgFeatureKey]: fromUserOrg.State;
+  [fromConfig.configKey]: fromConfig.State;
 
 
 
@@ -78,7 +80,8 @@ export const reducers: ActionReducerMap<State> = {
   [fromLawOffice.lawOfficeFeatureKey]: fromLawOffice.reducer,
   [fromExemptReason.exemptReasonFeatureKey]: fromExemptReason.reducer,
   [fromTransactionCustType.transactionCustTypeFeatureKey]: fromTransactionCustType.reducer,
-  [fromUserOrg.userOrgFeatureKey]: fromUserOrg.reducer
+  [fromUserOrg.userOrgFeatureKey]: fromUserOrg.reducer,
+  [fromConfig.configKey]: fromConfig.reducer
 };
 
 export const REDUCERS_TOKEN = new InjectionToken<ActionReducerMap<State>>('App Reducers');

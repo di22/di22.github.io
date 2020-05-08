@@ -28,7 +28,7 @@ const routes: Routes = [
       { path: 'Cancellations', component: CancellationsComponent, data: { breadcrumb: 'الإلغاءات' }},
       { path: 'SellingPledgingGift', component: SellingPledgingGiftComponent, data: { breadcrumb: 'عقود البيع و الرهن و الهبه' }},
       { path: 'Personal affairs', component: PersonalAffairsComponent, data: { breadcrumb: 'الأحوال الشخصيه' }},
-     /* { path: 'WillsEndowment', component: WillsEndowmentComponent, data: { breadcrumb: 'الوصايا والوقف' }}, */
+     /* { path: 'WillsEndowment', component: WillsEndowmentComponent, fees-package: { breadcrumb: 'الوصايا والوقف' }}, */
       { path: 'Attestations', component: AttestationsComponent, data: { breadcrumb: 'التصديقات' , transactionId: 112}},
       // tslint:disable-next-line:max-line-length
       { path: 'Attestations/:requestId', component: AttestationsComponent, data: { breadcrumb: 'التصديقات', transactionId: 112 }},
@@ -37,7 +37,7 @@ const routes: Routes = [
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
       {path:'fees-setting',component:FeesSettingComponent,data:{breadcrumb:'إعدادات الرسوم'}},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}
-  
+
       { path:  'adminTipes', component:  AdminTipesComponent},
     ]}
   // { path: 'PageNotAllowed', component: NotAllowedComponent},

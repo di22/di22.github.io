@@ -15,12 +15,3 @@ export const selectDebaga = createSelector(
   (state: fromRequestDebaga.State) => state.debagaText
 );
 
-export const selectExpiryDate = createSelector(
-  selectRequestDebagaState,
-  (state) => state.expiryDate
-);
-
-export const selectDebagaFees = createSelector(
-  selectRequestDebagaState,
-  (state: fromRequestDebaga.State) => state.fees
-);

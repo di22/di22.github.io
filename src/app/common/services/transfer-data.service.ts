@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {TransactionCategories} from '../data/transactionCategories';
+import {TransactionCategories} from '../transaction-data/transactionCategories';
 
 @Injectable({
   providedIn: 'root'

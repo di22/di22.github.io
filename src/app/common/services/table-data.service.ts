@@ -23,7 +23,6 @@ export class TableDataService {
       { columnDef: 'requestCustomerType',   header: 'الصفه', cell: (element: any) => `${element.customer.customerCategory.description}`},
       { columnDef: 'mobileNumber',   header: 'رقم النقال', cell: (element: any) => element.customer.mobileNo ? `${element.customer.mobileNo}` : ''},
       { columnDef: 'moql-qaser-mfwad',   header: 'موكل/قاصر/مفوض ', cell: (element: any) => ``},
-      { columnDef: 'check',   header: 'تحقق', cell: (element: any) => ``},
       { columnDef: 'edit-delete',   header: 'تعديل/حذف', cell: (element: any) => ``}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
@@ -43,7 +42,6 @@ export class TableDataService {
       { columnDef: 'class',   header: 'الدرجة', cell: (element: any) => `${element.customer.address}`},
       { columnDef: 'law-office',   header: 'مكتب المحاماة', cell: (element: any) => `${element.facilityData.facilityName}`},
       { columnDef: 'moql-qaser-mfwad',   header: 'موكل/قاصر/مفوض ', cell: (element: any) => ``   },
-      { columnDef: 'check',   header: 'تحقق', cell: (element: any) => ``   },
       { columnDef: 'edit-delete',   header: 'تعديل/حذف', cell: (element: any) => ``   }
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);

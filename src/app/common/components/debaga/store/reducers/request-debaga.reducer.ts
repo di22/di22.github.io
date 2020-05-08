@@ -53,13 +53,7 @@ const requestDebagaReducer = createReducer(
   ),
   on(RequestDebagaActions.clearRequestDebagas,
     state => adapter.removeAll(state)
-  ),
-  on(RequestDebagaActions.getExpiryDate,
-    (state, action) => ({state, debagaText: state.debagaText, ids: state.ids, entities: state.entities, expiryDate: action.date, fees: state.fees})
-  ),
-  on(RequestDebagaActions.getDebagaFees,
-    (state, action) => ({state, debagaText: state.debagaText, ids: state.ids, entities: state.entities, fees: action.fees, expiryDate: state.expiryDate})
-  ),
+  )
 );
 
 export function reducer(state: State | undefined, action: Action) {

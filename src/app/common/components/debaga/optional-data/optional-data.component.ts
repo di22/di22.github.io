@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, zip} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DebagaTemplete} from '../../../../DTO`s/debaga-templete';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -12,9 +12,6 @@ import {Store} from '@ngrx/store';
 import * as fromApp from '../../../../store';
 import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute} from '@angular/router';
-import {
-  getExpiryDate,
-} from '../store/actions/request-debaga.actions';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
 import {ValidationMessagesService} from '../../../../services/config/validation-messages.service';
 import {MessageService} from '../../../../services/config/message.service';
@@ -23,7 +20,8 @@ import {DebagaService} from '../../../services/debaga.service';
 import {TransactionService} from '../../../../services/transaction.service';
 import {GetBasicDataValuesPipe} from '../../../pipes/get-basic-data-values.pipe';
 import {DebagaFilterPipe} from '../../../pipes/debaga-filter.pipe';
-import {PartiesFeesService} from '../../../../services/parties-fees.service';
+import {SetExpiryDate} from '../../../../store/general/config/config.actions';
+import * as fromConfigSelectors from '../../../../store/general/config/config-selector';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,9 +34,9 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
 
   @Input() debagas$: Observable<any>;
 
-   transaction: TransactionService;
-   requestDebagaForm: FormGroup;
+  requestDebagaForm: FormGroup;
   startRequestDebagasForm: FormArray;
+  transaction$: Observable<any> = this.store.select(state => fromConfigSelectors.selectTransaction(state));
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
   debaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectDebaga(state));
   validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
@@ -66,7 +64,9 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
   textExtension = new FormControl('');
   textResult = new FormControl({value: '', disabled: true});
   Editor = ClassicEditor;
-  debagaFees = 0;
+
+  transaction: TransactionService;
+
   constructor(private store: Store<fromApp.State>,
               private debagaService: DebagaService,
               private validationMessagesService: ValidationMessagesService,
@@ -76,7 +76,7 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
               private messageService: MessageService,
               private basicDataValuesPipe: GetBasicDataValuesPipe,
               private debagaFilter: DebagaFilterPipe) {
-
+    this.transaction = new TransactionService(store);
     this.initForms();
   }
 
@@ -86,6 +86,7 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
         this.requestId = params.requestId;
       }
     });
+
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<FlatTree>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
@@ -98,21 +99,18 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
     this.requestDebaga$.subscribe((requestDebaga: any) => {
       this.basicRequestDebaga = [];
       this.basicRequestDebagaTableValues = [];
-      this.debagaFees = 0;
         if (requestDebaga && requestDebaga.length > 0) {
           requestDebaga.forEach((item, i) => {
             if (!item.groupNumber) {
               this.setRequestDebagasAfterGetRequestDetails(item);
             } else {
-                  if (TransactionService.transaction.percentField && TransactionService.transaction.percentField === item.debagaTemplate.code) {
-                    this.debagaFees = +item.text;
-                  }
+
                 this.basicRequestDebaga.push(item);
                 this.basicRequestDebagaHeaders.add(item.debagaTemplate.description);
             }
           });
           this.basicRequestDebagaTableValues = this.basicDataValuesPipe.transform(requestDebaga, true);
-          PartiesFeesService.Fees = this.debagaFees;
+
         }
     });
     this.debaga$.subscribe((debaga: any) => {
@@ -177,30 +175,31 @@ initForms = () => {
       this.treeControl.collapseDescendants(node);
     }
 
-    this.toggleCheckBoxesValues(descendants);
+   descendants.length > 0? this.toggleCheckBoxesValues(descendants) : this.resetNodeValue(node);
   }
-
-
 
 
   addOrUpdate = () => {
     this.setValues();
     if (this.requestDebagaForm.valid) {
     if (!this.debagaId) {
-      this.addDebaga();
-      this.addRequestDebaga();
+      zip(this.addDebaga(), this.addRequestDebaga()).subscribe(res => {
+        this.messageService.successMessage('تم إضافة النماذج بنجاح');
+        this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
+      });
+
     } else {
-      this.updateDebaga();
-      this.updateRequestDebaga();
+      zip(this.updateDebaga(), this.updateRequestDebaga()).subscribe(res => {
+        this.messageService.successMessage('تم تعديل النماذج بنجاح');
+        this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
+      });
     }
-    setTimeout(() => {
-      this.store.dispatch(GetRequestDetails({requestId: this.requestId}));
-    }, 1000);
     } else {
       this.validationMessagesService.validateAllFormFields(this.requestDebagaForm);
     }
   };
-  addDebaga = () => {
+
+  addDebaga = (): Observable<any> => {
     let  date: any = new Date();
     date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     const debaga = {
@@ -216,11 +215,10 @@ initForms = () => {
         }
       }
     };
-    this.debagaService.createDebaga(debaga).subscribe(res => {
-      this.messageService.successMessage('تم إضافة النموذج النصي بنجاح');
-    });
+  return  this.debagaService.createDebaga(debaga);
   };
-  updateDebaga = () => {
+
+  updateDebaga = (): Observable<any> => {
     let  date: any = new Date();
     date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     const debaga = {
@@ -237,11 +235,10 @@ initForms = () => {
         }
       }
     };
-    this.debagaService.updateDebaga(debaga).subscribe(res => {
-      this.messageService.successMessage('تم تعديل النموذج النصي بنجاح');
-    });
+   return  this.debagaService.updateDebaga(debaga);
   };
-  addRequestDebaga = () => {
+
+  addRequestDebaga = (): Observable<any> => {
     if (this.startRequestDebagasForm.value && this.startRequestDebagasForm.value.length > 0) {
       const requestDebaga = {
         data: {
@@ -249,12 +246,11 @@ initForms = () => {
           requestDebaga: this.startRequestDebagasForm.value
         }
       };
-      this.debagaService.createRequestDebaga(requestDebaga).subscribe(res => {
-        this.messageService.successMessage('تم إضافة النماذج بنجاح');
-      });
+     return  this.debagaService.createRequestDebaga(requestDebaga);
     }
   };
-  updateRequestDebaga = () => {
+
+  updateRequestDebaga = (): Observable<any> => {
     if (this.startRequestDebagasForm.value && this.startRequestDebagasForm.value.length > 0) {
       const requestDebaga = {
         data: {
@@ -262,9 +258,7 @@ initForms = () => {
           requestDebaga: this.startRequestDebagasForm.value
         }
       };
-      this.debagaService.updaterequestDebaga(requestDebaga).subscribe(res => {
-        this.messageService.successMessage('تم تعديل النماذج بنجاح');
-      });
+     return  this.debagaService.updaterequestDebaga(requestDebaga);
     }
   };
 
@@ -272,7 +266,7 @@ initForms = () => {
 
   // draw object that used in requestDebagas for save && update andd push it to start request form
   setDebagas = (node) => {
-    const requestDebaga =  {
+    return   {
       id: node.id,
       request: {
         id: this.requestId
@@ -283,7 +277,6 @@ initForms = () => {
       },
       sortOrder: node.sortOrder
     };
-    return requestDebaga;
   };
 
   // set values from returned saved requestDebagas
@@ -296,7 +289,6 @@ initForms = () => {
           } else {
             this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue([node.text]);
           }
-          node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
         } else {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue([]);
         }
@@ -306,7 +298,6 @@ initForms = () => {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(true);
           this.checklistSelection.select(n);
           this.treeControl.expand(n);
-          node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
         } else if (node.text === 'false') {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(false);
           this.checklistSelection.deselect(n);
@@ -317,7 +308,6 @@ initForms = () => {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).setValue(node.debagaTemplate.id);
           this.checklistSelection.select(n);
           this.treeControl.expandDescendants(n);
-          node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
         } else if (node.text && node.text === 'false') {
           this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(false);
           this.checklistSelection.deselect(n);
@@ -328,12 +318,10 @@ initForms = () => {
         const time: any = node.text ?
           moment(new Date(node.text.split('/').reverse().join('/'))).format('YYYY-MM-DD') : '';
         this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(time);
-        node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0;
         if (node.debagaTemplate.code === 'POA_EXPIRY_DATE') {
-          this.store.dispatch(getExpiryDate({date: node.text}));
+          this.store.dispatch(SetExpiryDate({date: node.text}));
         }
       } else {
-        node.text ? node.debagaTemplate.cost ? this.debagaFees += node.debagaTemplate.cost : this.debagaFees += 0 : this.debagaFees += 0;
         this.requestDebagaForm.get(`${node.debagaTemplate.id}`).patchValue(node.text);
       }
   };
@@ -409,6 +397,8 @@ initForms = () => {
        this.resetNodeValue(ele);
     });
   };
+
+
   setNodeFormControl = (node: FlatTree) => {
     if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' || node.htmlCodeType === 'RADIOBUTTON') {
       this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(false));
@@ -418,6 +408,8 @@ initForms = () => {
       this.requestDebagaForm.addControl(`${node.id}`, this.formBuilder.control(''));
     }
   };
+
+
   resetNodeValue = (node: FlatTree) => {
     if (!this.checklistSelection.isSelected(node)) {
     if (node.htmlCodeType === 'GRID' || node.htmlCodeType === 'CHECKBOX' || node.htmlCodeType === 'RADIOBUTTON') {
@@ -433,6 +425,8 @@ initForms = () => {
       }
     }
   };
+
+
   getParticularNode = (id): FlatTree => {
     let node = null;
     this.parentNodes.forEach(n => {
@@ -515,9 +509,7 @@ initForms = () => {
     }
   };
 
-   createBody(data) {
-    return data.map(row => `<tr style='text-align:center; '>${this.getCells(Object.values(row), 'td')}</tr>`).join('');
-  };
+
 
    createTable(data) {
     if (data[1] && Object.entries(data[1]).length > 0) {
@@ -529,39 +521,40 @@ initForms = () => {
       return '';
     }
   };
-  getFormControl = (id): AbstractControl => {
-   return  this.requestDebagaForm.get(`${id}`);
-  };
+
+
   onChangesDate = (event, code) => {
-    const Exceeds = TransactionService.Exceed(`${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`);
-    // this.store.dispatch(getExpiryDate({date: `${event.value._i.date}/${event.value._i.month}/${event.value._i.year}`}));
-    if (code === 'POA_EXPIRY_DATE' &&  Exceeds > 0) {
-      this.messageService.errorMessage(`لقد تعديت مدة صلاحية التوكيل سيتم إحتساب عدد ${Exceeds + 1} مضاعف قيمة رسوم المعاملة`);
+    const Exceeds = this.transaction.Exceeds(`${event.value._i.date}/${event.value._i.month+1}/${event.value._i.year}`);
+    if (code === 'POA_EXPIRY_DATE' &&  Exceeds > 1) {
+      this.messageService.errorMessage(`لقد تعديت مدة صلاحية التوكيل سيتم إحتساب عدد ${Exceeds} مضاعف قيمة رسوم المعاملة`);
     }
 
   };
-  startDate = (): any => {
-    return moment(new Date()).format('YYYY-MM-DD');
-  };
+
+
   endDate = (date, code): any => {
-    const expirationPeriodCount = TransactionService.transaction.expirationPeriodCount ? TransactionService.transaction.expirationPeriodCount : 1;
+    const expirationPeriodCount = this.transaction.expirationPeriodCount ? this.transaction.expirationPeriodCount : 1;
     const endDate = new Date();
     if (code === 'POA_EXPIRY_DATE') {
-      endDate.setMonth(endDate.getMonth() + (TransactionService.transaction.expirationPeriod * expirationPeriodCount));
+      endDate.setMonth(endDate.getMonth() + (this.transaction.expirationPeriod * expirationPeriodCount));
     } else {
       endDate.setDate(endDate.getDate() + date);
     }
     return moment(endDate).format('YYYY-MM-DD');
-  };
+  }
+
+
+  createBody = (data) => data.map(row => `<tr style='text-align:center; '>${this.getCells(Object.values(row), 'td')}</tr>`).join('');
+
+  getFormControl = (id): AbstractControl => this.requestDebagaForm.get(`${id}`);
+
+  startDate = () => moment(new Date()).format('YYYY-MM-DD');
+
   getLevel = (node: FlatTree) => node.level;
 
   isExpandable = (node: FlatTree) => node.expandable;
 
-  getChildren = (node: DebagaTemplete): DebagaTemplete[] => {
-    return node.childDebagaTemplates ? node.childDebagaTemplates : [];
-  };
+  getChildren = (node: DebagaTemplete): DebagaTemplete[] => node.childDebagaTemplates ? node.childDebagaTemplates : [];
 
   hasChild = (_: number, nodeData: FlatTree) => nodeData.expandable;
-
-
 }

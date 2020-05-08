@@ -17,13 +17,13 @@ export class RequestAttachmentService {
   addRequestAttachment = (attachment) => {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'multipart/form-data'
+        'Content-Type':  'multipart/form-fees-package'
       })
     };
     const fd = new FormData();
-    fd.append('data.requestId', attachment.requestId);
-    fd.append('data.attachmentTypeId', `${attachment.attachmentTypeId}`);
-    fd.append('data.files', attachment.file);
+    fd.append('fees-package.requestId', attachment.requestId);
+    fd.append('fees-package.attachmentTypeId', `${attachment.attachmentTypeId}`);
+    fd.append('fees-package.files', attachment.file);
     return this.http.post<any>(`${this.URL}upload-files.do`, fd, httpOptions);
   }
   getRequestAttachments = (attachment) => {
@@ -43,7 +43,7 @@ export class RequestAttachmentService {
         return this.apiResponse(event);
         break;
       default:
-        return `File "${attachment.get('data.files')}" surprising upload event: ${event.type}.`;
+        return `File "${attachment.get('fees-package.files')}" surprising upload event: ${event.type}.`;
     }
   }
   private fileUploadProgress(event) {
