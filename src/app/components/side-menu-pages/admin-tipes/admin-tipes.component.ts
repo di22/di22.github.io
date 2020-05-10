@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {NotaryAdminsService} from '../../../services/notary-admins.service';
 import {Observable} from 'rxjs';
 import {AdminTypes} from '../../../DTO`s/admin-types';
+import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 //import {MatPaginator, MatTableDataSource} from '@angular/material';
 
 @Component({
@@ -11,9 +12,14 @@ import {AdminTypes} from '../../../DTO`s/admin-types';
 })
 export class AdminTipesComponent implements OnInit {
 
+  adminTipesControl = new FormControl('');
+
   adminTypes$: Observable<AdminTypes[]> = this.adminTypes.getNotaryAdmins();
 
-  constructor(private adminTypes: NotaryAdminsService) {
+  searchForm: FormGroup;
+
+  constructor(private formBuilder: FormBuilder,
+              private adminTypes: NotaryAdminsService) {
    }
 
   ngOnInit() {
