@@ -14,8 +14,8 @@
                           <mat-form-field>
                               <mat-label >الجهة</mat-label>
                               <mat-select>
-                                  <mat-option  *ngFor="let direct of directions" [value]="direct.name">
-                                      {{direct.name}}
+                                  <mat-option  *ngFor="let direct of directions" [value]="direct">
+                                      {{direct}}
                                   </mat-option>
                               </mat-select>
                           </mat-form-field>
@@ -30,9 +30,9 @@
                               </mat-select> -->
                               <input type="text" placeholder="xxxxxx"   [formControl]="myControl" matInput [matAutocomplete]="auto">
                               <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                                  <mat-option *ngFor="let option of filteredOptions | async " [value]="option">
-                                  {{ option}}
-                              </mat-option>
+                                  <mat-option *ngFor="let transaction of (transactionCategories$|async) | transactionsFlat" [value]="transaction.description" (onSelectionChange)="getAllCategories()">
+                                 {{transaction.description}}
+                                  </mat-option>
                               </mat-autocomplete>
                           </mat-form-field>
                         </div>
@@ -81,71 +81,88 @@
                     <!-- <div  flexLayout="row" fxLayout.xs="column"> -->
                     <mat-form-field>
                         <mat-label>بحث</mat-label>
-                           <input matInput  placeholder="بحث عن موظف">
+                           <input matInput type="text" (keyup)="doFilter($event.target.value)"  placeholder="بحث عن موظف">
                       </mat-form-field>
                       
                       
                       
-                      <mat-table class="mat-elevation-z8">
+                      <!-- <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
                         <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
                           <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
-                          <mat-cell>
-                  
+                          <mat-cell *matCellDef="let element; let i = index ">
+                            {{column.columnDef === 'position' ? i+1 : column.columnDef !== 'requestId' ? column.cell(element) : ''}}
+                            <a *ngIf="column.columnDef === 'requestId'" mat-icon-button (click)="routeToRequest(element.transactionType.code, element.id)"> {{element.id}} </a>
                           </mat-cell>
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-                      </mat-table>
+                      </mat-table> -->
                     <!-- </div> -->
-                
-                
-<!-- <div flexLayout="row" fxLayout.xs="column"> 
-<mat-table matSort>
-  <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef> الجهه </mat-header-cell>
-    <mat-cell *matCellDef="let element"> 5 </mat-cell>
-  </ng-container>
- 
-  <ng-container matColumnDef="dateOfBirth">
-    <mat-header-cell *matHeaderCellDef>نوع الطلب </mat-header-cell>
-    <mat-cell *matCellDef="let element">3 </mat-cell>
-  </ng-container>
- 
-  <ng-container matColumnDef="address">
-    <mat-header-cell *matHeaderCellDef> قيمةرسوم الاطراف </mat-header-cell>
-    <mat-cell *matCellDef="let element"> s </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="address1">
-    <mat-header-cell *matHeaderCellDef> قيمةرسوم النسخ </mat-header-cell>
-    <mat-cell *matCellDef="let element"> 3 </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="address2">
-    <mat-header-cell *matHeaderCellDef> قيمةرسوم الطلب </mat-header-cell>
-    <mat-cell *matCellDef="let element"> 1 </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="update">
-      <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <button mat-icon-button color="blue" (click)="redirectToUpdate(element.id)">
-            <mat-icon class="mat-18">system_update</mat-icon>
-        </button>
-      </mat-cell>
-    </ng-container>
- 
-    <ng-container matColumnDef="delete">
-        <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-        <mat-cell *matCellDef="let element">
-          <button mat-icon-button color="warn" (click)="redirectToDelete(element.id)">
-              <mat-icon class="mat-18">delete</mat-icon>
-          </button>
-        </mat-cell>
-      </ng-container>
- 
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
-</div>  -->
-<mat-paginator  showFirstLastButtons [pageSize]="2" [pageSizeOptions]="[2, 4, 6, 10, 20]">
+
+            
+                  <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                    <ng-container matColumnDef="name">
+                      <mat-header-cell *matHeaderCellDef> الجهة </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> </mat-cell>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="requestId">
+                      <mat-header-cell *matHeaderCellDef> رقم الطلب </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="requestType">
+                      <mat-header-cell *matHeaderCellDef> نوع الطلب </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.transactionTypeDesc}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="partiesFeesValue"> 
+                      <mat-header-cell *matHeaderCellDef>قيمة رسوم الاطراف</mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.partyFees}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="copyFeesValue"> 
+                      <mat-header-cell *matHeaderCellDef>قيمة رسوم النسخ</mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.copyFees}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="requestFeesValue">
+                      <mat-header-cell *matHeaderCellDef> قيمة رسوم الطلب </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.categoryFees}} </mat-cell>
+                    </ng-container>
+                  
+                  
+                    <ng-container matColumnDef="update">
+                        <mat-header-cell *matHeaderCellDef> تعديل </mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                          <button mat-icon-button color="accent" (click)="redirectToUpdate(element.id)">
+                              <mat-icon class="mat-18">system_update</mat-icon>
+                          </button>
+                        </mat-cell>
+                      </ng-container>
+                      
+                      <!-- <ng-container matColumnDef="delete">
+                        <mat-header-cell *matHeaderCellDef>حذف</mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                          <button mat-icon-button color="accent" (click)="redirectToUpdate(element.id)">
+                              <mat-icon class="mat-18">system_update</mat-icon>
+                          </button>
+                        </mat-cell>
+                      </ng-container> -->
+                  
+                      <ng-container matColumnDef="delete">
+                          <mat-header-cell *matHeaderCellDef> حذف </mat-header-cell>
+                          <mat-cell *matCellDef="let element">
+                            <button mat-icon-button color="warn" (click)="redirectToDelete(element.id)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                            </button>
+                          </mat-cell>
+                        </ng-container>
+                  
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                  </mat-table>
+<mat-paginator  showFirstLastButtons [pageSize]="5" [pageSizeOptions]="[5, 10, 15, 20, 25]">
 </mat-paginator>
             </mat-card-content>
         </mat-card>

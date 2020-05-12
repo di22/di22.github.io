@@ -117,11 +117,11 @@ export class TableDataService {
     this.columns = [
       { columnDef: 'position', header: 'الجهة',    cell: (element: any) => `` },
       // tslint:disable-next-line:max-line-length
-      { columnDef: 'requestId',     header: 'رقم الطلب',   cell: (element: any) => ``},
-      { columnDef: 'requestType',   header: 'نوع الطلب', cell: (element: any) => ``},
-      { columnDef: 'partiesFeesValue',   header: 'قيمة رسوم الاطراف', cell: (element: any) =>``},
-      { columnDef: 'copyFeesValue',   header: 'قيمة رسوم النسخ', cell: (element: any) => ``},
-      { columnDef: 'requestFeesValue',   header: 'قيمة رسوم الطلب', cell: (element: any) => ``},
+      { columnDef: 'requestId',     header: 'رقم الطلب',   cell: (element: any) =>element.id},
+      { columnDef: 'requestType',   header: 'نوع الطلب', cell: (element: any) =>element.description},
+      { columnDef: 'partiesFeesValue',   header: 'قيمة رسوم الاطراف', cell: (element: any) =>element.partyFees},
+      { columnDef: 'copyFeesValue',   header: 'قيمة رسوم النسخ', cell: (element: any) => element.copyFees},
+      { columnDef: 'requestFeesValue',   header: 'قيمة رسوم الطلب', cell: (element: any) => element.categoryFees},
       { columnDef: 'EditFee', header: '#',    cell: (element: any) => `` },
       { columnDef: 'deleteFee', header: '#',    cell: (element: any) => `` },
     ];

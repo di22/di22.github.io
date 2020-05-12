@@ -45,7 +45,6 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
 
 
 
-
 @NgModule({
   declarations: [
     MainCategoriesComponent,
