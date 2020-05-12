@@ -28,9 +28,10 @@
                                       {{direct.name}}
                                   </mat-option>
                               </mat-select> -->
-                              <input type="text" placeholder="xxxxxx"   [formControl]="myControl" matInput [matAutocomplete]="auto">
-                              <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                                  <mat-option *ngFor="let transaction of (transactionCategories$|async) | transactionsFlat" [value]="transaction.description" (onSelectionChange)="getAllCategories()">
+                              <input type="text" placeholder="xxxxxx"   [formControl]="typeFees" matInput [matAutocomplete]="auto">
+                              <mat-icon matSuffix>search</mat-icon>
+                              <mat-autocomplete  #auto="matAutocomplete" [displayWith]="getDisplayFn">
+                                  <mat-option *ngFor="let transaction of (transactionCategories$|async) | transactionsFlat | autoCompleteTypeFilter :typeFees.value" [value]="transaction">
                                  {{transaction.description}}
                                   </mat-option>
                               </mat-autocomplete>

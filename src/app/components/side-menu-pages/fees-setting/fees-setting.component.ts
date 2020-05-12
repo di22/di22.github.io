@@ -24,7 +24,7 @@ export class FeesSettingComponent implements OnInit {
 directions=["البوابه",
   "الدائره"
 ]
-myControl = new FormControl();
+typeFees: FormControl = new FormControl('');
 filteredOptions:Observable<any>
 
 // displayedColumns: string[];
@@ -55,10 +55,13 @@ dataSource=new MatTableDataSource<TypeFess>();
     this.getAllCategories();
 
 
-          // this.filteredOptions = this.myControl.valueChanges.pipe(
-          //   startWith(''),
-          //   map(value => this._filter(value))
-          // );
+    // this.typeFees.valueChanges.subscribe(value => {
+    //   if (value && typeof value === 'object' && value.constructor === Object) {
+    //   this.institutionId = value.InstitutionId;
+    //   this.lawOfficeName = value.InstitutionName;
+    //   this.store.dispatch(loadLawers({resourc_id: 'T2ZmaWNlc0xhd3llcg==', InstitutionId: window.btoa(`?q=InstitutionId=${value.InstitutionId}`)}));
+    //   }
+    // });
 
   }
   
@@ -76,5 +79,9 @@ dataSource=new MatTableDataSource<TypeFess>();
   }
   doFilter = (value: string) => {
     this.dataSource.filter = value.trim().toLocaleLowerCase();
+  }
+
+  getDisplayFn(transaction): string {
+    return transaction && transaction.description ? transaction.description : '';
   }
 }

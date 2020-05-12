@@ -60,7 +60,7 @@ import {PipesModule} from '../pipes-module/pipes.module';
     AutoCompleteFilterPipe,
     RequestCustomerTypePipe,
     CompleteRequestComponent,
-    RequestComponent
+    RequestComponent,
   ],
   imports: [
     CommonModule,

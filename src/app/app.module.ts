@@ -42,6 +42,9 @@ import { MyRequestsComponent } from './components/side-menu-pages/my-requests/my
 import { SubCategoriesModule } from './components/sub-categories/sub-categories.module';
 import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
 import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/admin-tipes.component';
+import { PipesModule } from './pipes-module/pipes.module';
+
+
 
 
 
@@ -56,7 +59,8 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
     AdminDebagaComponent,
     MyRequestsComponent,
     FeesSettingComponent,
-    AdminTipesComponent
+    AdminTipesComponent,
+    
   ],
 
   imports: [
@@ -68,6 +72,7 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
     AppRoutingModule,
     CommonSharedModule,
     DirectivesModule,
+    PipesModule,
     ModalModule,
     StoreModule.forRoot(REDUCERS_TOKEN, {
       metaReducers,
@@ -106,7 +111,8 @@ import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/ad
     exports: [
         MainCategoriesComponent,
         DirectivesModule,
-        ModalModule
+        ModalModule,
+        // PipesModule
     ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
