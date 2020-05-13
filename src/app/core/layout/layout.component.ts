@@ -12,7 +12,7 @@ export class LayoutComponent implements OnInit {
   url: string;
   routes = ['Agencies'];
   isMain: boolean;
-  constructor(private router: Router, private iconService: IconService,) {
+  constructor(private router: Router, private iconService: IconService) {
     this.iconService.registerIcons();
   }
 

@@ -5,11 +5,6 @@ export const selectConfigState = createFeatureSelector<fromConfig.State>(
   fromConfig.configKey
 );
 
-export const selectRelative = createSelector(
-  selectConfigState,
-  (state: fromConfig.State) => state.relative
-);
-
 export const selectTransaction = createSelector(
   selectConfigState,
   (state: fromConfig.State) => state.transaction
@@ -23,4 +18,9 @@ export const selectExpiryDate = createSelector(
 export const selectTransactionId = createSelector(
   selectConfigState,
   (state: fromConfig.State) => state.transactionID
+);
+
+export const selectRequester = createSelector(
+  selectConfigState,
+  (state: fromConfig.State) => state.requester
 );

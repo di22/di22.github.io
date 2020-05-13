@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +61,7 @@ export class TableDataService {
   getCommercialInvestorsModal = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
-      { columnDef: 'name', header: 'الاسم',   cell: (element: any) => element.person.civilId},
+      { columnDef: 'name', header: 'الاسم',   cell: (element: any) => element.person.arabicName},
       { columnDef: 'nationality', header: 'الجنسية',   cell: (element: any) => element.person.nationality.arabicName},
       { columnDef: 'civilId', header: 'الرقم المدني', cell: (element: any) => `${element.person.civilId}`},
       { columnDef: 'partnershipRatio', header: 'نسبة الشراكة', cell: (element: any) => `${element.numberOfShares}`},

@@ -93,7 +93,11 @@ export const deleteRequestDebagas = createAction(
   props<{ ids: string[] }>()
 );
 
-export const clearRequestDebagas = createAction(
-  '[RequestDebaga/API] Clear RequestDebagas'
+export const ResetRequestDebagas = createAction(
+  '[RequestDebaga/API] Reset RequestDebagas'
+);
+
+export const ResetDebagas = createAction(
+  '[RequestDebaga/API] Reset Debagas'
 );
 

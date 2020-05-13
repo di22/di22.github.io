@@ -13,11 +13,11 @@ import * as fromRelativesSelectors from '../../../../store/general/lookups/relat
 import * as fromLawOfficesSelectors from '../../../../store/general/lookups/law-offices/selectors/law-office.selectors';
 import * as fromTransactionCustomerTypesSelectors from '../../../../store/general/lookups/transaction-cust-types/selectors/transaction-cust-type.selectors';
 import * as fromCustomerSelectors from './store/selectors/customer.selectors';
+import * as fromConfigSelectors from '../../../../store/general/config/config-selector';
 import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import { GetRequestDetails} from '../../request/store/actions/request.actions';
 import {createCustomer, deleteCustomer, updateCustomer} from './store/actions/customer.actions';
 import { MatDialog} from '@angular/material/dialog';
 import {TransactionCategories} from '../../../transaction-data/transactionCategories';
@@ -31,6 +31,7 @@ import {LawyersModalComponent} from '../../../../modal/lawyers-modal/lawyers-mod
 import {environment} from '../../../../../environments/environment';
 import {CommericalComponent} from '../../../../modal/commerical/commerical.component';
 import {RequestService} from '../../../services/request.service';
+import {distinct} from 'rxjs/operators';
 
 @Component({
   selector: 'app-party',
@@ -66,6 +67,7 @@ export class PartyComponent implements OnInit {
   transactionCustomerTypes$: Observable<any> = this.store.select(state =>
     fromTransactionCustomerTypesSelectors.selectTranscationCustomerTypes(state));
   customers$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectUserEntities(state));
+  requester$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectRequester(state));
   displayedColumns: string[];
   columns: any;
   validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
@@ -168,7 +170,7 @@ export class PartyComponent implements OnInit {
           this.validationMessagesService.facilityConditionallyRequiredValidator]],
         signatories: [],
         humanPartners: [],
-        branches: [],
+        branches: [[]],
         establishmentPartners: [],
         facilityNo: [],
         facilityName: [{value: '', disabled: true}, [this.validationMessagesService.facilityConditionallyRequiredValidator]],
@@ -356,17 +358,27 @@ export class PartyComponent implements OnInit {
     this.requestCustomerType = type;
   }
   getCommercials = () => {
+    this.changeValueDataType('facilityData', 'commericalRegister');
     if (!this.mociData) {
     if (environment.production) {
       this.customerService.getMociData(this.procurationCustomer.controls.facilityData.get('commericalRegister').value).subscribe(res => {
-        this.mociData = res.data;
+        this.mociData = +res.data;
       });
     } else {
     this.mociData = this.customerService.getMociDataMocaup(this.procurationCustomer.controls.facilityData.get('commericalRegister').value);
     }
     this.procurationCustomer.controls.facilityData.get('facilityName').patchValue(this.mociData.data.companySummary.company.arabicName);
+
+    this.procurationCustomer.controls.facilityData.get('expiryDate').patchValue(moment(new Date(this.mociData.data.companySummary.company.expiryDate)).format('YYYY-MM-DD'));
     }
-  }
+  };
+
+  changeValueDataType = (FPath,SPath) => {
+    const control = this.procurationCustomer.get(`${FPath}`).get(`${SPath}`);
+    control.valueChanges.pipe(distinct()).subscribe(res => {
+      control.setValue(`${res}`)
+    });
+}
   openCommercialDialog = () => {
     const dialogRef = this.dialog.open(CommericalComponent, {
       width: '200vh',

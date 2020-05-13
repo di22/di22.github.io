@@ -36,7 +36,7 @@ export class RequestEffects {
           map((request: any) => request.data.request),
           map(request => RequestActions.GetRequestDetailsSuccess({ request })),
           switchMap((request: any) => [
-     CustomerActions.loadCustomersSuccess({customers: request.request.procurationCustomers ? request.request.procurationCustomers : [] }),
+            CustomerActions.loadCustomersSuccess({customers: request.request.procurationCustomers ? request.request.procurationCustomers : [] }),
             RequestDebagaActions.loadRequestDebagasSuccess({data: request.request.requestDebagas ? request.request.requestDebagas : [] }),
             RequestDebagaActions.addDebagaSuccess({debaga: request.request.debaga ? request.request.debaga : {}}),
             transactionRequestAttachmentsActions.loadTransactionRequestAttachments({transactionRequestAttachments:

@@ -7,15 +7,15 @@
       <p>
         <mat-form-field class="span_2_of_2">
           <input matInput id="userName" placeholder="اسم المستخدم" formControlName="userName" >
-          <mat-icon matPrefix>account_circle</mat-icon>
+          <mat-icon svgIcon="muslim" matPrefix></mat-icon>
         </mat-form-field>
       </p>
 
       <p>
         <mat-form-field class="span_2_of_2">
           <input matInput id="password" placeholder="كلمه السر" formControlName="password" [type]="hide ? 'password' : 'text'">
-          <mat-icon matPrefix>lock</mat-icon>
-          <mat-icon matSuffix class="pointer" (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          <mat-icon matPrefix svgIcon="tools-and-utensils"></mat-icon>
+          <mat-icon matSuffix class="pointer" (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide" svgIcon="{{hide ? 'visibility' : 'no-visibility'}}"></mat-icon>
         </mat-form-field>
       </p>
 

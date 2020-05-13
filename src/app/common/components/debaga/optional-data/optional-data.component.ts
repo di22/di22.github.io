@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Observable, zip} from 'rxjs';
+import {combineLatest, from, Observable, zip} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DebagaTemplete} from '../../../../DTO`s/debaga-templete';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -21,7 +21,8 @@ import {TransactionService} from '../../../../services/transaction.service';
 import {GetBasicDataValuesPipe} from '../../../pipes/get-basic-data-values.pipe';
 import {DebagaFilterPipe} from '../../../pipes/debaga-filter.pipe';
 import {SetExpiryDate} from '../../../../store/general/config/config.actions';
-import * as fromConfigSelectors from '../../../../store/general/config/config-selector';
+import {distinct, last, take, withLatestFrom} from 'rxjs/operators';
+import * as fromDebagaSelectors from '../../../../components/side-menu-pages/admin-debaga/store/selectors/debaga.selectors';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,11 +33,10 @@ import * as fromConfigSelectors from '../../../../store/general/config/config-se
 })
 export class OptionalDataComponent implements OnInit, OnDestroy {
 
-  @Input() debagas$: Observable<any>;
-
   requestDebagaForm: FormGroup;
   startRequestDebagasForm: FormArray;
-  transaction$: Observable<any> = this.store.select(state => fromConfigSelectors.selectTransaction(state));
+
+  debagas$: Observable<any> = this.store.select(state => fromDebagaSelectors.selectDebagaEntities(state));
   requestDebaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectAllRequestDebaga(state));
   debaga$: Observable<any> = this.store.select(state => fromRequestDebagaSelectors.selectDebaga(state));
   validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
@@ -90,7 +90,7 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<FlatTree>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    this.startRequestDebagasForm = this.formBuilder.array([]);
+
     this.debagas$.subscribe(value => {
       if (value.length > 0) {
         this.dataSource.data = this.debagaFilter.transform(value, false);
@@ -99,20 +99,21 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
     this.requestDebaga$.subscribe((requestDebaga: any) => {
       this.basicRequestDebaga = [];
       this.basicRequestDebagaTableValues = [];
-        if (requestDebaga && requestDebaga.length > 0) {
-          requestDebaga.forEach((item, i) => {
-            if (!item.groupNumber) {
-              this.setRequestDebagasAfterGetRequestDetails(item);
-            } else {
+      if (requestDebaga && requestDebaga.length > 0) {
+        requestDebaga.forEach((item, i) => {
+          if (!item.groupNumber) {
+            this.setRequestDebagasAfterGetRequestDetails(item);
+          } else {
 
-                this.basicRequestDebaga.push(item);
-                this.basicRequestDebagaHeaders.add(item.debagaTemplate.description);
-            }
-          });
-          this.basicRequestDebagaTableValues = this.basicDataValuesPipe.transform(requestDebaga, true);
+            this.basicRequestDebaga.push(item);
+            this.basicRequestDebagaHeaders.add(item.debagaTemplate.description);
+          }
+        });
+        this.basicRequestDebagaTableValues = this.basicDataValuesPipe.transform(requestDebaga, true);
 
-        }
+      }
     });
+
     this.debaga$.subscribe((debaga: any) => {
       if (debaga.id) {
         const exText = debaga.textExtension ? debaga.textExtension : '';
@@ -541,7 +542,7 @@ initForms = () => {
       endDate.setDate(endDate.getDate() + date);
     }
     return moment(endDate).format('YYYY-MM-DD');
-  }
+  };
 
 
   createBody = (data) => data.map(row => `<tr style='text-align:center; '>${this.getCells(Object.values(row), 'td')}</tr>`).join('');
@@ -557,4 +558,6 @@ initForms = () => {
   getChildren = (node: DebagaTemplete): DebagaTemplete[] => node.childDebagaTemplates ? node.childDebagaTemplates : [];
 
   hasChild = (_: number, nodeData: FlatTree) => nodeData.expandable;
+
+  resetForm = (form: AbstractControl) => form.reset();
 }

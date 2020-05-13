@@ -5,6 +5,7 @@ import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {loadAuth} from '../store/auth.actions';
 import {State} from '../../store';
+import {IconService} from '../../services/icon.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,10 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   authState: Observable<fromAuth.State>;
   constructor(private formBuilder: FormBuilder,
-              private store: Store<State>) { }
+              private store: Store<State>,
+              private iconService: IconService) {
+    this.iconService.registerIcons();
+  }
 
   ngOnInit() {
     this.initForms();

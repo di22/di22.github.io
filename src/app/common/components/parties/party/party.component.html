@@ -332,7 +332,7 @@
               </button>
             </div>
 
-            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center">
+            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center" *ngIf="!(requester$ | async)">
                 <mat-checkbox formControlName="requesterFlag" >مقدم الطلب</mat-checkbox>
             </div>
 

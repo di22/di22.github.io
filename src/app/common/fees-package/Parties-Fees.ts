@@ -25,6 +25,9 @@ export class PartiesFees implements IFees{
       if (res[0]?.length > 0 && res[1]) {
         this.relative = res[0].find(e => e.relativeRelation);
         this.transaction = res[1];
+
+      }
+      if (this.relative){
         this.getRelative();
       } else {
         this.amount = 0;

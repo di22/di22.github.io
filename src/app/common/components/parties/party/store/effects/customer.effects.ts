@@ -29,7 +29,7 @@ export class CustomerEffects {
       ofType(CustomerActions.createCustomer),
       concatMap((action: any) =>
         this.customerService.createCustomer({data: {procurationCustomer: action.customer}}).pipe(
-          map(data => RequestActions.GetRequestDetails({requestId: action.data.procurationCustomer.request.id})),
+          map(data => RequestActions.GetRequestDetails({requestId: action.customer.request.id})),
           tap( customers => this.messageService.successMessage('تم إضافة الطرف بنجاح')),
           catchError(error => of(CustomerActions.loadCustomersFailure({ error }))))
       )
@@ -42,7 +42,7 @@ export class CustomerEffects {
       ofType(CustomerActions.updateCustomer),
       concatMap((action: any) =>
         this.customerService.updateCustomer({data: {procurationCustomer: action.customer}}).pipe(
-          map(data => RequestActions.GetRequestDetails({requestId: action.data.procurationCustomer.request.id})),
+          map(data => RequestActions.GetRequestDetails({requestId: action.customer.request.id})),
           tap( customers => this.messageService.successMessage('تم تعديل الطرف بنجاح')),
           catchError(error => of(CustomerActions.loadCustomersFailure({ error }))))
       )

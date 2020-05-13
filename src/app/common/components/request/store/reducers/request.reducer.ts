@@ -11,8 +11,8 @@ export interface State {
 
 export const initialState: State = {
   request: {},
-  requestId: null,
-  error: null
+  requestId: 0,
+  error: ''
 };
 
 const requestReducer = createReducer(
@@ -23,6 +23,7 @@ const requestReducer = createReducer(
   on(RequestActions.GetRequestDetailsSuccess, (state, action) => ({state, request: action.request, requestId: state.requestId, error: null})),
   on(RequestActions.GetRequestDetails, (state, action) => ({state, request: state.request, requestId: action.requestId, error: null})),
   on(RequestActions.CreateRequestsFailure, (state, action) => ({state, error: action.error, requestId: state.requestId, request: {}})),
+  on(RequestActions.ResetRequests, (state) => ({state, error: '', requestId: 0, request: {}})),
 
 );
 

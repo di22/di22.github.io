@@ -10,6 +10,13 @@ export const selectUserEntities = createSelector(
   fromCustomer.selectAll
 );
 
+export const selectRequester = createSelector(
+  selectCustomerState,
+  customerState => {
+    return Object.values(customerState.entities).some((e: any) => e.requesterFlag)
+  }
+);
+
 export const selectROPCustomer = createSelector(
   selectCustomerState,
   (state: fromCustomer.State) => state.ROPCustomer

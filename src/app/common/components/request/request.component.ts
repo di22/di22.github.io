@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {CreateRequest, GetRequestDetails} from './store/actions/request.actions';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {CreateRequest, GetRequestDetails, ResetRequests} from './store/actions/request.actions';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {State} from '../../../store';
@@ -12,21 +12,25 @@ import {loadTransactionCustTypes} from '../../../store/general/lookups/transacti
 import {loadRelatives} from '../../../store/general/lookups/relatives/actions/relatives.actions';
 import {loadLawOffices} from '../../../store/general/lookups/law-offices/actions/law-office.actions';
 import {loadDebagas} from '../../../components/side-menu-pages/admin-debaga/store/actions/debaga.actions';
-import {SetTransactionId} from '../../../store/general/config/config.actions';
+import {ResetConfig, SetTransactionId} from '../../../store/general/config/config.actions';
+import {ResetCustomers} from '../parties/party/store/actions/customer.actions';
+import {ResetDebagas} from '../debaga/store/actions/request-debaga.actions';
 
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.scss']
 })
-export class RequestComponent implements OnInit {
+export class RequestComponent implements OnInit, OnDestroy {
   transactionId: number;
   requestId: number;
   request: FormGroup;
   constructor(private store: Store<State>,
               private formBuilder: FormBuilder,
               private activatedRout: ActivatedRoute,
-              private router: Router) { }
+              private router: Router) {
+
+  }
 
   ngOnInit(): void {
     this.initForms();
@@ -52,6 +56,15 @@ export class RequestComponent implements OnInit {
       this.store.dispatch(loadLawOffices({resourc_id: window.btoa('LawyerCompanyPartner')}));
     }
   }
+
+  ngOnDestroy(): void {
+    this.store.dispatch(ResetRequests());
+    this.store.dispatch(ResetCustomers());
+    this.store.dispatch(ResetDebagas());
+    this.store.dispatch(ResetConfig());
+  }
+
+
   initForms = () => {
     this.request = this.formBuilder.group({
       requestDate: [null],
@@ -73,4 +86,6 @@ export class RequestComponent implements OnInit {
   getTransactionDebaga = (transactionId) => {
     this.store.dispatch(loadDebagas({transactionId}));
   }
+
+
 }

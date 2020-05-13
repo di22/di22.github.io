@@ -12,7 +12,7 @@ export class TokenInterceptorService implements HttpInterceptor {
               private spinnerService: NgxSpinnerService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.totalRequests++;
+
     this.spinnerService.show();
 
     const token = this.authService.getToken();
@@ -35,19 +35,15 @@ export class TokenInterceptorService implements HttpInterceptor {
     return next.handle(req).pipe(tap((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
           if (event.status === 200 || event.status === 201 ||
-            event.status === 400 || event.status === 404 || event.status === 500 || !event.body) {
-           // this.spinnerService.hide();
+            event.status === 400 || event.status === 404 || event.status === 500 || event.status === 304 || !event.body) {
+
+            this.spinnerService.hide();
+
           }
         }
       },
       (err: any) => {
-       // this.spinnerService.hide();
-      }),
-      finalize(() => {
-        this.totalRequests--;
-        if (this.totalRequests === 0) {
-          this.spinnerService.hide();
-        }
+        this.spinnerService.hide();
       })
     );
   }

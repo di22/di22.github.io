@@ -7,16 +7,12 @@ export const requestDebagaFeatureKey = 'requestDebaga';
 
 export interface State extends EntityState<RequestDebaga> {
   debagaText: any;
-  expiryDate: any;
-  fees: any;
 }
 
 export const adapter: EntityAdapter<RequestDebaga> = createEntityAdapter<RequestDebaga>();
 
 export const initialState: State = adapter.getInitialState({
-  debagaText: '',
-  expiryDate: new Date(),
-  fees: 0
+  debagaText: ''
 });
 
 const requestDebagaReducer = createReducer(
@@ -25,7 +21,7 @@ const requestDebagaReducer = createReducer(
     (state, action) => adapter.addOne(action.requestDebaga, state)
   ),
   on(RequestDebagaActions.addDebagaSuccess,
-    (state, action) => ({state, debagaText: action.debaga, ids: state.ids, entities: state.entities, expiryDate: state.expiryDate, fees: state.fees})
+    (state, action) => ({state, debagaText: action.debaga, ids: state.ids, entities: state.entities})
   ),
   on(RequestDebagaActions.upsertRequestDebaga,
     (state, action) => adapter.upsertOne(action.requestDebaga, state)
@@ -51,8 +47,8 @@ const requestDebagaReducer = createReducer(
   on(RequestDebagaActions.loadRequestDebagasSuccess,
     (state, action) => adapter.addAll(action.data, state)
   ),
-  on(RequestDebagaActions.clearRequestDebagas,
-    state => adapter.removeAll(state)
+  on(RequestDebagaActions.ResetDebagas,
+    (state, action) => ({state, debagaText: '', ids: initialState.ids, entities: initialState.entities})
   )
 );
 

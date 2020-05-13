@@ -46,8 +46,8 @@ export const updateCustomerSuccess = createAction(
   props<{ customer: Customer }>()
 );
 
-export const clearCustomers = createAction(
-  '[Customer/API] Clear Customers'
+export const ResetCustomers = createAction(
+  '[Customer/API] Reset Customers'
 );
 
 export const deleteCustomer = createAction(

@@ -29,4 +29,7 @@ export enum Icons {
   arrow_left = 'left',
   menu = 'menu',
   exit = 'exit',
+  visibility = 'visibility',
+  no_visibility = 'no-visibility',
+  lock = 'tools-and-utensils'
 }

@@ -24,6 +24,9 @@ export class RouteService {
         case 'DEBIT_ENDORSEMENT':
         this.router.navigate([`/notary/acknowledgments-undertakings/acknowledgments/${requestType}`, requestId]);
         break;
+        case 'POA_COMMERCIAL_REGISTRY':
+        this.router.navigate([`/notary/Agencies/companies/${requestType}`, requestId]);
+        break;
     }
   }
 }

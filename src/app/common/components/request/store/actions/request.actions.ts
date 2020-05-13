@@ -25,3 +25,7 @@ export const CreateRequestsFailure = createAction(
   '[Request] Create Request Failure',
   props<{ error: any }>()
 );
+
+export const ResetRequests = createAction(
+  '[Request] Reset Request'
+);

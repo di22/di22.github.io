@@ -34,10 +34,10 @@ const customerReducer = createReducer(
   on(CustomerActions.deleteCustomerSuccess, (state, action) => adapter.removeOne(action.id, state)),
   on(CustomerActions.loadCustomersSuccess, (state, action) => adapter.addAll(action.customers, state)),
    on(CustomerActions.getROPCustomerSuccess, (state, action) => ({state, error: null,
-     ids: state.ids, entities: state.entities, ROPCustomer: action.customer, selectedCustomerId: state.selectedCustomerId}))
+     ids: state.ids, entities: state.entities, ROPCustomer: action.customer, selectedCustomerId: state.selectedCustomerId})),
   // on(CustomerActions.loadCustomersFailure, (state, action) => ({state, error: action.error, ids: state.ids, entities: state.entities}))
-  // tslint:disable-next-line:max-line-length
- // on(CustomerActions.loadCustomersFailure, (state, action) => adapter.({state, error: action.error, customers: state.customers, customer: {}, customerId: null})),
+
+  on(CustomerActions.ResetCustomers, (state, action) => adapter.removeAll(state)),
 
 );
 
