@@ -33,12 +33,16 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center" >
           <div class="center">
             <button mat-raised-button class="button-width button-success" (click)="feesEstimation()">تحصيل</button>
-            <button mat-raised-button  class="button-width button-success">إصدار المحرر</button>
+            <button mat-raised-button  class="button-width button-success" (click)="submitRequest()">إصدار المحرر</button>
             <button mat-raised-button color="basic" class="button-width" *ngIf="false">إصدار المحرر بناء على قرار المحكمة</button>
             <button mat-raised-button color="basic" class="button-width" *ngIf="false">إصدار بعد الرفض النهائي</button>
-            <button mat-raised-button color="basic" class="button-width" (click)="mo7rrReview()">عـرض المحــرر</button>
+            <button mat-raised-button color="warn" class="button-width" (click)="generalActions(1)">رفض نهائي</button>
+            <button mat-raised-button color="warn" class="button-width" (click)="generalActions(10)">رفض وتحويل للمحكمة</button>
+            <button mat-raised-button color="basic" class="button-width" (click)="generalActions(4)"> تعديل الملاحظات</button>
+            <button mat-raised-button color="basic" class="button-width" > نقل إلى مكتب آخر</button>
+            <button mat-raised-button color="basic" class="button-width" (click)="mo7rrReview('POA_REPORT')">عـرض المحــرر</button>
             <button mat-raised-button color="basic" class="button-width">عـرض الإيصــــال</button>
-            <button mat-raised-button color="basic" class="button-width">عـرض السجل التاريخي</button>
+            <button mat-raised-button color="basic" class="button-width" (click)="mo7rrReview('REQUEST_HISTORY')">عـرض السجل التاريخي</button>
           </div>
         </div>
       </mat-card-actions>

@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {combineLatest, from, Observable, zip} from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {Observable, zip} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DebagaTemplete} from '../../../../DTO`s/debaga-templete';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -21,7 +21,6 @@ import {TransactionService} from '../../../../services/transaction.service';
 import {GetBasicDataValuesPipe} from '../../../pipes/get-basic-data-values.pipe';
 import {DebagaFilterPipe} from '../../../pipes/debaga-filter.pipe';
 import {SetExpiryDate} from '../../../../store/general/config/config.actions';
-import {distinct, last, take, withLatestFrom} from 'rxjs/operators';
 import * as fromDebagaSelectors from '../../../../components/side-menu-pages/admin-debaga/store/selectors/debaga.selectors';
 
 @Component({
@@ -176,7 +175,12 @@ initForms = () => {
       this.treeControl.collapseDescendants(node);
     }
 
-   descendants.length > 0? this.toggleCheckBoxesValues(descendants) : this.resetNodeValue(node);
+    if (descendants.length > 0) {
+      this.resetNodeValue(node);
+      this.toggleCheckBoxesValues(descendants);
+    } else {
+      this.resetNodeValue(node);
+    }
   }
 
 
@@ -362,6 +366,9 @@ initForms = () => {
         } else if (this.requestDebagaType[ele.debagaTemplate.id].htmlCodeType === 'GRID') {
           value = this.requestDebagaForm.get(`${ele.debagaTemplate.id}`).value;
         }
+
+
+
         this.startRequestDebagasForm.at(i).setValue(Object.assign({}, ele, {text: value}));
       }
       this.validation(ele);

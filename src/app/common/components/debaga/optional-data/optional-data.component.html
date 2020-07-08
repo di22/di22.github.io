@@ -24,6 +24,7 @@
       <span>
         {{node.description}}
       </span>
+
       <mat-error  *ngFor="let type of (validationTypes$ | async)" style="margin-right: 15px">
         <mat-error *ngIf="getFormControl(node.id).hasError(type)">{{'فضلاً يجب إختيار' + node.description}}</mat-error>
       </mat-error>

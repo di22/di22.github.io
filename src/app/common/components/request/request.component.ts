@@ -15,6 +15,7 @@ import {loadDebagas} from '../../../components/side-menu-pages/admin-debaga/stor
 import {ResetConfig, SetTransactionId} from '../../../store/general/config/config.actions';
 import {ResetCustomers} from '../parties/party/store/actions/customer.actions';
 import {ResetDebagas} from '../debaga/store/actions/request-debaga.actions';
+import {clearTransactionRequestAttachments} from '../request-attachment/store/actions/transaction-request-attachment.actions';
 
 @Component({
   selector: 'app-request',
@@ -62,6 +63,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.store.dispatch(ResetCustomers());
     this.store.dispatch(ResetDebagas());
     this.store.dispatch(ResetConfig());
+    this.store.dispatch(clearTransactionRequestAttachments());
   }
 
 

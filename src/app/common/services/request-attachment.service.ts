@@ -15,23 +15,18 @@ export class RequestAttachmentService {
   }
 
   addRequestAttachment = (attachment) => {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'multipart/form-fees-package'
-      })
-    };
     const fd = new FormData();
-    fd.append('fees-package.requestId', attachment.requestId);
-    fd.append('fees-package.attachmentTypeId', `${attachment.attachmentTypeId}`);
-    fd.append('fees-package.files', attachment.file);
-    return this.http.post<any>(`${this.URL}upload-files.do`, fd, httpOptions);
-  }
+    fd.append('data.requestId', attachment.requestId);
+    fd.append('data.attachmentTypeId', `${attachment.attachmentTypeId}`);
+    fd.append('data.files', attachment.file);
+    return this.http.post<any>(`${this.URL}upload-files.do`, fd );
+  };
   getRequestAttachments = (attachment) => {
     return this.http.post<any>(`${this.URL}get-request-details.do`, attachment);
-  }
+  };
   deleteRequestAttachment = (attachment) => {
     return this.http.post<any>(`${this.URL}delete-file.do`, attachment);
-  }
+  };
 
   private getEventMessage(event: HttpEvent<any>, attachment) {
 

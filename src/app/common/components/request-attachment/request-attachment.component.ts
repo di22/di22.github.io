@@ -3,16 +3,18 @@ import {Store} from '@ngrx/store';
 import * as fromApp from '../../../store';
 import * as fromRequestAttachmentSelectors from '../../../store/general/lookups/requestAttachments/selectors/request-attachments.selectors';
 import * as fromTransactionRequestAttachmentSelectors from './store/selectors/transaction-request-attachment.selectors';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, pipe} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
+import {Observable} from 'rxjs';
 import {RequestAttachments} from '../../../DTO`s/requestAttachments';
 import {loadRequestAttachmentss} from '../../../store/general/lookups/requestAttachments/actions/request-attachments.actions';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {RequestAttachment} from '../../../DTO`s/requestAttachment';
 import {addTransactionRequestAttachment, deleteTransactionRequestAttachment} from './store/actions/transaction-request-attachment.actions';
-import {RequestAttachmentService} from '../../services/request-attachment.service';
+import {AttachmentsService} from '../../services/attachments.service';
+import {AuthService} from '../../../auth/services/auth.service';
+import {ValidationMessagesService} from '../../../services/config/validation-messages.service';
 
 @Component({
   selector: 'app-request-attachment',
@@ -30,7 +32,6 @@ import {RequestAttachmentService} from '../../services/request-attachment.servic
 export class RequestAttachmentComponent implements OnInit {
 
    text = 'Upload';
-  param = 'file';
   target = 'https://file.io';
   accept = 'image/*';
 
@@ -45,14 +46,15 @@ export class RequestAttachmentComponent implements OnInit {
     fromRequestAttachmentSelectors.requestAttachmentsSelector(stat));
   transactionRequestAttachments$: Observable<any> = this.store.select(stat =>
     fromTransactionRequestAttachmentSelectors.transactionRequestAttachmentsSelector(stat));
-  displayedColumns: string[] = ['position', 'attachmentType', 'show', 'edit-delete'];
+  displayedColumns: string[] = ['position', 'attachmentType', 'edit-delete'];
 
   constructor(private store: Store<fromApp.State>,
               private formBuilder: FormBuilder,
               private encryptDecryptService: EncryptDecryptService,
-              private activatedRout: ActivatedRoute,
-              private requestAttachmentService: RequestAttachmentService,
-              private router: Router) { }
+              private attachmentsService: AttachmentsService,
+              private validationMessagesService: ValidationMessagesService,
+              private authService: AuthService,
+              private activatedRout: ActivatedRoute) { }
 
   ngOnInit() {
     this.initForms();
@@ -71,17 +73,17 @@ export class RequestAttachmentComponent implements OnInit {
 
   initForms = () => {
     this.requestAttachmentForm = this.formBuilder.group({
-      attachmentTypeId: [],
+      attachmentTypeId: [1, Validators.required],
       requestId: [],
-      file: []
+      file: ['', Validators.required]
     });
-  }
+  };
 
 
   onClick() {
     const fileUpload = document.getElementById('fileUpload') as HTMLInputElement;
     fileUpload.onchange = () => {
-      // tslint:disable-next-line:prefer-for-of
+      this.files = [];
       for (let index = 0; index < fileUpload.files.length; index++) {
         const file = fileUpload.files[index];
         this.files.push({ data: file, state: 'in',
@@ -92,19 +94,29 @@ export class RequestAttachmentComponent implements OnInit {
   }
 
   cancelFile(file: RequestAttachment) {
-    file.sub.unsubscribe();
+   // file.sub.unsubscribe();
+    this.removeFileFromArray(file);
   }
-
+  private removeFileFromArray(file: RequestAttachment) {
+    const index = this.files.indexOf(file);
+    if (index > -1) {
+      this.files.splice(index, 1);
+    }
+  }
   retryFile(file: RequestAttachment) {
     this.uploadFile(file);
     file.canRetry = false;
   }
 
    uploadFile(file) {
-    this.requestAttachmentService.addRequestAttachment(file).subscribe(res => {
-      const x = res;
-    });
-    // this.store.dispatch(addTransactionRequestAttachment({transactionRequestAttachment: file}));
+    if (this.requestAttachmentForm.valid) {
+      this.store.dispatch(addTransactionRequestAttachment({transactionRequestAttachment: file, requestID: this.requestId}));
+      this.files = [];
+      this.requestAttachmentForm.reset({attachmentTypeId: 1});
+    } else {
+      this.validationMessagesService.validateAllFormFields(this.requestAttachmentForm);
+    }
+
   }
 
    uploadFiles() {
@@ -114,6 +126,13 @@ export class RequestAttachmentComponent implements OnInit {
     });
   }
 
+  viewAttachment = (e) => {
+    const params = {
+      docId: `${e.id}`,
+      xat: this.authService.getToken()
+    };
+    this.attachmentsService.imageView(params);
+  };
 
   deleteRequestAttachment = (id) => {
     this.store.dispatch(deleteTransactionRequestAttachment({id: {data: { reqCustAttachId: id }}}));

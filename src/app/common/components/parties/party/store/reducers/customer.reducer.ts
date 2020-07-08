@@ -35,6 +35,7 @@ const customerReducer = createReducer(
   on(CustomerActions.loadCustomersSuccess, (state, action) => adapter.addAll(action.customers, state)),
    on(CustomerActions.getROPCustomerSuccess, (state, action) => ({state, error: null,
      ids: state.ids, entities: state.entities, ROPCustomer: action.customer, selectedCustomerId: state.selectedCustomerId})),
+  on(CustomerActions.clearCustomers, state => adapter.removeAll({ ...state, selectedCustomerId: null })),
   // on(CustomerActions.loadCustomersFailure, (state, action) => ({state, error: action.error, ids: state.ids, entities: state.entities}))
 
   on(CustomerActions.ResetCustomers, (state, action) => adapter.removeAll(state)),

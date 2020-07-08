@@ -1,0 +1,36 @@
+<div class="container" >
+  <div >
+    <mat-card class="card">
+      <mat-card-content>
+        <form [formGroup]="actionsForm" novalidate autocomplete="off">
+          <div class="mat-elevation-z8 card-content-space-around col">
+
+
+
+                <label class="span_2_of_2">
+                  <span style="color:red;text-decoration:underline; font-size: larger; ">
+                    {{data === 10? 'نص كتاب التحويل للمحكمة' : 'ملاحظات لمقدم الطلب'}}
+                  </span>
+                  <textarea formControlName="reason" class="input-width"></textarea>
+                </label>
+
+
+              <label class="span_2_of_2">
+                  <span style="color:red;text-decoration:underline; font-size: larger; ">
+                  ملاحظات داخلية
+                  </span>
+                <textarea formControlName="reasonInternal" class="input-width"></textarea>
+              </label>
+
+          </div>
+        </form>
+      </mat-card-content>
+      <mat-card-actions>
+          <div class="center">
+            <button mat-raised-button mat-dialog-close tabindex="-1" color="primary" class="button-width">{{data === 1? 'تنفيذ الرفض' : data === 10? 'رفض وطباعة كتاب المحكمة' : 'تنشيط المعاملة'}}</button>
+            <button mat-raised-button mat-dialog-close tabindex="-1" color="warn" class="button-width">غلق</button>
+          </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

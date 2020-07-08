@@ -14,13 +14,18 @@ import * as selectFeatureResult from './store/selectors/inbox.selectors';
 import {loadUserDetails} from '../../../store/general/user-org-details/actions/user-org.actions';
 import {AuthService} from '../../../auth/services/auth.service';
 import * as fromUser_ORGSelector from '../../../store/general/user-org-details/selectors/user-org.selectors';
-import {PDFService} from '../../../common/services/pdf`s.service';
+import {AttachmentsService} from '../../../common/services/attachments.service';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {LookupsService} from '../../../services/lookups.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RouteService} from '../../../services/route.service';
 import * as fromTransactionCategoriesSelector from '../../../store/general/categories/main-categories-selector';
+import {take} from 'rxjs/operators';
+import {loadMainCategories} from '../../../store/general/categories/main-categories.actions';
+import {MatDialog} from '@angular/material/dialog';
+import {GetRequestDetails} from '../../../common/components/request/store/actions/request.actions';
+import {RequestAttachmentsModalComponent} from '../../../modal/request-attachments-modal/request-attachments-modal.component';
 
 
 @Component({
@@ -42,7 +47,6 @@ export class InboxComponent implements OnInit {
   dateFrom: any;
   dateTo: {};
   userDetails$: Observable<any> = this.store.select(state => fromUser_ORGSelector.selectUserDetails(state));
-  requestTypes$: Observable<RequestType[]> = this.lookupsService.getRequestCustomerTypes();
   requestStatuses$: Observable<RequestStatus[]> = this.lookupsService.getRequestStatuses();
   employee$: Observable<Employee[]> = this.lookupsService.getAllEmployee();
   transactionCategories$: Observable<any> = this.store.select(state => fromTransactionCategoriesSelector.selectCategories(state));
@@ -54,12 +58,12 @@ export class InboxComponent implements OnInit {
   constructor(private store: Store<State>,
               private formBuilder: FormBuilder,
               private authService: AuthService,
-              private pdfService: PDFService,
+              private pdfService: AttachmentsService,
               private lookupsService: LookupsService,
               private routeService: RouteService,
               private router: Router,
+              private dialog: MatDialog,
               private activatedRoute: ActivatedRoute,
-            //  private activatedRouteSnapShot: ActivatedRouteSnapshot,
               private encryptDecryptService: EncryptDecryptService) { }
 
   ngOnInit() {
@@ -73,8 +77,16 @@ export class InboxComponent implements OnInit {
        }
     });
     this.searchResult$.subscribe(res => {
-      this.dataSource.data = res;
+      this.dataSource.data = res?  res : [] ;
     });
+    this.transactionCategories$.pipe(take(1))
+      .subscribe(
+        (transactions: []) => {
+          if (transactions.length === 0) {
+            this.store.dispatch(loadMainCategories());
+          }
+        }
+      );
     this.dataSource.paginator = this.paginator;
   }
 
@@ -91,7 +103,7 @@ export class InboxComponent implements OnInit {
     pageNo: [],
     pageSize: [1000000000],
     });
-  }
+  };
 
   search = (searchObj) => {
     searchObj.requestDateTo = this.dateTo;
@@ -100,36 +112,51 @@ export class InboxComponent implements OnInit {
       data: { ...searchObj }
     });
     this.store.dispatch(loadInbox({data: this.searchObj}));
-  }
+  };
+
   onChangesFromDate = (event: any) => {
     this.dateFrom = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
-    }
+    };
+
   onChangesToDate = (event: any) => {
     this.dateTo = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
-  }
+  };
+
   mo7rrReview = (requestId) => {
     const params = {x__RepName: 'POA_REPORT',
       p___REQUEST_ID: this.encryptDecryptService.encryptUsingAES256(`${requestId}`),
       xat: this.authService.getToken()};
     this.pdfService.mo7rrView(params);
-  }
+  };
+
+  attachmentsView = (id) => {
+    this.store.dispatch(GetRequestDetails( {requestId: id}));
+    const dialogRef = this.dialog.open(RequestAttachmentsModalComponent, {
+      width: '850px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  };
+
   routeToRequest = (requestType, requestId) => {
     this.routeService.route(requestType, requestId);
-  }
+  };
 
   clearForm = () => {
     this.searchForm.reset();
-  }
+  };
 
   encryption = (data) => {
     return this.encryptDecryptService.encryptUsingAES256(data);
-  }
+  };
 }

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule} from '@angular/core';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
@@ -43,6 +43,9 @@ import { SubCategoriesModule } from './components/sub-categories/sub-categories.
 import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
 import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/admin-tipes.component';
 import { PipesModule } from './pipes-module/pipes.module';
+import {ErrorHandlerService} from './services/config/error-handler.service';
+import { SearchComponent } from './components/side-menu-pages/search/search.component';
+import { TransactionTypesComponent } from './components/side-menu-pages/transaction-types/transaction-types.component';
 
 
 
@@ -60,7 +63,8 @@ import { PipesModule } from './pipes-module/pipes.module';
     MyRequestsComponent,
     FeesSettingComponent,
     AdminTipesComponent,
-    
+    SearchComponent,
+    TransactionTypesComponent
   ],
 
   imports: [
@@ -105,8 +109,8 @@ import { PipesModule } from './pipes-module/pipes.module';
   ],
   providers: [reducerProvider,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-   // ErrorHandlerService,
-   // {provide: ErrorHandler, useClass: ErrorHandlerService}
+    ErrorHandlerService,
+    {provide: ErrorHandler, useClass: ErrorHandlerService}
     ],
     exports: [
         MainCategoriesComponent,

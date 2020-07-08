@@ -13,6 +13,8 @@ import {AdminDebagaComponent} from './components/side-menu-pages/admin-debaga/ad
 import {MyRequestsComponent} from './components/side-menu-pages/my-requests/my-requests.component';
 import { FeesSettingComponent } from './components/side-menu-pages/fees-setting/fees-setting.component';
 import { AdminTipesComponent } from './components/side-menu-pages/admin-tipes/admin-tipes.component';
+import {SearchComponent} from './components/side-menu-pages/search/search.component';
+import {TransactionTypesComponent} from './components/side-menu-pages/transaction-types/transaction-types.component';
 
 const routes: Routes = [
  // { path: '', redirectTo: '/notary', pathMatch: 'full' },
@@ -30,10 +32,11 @@ const routes: Routes = [
       { path: 'Personal affairs', component: PersonalAffairsComponent, data: { breadcrumb: 'الأحوال الشخصيه' }},
      /* { path: 'WillsEndowment', component: WillsEndowmentComponent, fees-package: { breadcrumb: 'الوصايا والوقف' }}, */
       { path: 'Attestations', component: AttestationsComponent, data: { breadcrumb: 'التصديقات' , transactionId: 112}},
-      // tslint:disable-next-line:max-line-length
       { path: 'Attestations/:requestId', component: AttestationsComponent, data: { breadcrumb: 'التصديقات', transactionId: 112 }},
       { path: 'inbox', component: InboxComponent, data: { breadcrumb: 'البريد الوارد' }},
       { path: 'my-requests', component: MyRequestsComponent, data: { breadcrumb: 'معاملاتى' }},
+      { path: 'search', component: SearchComponent, data: { breadcrumb: 'البحث' }},
+      { path: 'TransactionTypes', component: TransactionTypesComponent, data: { breadcrumb: ' إعدادت المعاملات' }},
       { path: 'adminDebaga', component: AdminDebagaComponent, data: { breadcrumb: 'قوالب التوثيق' }},
       {path:'fees-setting',component:FeesSettingComponent,data:{breadcrumb:'إعدادات الرسوم'}},
       // { path: '**', redirectTo: 'PageNotFound', pathMatch: 'full'}

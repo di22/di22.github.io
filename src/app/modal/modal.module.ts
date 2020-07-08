@@ -5,35 +5,46 @@ import { ModalRoutingModule } from './modal-routing.module';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import {MaterialModule} from '../material/material.module';
 import { LawyersModalComponent } from './lawyers-modal/lawyers-modal.component';
-import { Mo7rrModalComponent } from './mo7rr-modal/mo7rr-modal.component';
+import { AttachmentsModalComponent } from './attachments-modal/attachments-modal.component';
 import { CommericalComponent } from './commerical/commerical.component';
 import { FeesModalComponent } from './fees-modal/fees-modal.component';
 import { SuccessModalComponent } from './success-modal/success-modal.component';
+import { RequestAttachmentsModalComponent } from './request-attachments-modal/request-attachments-modal.component';
+import { CRActionsModalComponent } from './cr-actions-modal/cr-actions-modal.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 
 @NgModule({
   declarations: [DeleteModalComponent,
     LawyersModalComponent,
-    Mo7rrModalComponent,
+    AttachmentsModalComponent,
     CommericalComponent,
     FeesModalComponent,
-    SuccessModalComponent],
+    SuccessModalComponent,
+    RequestAttachmentsModalComponent,
+    CRActionsModalComponent],
   imports: [
     CommonModule,
     MaterialModule,
-    ModalRoutingModule
+    ModalRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   exports: [DeleteModalComponent,
     LawyersModalComponent,
-    Mo7rrModalComponent,
+    AttachmentsModalComponent,
     CommericalComponent,
     FeesModalComponent,
-    SuccessModalComponent],
+    SuccessModalComponent,
+    RequestAttachmentsModalComponent,
+    CRActionsModalComponent],
   entryComponents: [DeleteModalComponent,
     LawyersModalComponent,
-    Mo7rrModalComponent,
+    AttachmentsModalComponent,
     CommericalComponent,
     FeesModalComponent,
-    SuccessModalComponent]
+    SuccessModalComponent,
+    RequestAttachmentsModalComponent,
+    CRActionsModalComponent]
 })
 export class ModalModule { }

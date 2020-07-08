@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
+import { Observable, zip} from 'rxjs';
 import {State} from '../../../store';
 import {RequestCustomerType} from '../../../../DTO`s/request-customer-type';
 import * as fromRequestCustomerTypes from '../../../../store/general/lookups/request-custiomer-types/reducers/get-request-customer-type.reducer';
@@ -13,12 +13,11 @@ import * as fromRelativesSelectors from '../../../../store/general/lookups/relat
 import * as fromLawOfficesSelectors from '../../../../store/general/lookups/law-offices/selectors/law-office.selectors';
 import * as fromTransactionCustomerTypesSelectors from '../../../../store/general/lookups/transaction-cust-types/selectors/transaction-cust-type.selectors';
 import * as fromCustomerSelectors from './store/selectors/customer.selectors';
-import * as fromConfigSelectors from '../../../../store/general/config/config-selector';
 import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {createCustomer, deleteCustomer, updateCustomer} from './store/actions/customer.actions';
+import {clearCustomers, createCustomer, deleteCustomer, updateCustomer} from './store/actions/customer.actions';
 import { MatDialog} from '@angular/material/dialog';
 import {TransactionCategories} from '../../../transaction-data/transactionCategories';
 import {CustomerService} from '../../../services/customer.service';
@@ -32,6 +31,7 @@ import {environment} from '../../../../../environments/environment';
 import {CommericalComponent} from '../../../../modal/commerical/commerical.component';
 import {RequestService} from '../../../services/request.service';
 import {distinct} from 'rxjs/operators';
+import {MessageService} from '../../../../services/config/message.service';
 
 @Component({
   selector: 'app-party',
@@ -43,6 +43,7 @@ export class PartyComponent implements OnInit {
   procurationCustomer: FormGroup;
   request: FormGroup;
   lawOffices: FormControl = new FormControl('');
+  fetchedCustomer: any;
   requestId: number;
   transactionId: number;
   expiryDate: any;
@@ -56,9 +57,9 @@ export class PartyComponent implements OnInit {
   lawOfficeName: string;
   requestCustomerType: any;
   mociData: any;
+  isCommercialValid = true;
   transactionCategories: TransactionCategories = new TransactionCategories();
-  requestCustomerTypes$: Observable<RequestCustomerType[]> = this.store.select(state =>
-    state[fromRequestCustomerTypes.getRequestCustomerTypeFeatureKey].types);
+  requestCustomerTypes$: Observable<RequestCustomerType[]> = this.store.select(state => state[fromRequestCustomerTypes.getRequestCustomerTypeFeatureKey].types);
   customerIdTypes$: Observable<CustomerIdType[]> = this.store.select(state => state[fromCustomerIdTypes.customerIdTypeFeatureKey].Id);
   nationalities$: Observable<Nationality[]> = this.store.select(state => state[fromNationalities.nationalitiesFeatureKey].nationalities);
   adminTypes$: Observable<AdminTypes[]> = this.store.select(state => fromAdminTypesSelectors.selectFeatureAdminTypes(state));
@@ -70,7 +71,6 @@ export class PartyComponent implements OnInit {
   requester$: Observable<any> = this.store.select(state => fromCustomerSelectors.selectRequester(state));
   displayedColumns: string[];
   columns: any;
-  validationTypes$: Observable<any> = this.validationMessagesService.getMessages();
 
 
   constructor(private store: Store<State>,
@@ -79,6 +79,7 @@ export class PartyComponent implements OnInit {
               private validationMessagesService: ValidationMessagesService,
               private customerService: CustomerService,
               private requestService: RequestService,
+              private messageService: MessageService,
               private activatedRout: ActivatedRoute,
               private router: Router,
               private ref: ChangeDetectorRef,
@@ -94,7 +95,8 @@ export class PartyComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.url = this.router.url.slice(this.router.url.lastIndexOf('/', this.router.url.length));
+   // this.url = this.router.url.slice(this.router.url.lastIndexOf('/', this.router.url.length));
+    this.url = this.router.url;
     this.initForms();
     this.activatedRout.data.subscribe(params => {
       this.transactionId = params.transactionId;
@@ -165,6 +167,7 @@ export class PartyComponent implements OnInit {
     this.procurationCustomer = this.formBuilder.group({
       id: [],
       facilityData: this.formBuilder.group({
+        id: [],
         commericalRegister: [null, [this.validationMessagesService.facilityConditionallyRequiredValidator]],
         expiryDate: [null, [this.validationMessagesService.validateDateMore,
           this.validationMessagesService.facilityConditionallyRequiredValidator]],
@@ -178,6 +181,7 @@ export class PartyComponent implements OnInit {
         telephone: []
       }),
       customer: this.formBuilder.group({
+        id: [],
         customerName: ['', [Validators.required, Validators.pattern('^\\s*\\S+(?:\\s+\\S+)+\\s*$')]],
         customerNameEn: [''],
         customerStatus: [{id: 1}],
@@ -240,18 +244,19 @@ export class PartyComponent implements OnInit {
       particpantType: [{id: this.participantType}],
       requestCustomerType: [],
       procuration: this.formBuilder.group({
+        id: [],
         repProcurationSerial: [0, [this.validationMessagesService.repProcurationSerialConditionallyRequiredValidator]],
         repProcurationYear: [''],
         issuer: [0, [this.validationMessagesService.issuerConditionallyRequiredValidator]],
-        procurationType: ['true'],
+        procurationType: [true],
         repName: [null],
-        procurationNote: [null, [this.validationMessagesService.procurationNoteConditionallyRequiredValidator]],
+        procurationNote: [' ', [this.validationMessagesService.procurationNoteConditionallyRequiredValidator]],
         repOrganizationUnitId: [1],
         parentProcurationSerial: [],
         manualFlag: [false]
       })
     });
-  }
+  };
   updateProofNoMaxLength = (id) => {
     switch (id) {
       case 1:
@@ -282,34 +287,150 @@ export class PartyComponent implements OnInit {
         this.maxLength = 20;
         break;
     }
-  }
+  };
 
 
   creatProcurationCustomer = (customerObject: FormGroup) => {
+    if (customerObject.value.customer.customerIDType != 1) {
+      customerObject.controls.customer.get('idExpiryDate').clearValidators();
+      customerObject.controls.customer.get('idExpiryDate').updateValueAndValidity();
+
+    }
     if (customerObject.valid) {
+      this.commercialsValidations();
+      if (!this.isCommercialValid) {
+        return;
+      }
       const savedCustomer = Object.assign({}, customerObject.getRawValue());
-      !savedCustomer.id ? delete savedCustomer.id : null;
+      if(!savedCustomer.id) {
+        delete savedCustomer.id;
+        delete savedCustomer.facilityData.id;
+        delete savedCustomer.procuration.id;
+        delete savedCustomer.customer.id;
+      } else {
+        delete savedCustomer.customer.licenseNo;
+        delete savedCustomer.customer.guardianRelationId;
+        delete savedCustomer.customer.guardianReasonId;
+        delete savedCustomer.customer.courtApprovalNo;
+        delete savedCustomer.customer.courtApprovalDate;
+        delete savedCustomer.customer.courtName;
+        delete savedCustomer.customer.widowingNo;
+        delete savedCustomer.customer.widowingDate;
+        delete savedCustomer.customer.widowingIssuePlace;
+
+      }
+      if (!savedCustomer.facilityData.commericalRegister) {
+        delete savedCustomer.facilityData.id;
+      }
+
       savedCustomer.requestCustomerType = Object.assign({}, {id: JSON.parse(JSON.stringify(savedCustomer.customer.customerCategory))});
       savedCustomer.customer.customerCategory = Object.assign({}, {id: 1});
       savedCustomer.customer.customerIDType = {id: savedCustomer.customer.customerIDType};
       savedCustomer.customer.nationality = {id: savedCustomer.customer.nationality};
-      savedCustomer.customer.idExpiryDate = this.expiryDate ? this.expiryDate : null;
+      savedCustomer.customer.idExpiryDate = this.expiryDate ? this.expiryDate : this.dateToObject(savedCustomer.customer.idExpiryDate);
+      savedCustomer.customer.birthDate = this.birthDate ? this.birthDate : savedCustomer.customer.birthDate? savedCustomer.customer.birthDate : null;
+      if (savedCustomer.facilityData.commericalRegister&& this.mociData) {
+        savedCustomer.facilityData.expiryDate = this.companyExpiryDate? this.companyExpiryDate : this.dateToObject(savedCustomer.facilityData.expiryDate);
+        savedCustomer.facilityData.humanPartners = this.drawCommercialHumanParteners(this.mociData.companySummary.investors);
+        savedCustomer.facilityData.signatories = this.drawCommercialSignatures(this.mociData.companySummary.signatories);
+      }
+
       savedCustomer.id ? this.store.dispatch(updateCustomer({customer: savedCustomer, savedCustomer}))
         : this.store.dispatch(createCustomer({customer: savedCustomer}));
       this.clearForm();
     } else {
       this.validationMessagesService.validateAllFormFields(this.procurationCustomer);
     }
-  }
+  };
 
   fetchProcurationCustomer = (customer: any) => {
-    this.procurationCustomer.patchValue(customer);
-    this.procurationCustomer.get('customer').get('customerCategory').setValue(customer.requestCustomerType.id);
-    this.procurationCustomer.get('customer').get('customerIDType').setValue(customer.customer.customerIDType.id);
-    this.procurationCustomer.get('customer').get('nationality').setValue(customer.customer.nationality.id);
-    this.procurationCustomer.get('customer').get('idExpiryDate').setValue(customer.customer.idExpiryDate ?
-      moment(customer.customer.idExpiryDate) : '');
-  }
+    this.fetchedCustomer = {...customer};
+    const birthD = customer.customer.birthDate? moment(customer.customer.birthDate).subtract(1, 'months') : null;
+    this.procurationCustomer.patchValue({
+      id: customer.id,
+      customer: {
+        id: customer.customer.id,
+        customerName: customer.customer.customerName,
+        customerNameEn: customer.customer.customerNameEn,
+        customerStatus: {id: customer.customer.customerStatus.id},
+        customerType: {id: customer.customer.customerType.id},
+        customerCategory: customer.requestCustomerType.id,
+        nationality: customer.customer.nationality.id,
+        customerIDType: customer.customer.customerIDType.id,
+        customerCivilId: customer.customer.customerCivilId,
+        job: '',
+        address: customer.customer.address? customer.customer.address : null,
+        tribeName: customer.customer.tribeName? customer.customer.tribeName : null,
+        birthDate: birthD,
+        government: {id: 2},
+        tbookId: 3,
+        birthPlace: "",
+        jobPlace: "",
+        idExpiryDate: customer.customer.idExpiryDate? moment(customer.customer.idExpiryDate).subtract(1, 'months') : null,
+        customerGender: {id: customer.customer.customerGender.id},
+        customerReligion: {id: 4},
+        mobileNo: customer.customer.mobileNo? customer.customer.mobileNo : "",
+        professionId: customer.customer.professionId? customer.customer.professionId : null,
+        qualificationId: customer.customer.qualificationId? customer.customer.qualificationId : null,
+        workStatusId: customer.customer.workStatusId? customer.customer.workStatusId : null,
+        governorateId: customer.customer.governorateId? customer.customer.governorateId : null,
+        embassyDocNo: customer.customer.embassyDocNo? customer.customer.embassyDocNo : null,
+        embassyDocDate: customer.customer.embassyDocDate? moment(customer.customer.embassyDocDate).subtract(1, 'months') : null,
+        legalDate: customer.customer.legalDate? customer.customer.legalDate : null,
+        motherName: customer.customer.motherName? customer.customer.motherName : " ",
+        governorateDate: customer.customer.governorateDate? customer.customer.governorateDate : null,
+        isManualPassport: customer.customer.isManualPassport? customer.customer.isManualPassport : null,
+        passportIssueDate: customer.customer.passportIssueDate? customer.customer.passportIssueDate : null,
+      },
+      customerNo: 0,
+      status: 'true',
+      requesterFlag: customer.requesterFlag,
+      ffdFlag: 'true',
+      signFlag: 'true',
+      signNotes: 'Sign Notes',
+      fpCustomerDeliver: 'true',
+      hasParentRep: 'true',
+      notes: customer.notes? customer.notes : null,
+      delegateList: customer.delegateList? customer.delegateList : "",
+      relativeRelation: customer.relativeRelation? customer.relativeRelation : null,
+      request: {id: customer.request.id},
+      requestNo: '1234',
+      customerType: {id: customer.customerType.id},
+      particpantType: {id: this.participantType},
+    });
+this.procurationCustomer.controls.customer.get('birthDate').setValue(birthD);
+
+
+this.procurationCustomer.controls.facilityData.patchValue({
+  commericalRegister: customer.facilityData.commericalRegister? customer.facilityData.commericalRegister : "",
+  expiryDate: customer.facilityData.expiryDate? moment(customer.facilityData.expiryDate).subtract(1, 'months') : null,
+  signatories: customer.facilityData.signatories? customer.facilityData.signatories : null,
+  humanPartners: customer.facilityData.humanPartners? customer.facilityData.humanPartners : null,
+  branches: customer.facilityData.branches? customer.facilityData.branches : [],
+  establishmentPartners: customer.facilityData.establishmentPartners? customer.facilityData.establishmentPartners : [],
+  facilityNo: customer.facilityData.facilityNo? customer.facilityData.facilityNo : "",
+  facilityName: customer.facilityData.facilityName? customer.facilityData.facilityName : "",
+  postalBox: customer.facilityData.postalBox? customer.facilityData.postalBox : "",
+  telephone: customer.facilityData.telephone? customer.facilityData.telephone : ""
+});
+
+
+    this.procurationCustomer.controls.procuration.patchValue({
+      id: customer.procuration.id? customer.procuration.id : null,
+      repProcurationSerial: customer.procuration.repProcurationSerial? customer.procuration.repProcurationSerial : 0,
+      repProcurationYear: customer.procuration.repProcurationYear? customer.procuration.repProcurationYear : "",
+      issuer: customer.procuration.issuer? customer.procuration.issuer : 0,
+      procurationType: 'true',
+      repName: 'name1',
+      procurationNote: customer.procuration.procurationNote? customer.procuration.procurationNote : " ",
+      repOrganizationUnitId: 1,
+      parentProcurationSerial: null,
+      manualFlag: customer.procuration.manualFlag
+})
+if (customer.facilityData.commericalRegister) {
+  this.getCommercials();
+}
+  };
 
 
   deleteProcurationCustomer = (id, entityId) => {
@@ -324,13 +445,9 @@ export class PartyComponent implements OnInit {
         this.store.dispatch(deleteCustomer({id: data, entityId}));
       }
     });
-  }
+  };
   onChangesExpiryDate = (event: any) => {
-    this.expiryDate = {
-      day: `${event.value._i.date}`,
-      month: `${event.value._i.month + 1}`,
-      year: `${event.value._i.year}`
-    };
+    this.expiryDate = this.dateToObject(event);
     if (this.procurationCustomer.controls.customer.get('customerCivilId').value) {
       this.customerService.getCustomerFromROP({
         civilNumber: this.procurationCustomer.controls.customer.get('customerCivilId').value,
@@ -353,7 +470,8 @@ export class PartyComponent implements OnInit {
         }
       });
     }
-  }
+  };
+
  set customerType (type) {
     this.requestCustomerType = type;
   }
@@ -362,23 +480,58 @@ export class PartyComponent implements OnInit {
     if (!this.mociData) {
     if (environment.production) {
       this.customerService.getMociData(this.procurationCustomer.controls.facilityData.get('commericalRegister').value).subscribe(res => {
-        this.mociData = +res.data;
+        this.mociData = res.data;
+        this.procurationCustomer.controls.facilityData.get('facilityName').patchValue(this.mociData.companySummary.company.arabicName);
+        this.procurationCustomer.controls.facilityData.get('expiryDate').patchValue(moment(new Date(this.mociData.companySummary.company.expiryDate)).format('YYYY-MM-DD'));
+        if (!this.mociData.companySummary?.company?.arabicName) {
+          this.procurationCustomer.controls.facilityData.get('facilityName').enable()
+        } else {
+          this.procurationCustomer.controls.facilityData.get('facilityName').disable()
+        }
       });
     } else {
     this.mociData = this.customerService.getMociDataMocaup(this.procurationCustomer.controls.facilityData.get('commericalRegister').value);
+      this.procurationCustomer.controls.facilityData.get('facilityName').patchValue(this.mociData.data.companySummary.company.arabicName);
+      this.procurationCustomer.controls.facilityData.get('expiryDate').patchValue(moment(new Date(this.mociData.data.companySummary.company.expiryDate)).format('YYYY-MM-DD'));
     }
-    this.procurationCustomer.controls.facilityData.get('facilityName').patchValue(this.mociData.data.companySummary.company.arabicName);
 
-    this.procurationCustomer.controls.facilityData.get('expiryDate').patchValue(moment(new Date(this.mociData.data.companySummary.company.expiryDate)).format('YYYY-MM-DD'));
     }
   };
 
+ commercialsValidations = () => {
+   this.isCommercialValid = true;
+if (this.mociData) {
+  if (this.procurationCustomer.controls.facilityData.get('expiryDate').value < moment(new Date()).format('YYYY-MM-DD')) {
+    this.messageService.errorMessage(` السجل التجاري رقم${this.procurationCustomer.controls.facilityData.get('commericalRegister').value} الخاص ب ${this.procurationCustomer.controls.facilityData.get('facilityName')} منتهي الصلاحية بتاريخ ${this.procurationCustomer.controls.facilityData.get('expiryDate').value}`)
+    this.isCommercialValid = false;
+  } else if(this.procurationCustomer.controls.customer.get('customerCategory').value == 6) {
+   const theOwners = this.mociData.companySummary.investors.filter( (e) => e.designation.code == 'OWNER' && e.person.civilId == this.procurationCustomer.controls.customer.get('customerCivilId').value );
+   if (theOwners.length == 0 && this.procurationCustomer.controls.customer.get('customerCivilId').value) {
+     this.messageService.errorMessage(` الرقم المدني${this.procurationCustomer.controls.customer.get('customerCivilId').value} غير مسجل كمالك في السجل التجاري الخاص ب ${this.procurationCustomer.controls.facilityData.get('facilityName').value}`);
+     this.isCommercialValid = false;
+   }
+
+  } else if(this.procurationCustomer.controls.customer.get('customerCategory').value == 55) {
+    const thePartners = this.mociData.companySummary.investors.filter( (e) =>  e.designation.code == 'LL_PARTNER' && e.person.civilId == this.procurationCustomer.controls.customer.get('customerCivilId').value );
+    if (thePartners.length == 0 && this.procurationCustomer.controls.customer.get('customerCivilId').value) {
+      this.messageService.errorMessage(` الرقم المدني${this.procurationCustomer.controls.customer.get('customerCivilId').value} غير مسجل كشريك مفوض في السجل التجاري الخاص ب ${this.procurationCustomer.controls.facilityData.get('facilityName').value}`);
+      this.isCommercialValid = false;
+    }
+  } else if(this.procurationCustomer.controls.customer.get('customerCategory').value == 64) {
+    const thePartners = this.mociData.companySummary.signatories.filter( (e) => e.civilId == this.procurationCustomer.controls.customer.get('customerCivilId').value );
+    if (thePartners.length == 0 && this.procurationCustomer.controls.customer.get('customerCivilId').value) {
+      this.messageService.errorMessage(` الرقم المدني${this.procurationCustomer.controls.customer.get('customerCivilId').value} غير مسجل كمدير مفوض في السجل التجاري الخاص ب ${this.procurationCustomer.controls.facilityData.get('facilityName').value}`);
+      this.isCommercialValid = false;
+    }
+  }
+}
+ };
   changeValueDataType = (FPath,SPath) => {
     const control = this.procurationCustomer.get(`${FPath}`).get(`${SPath}`);
     control.valueChanges.pipe(distinct()).subscribe(res => {
-      control.setValue(`${res}`)
+      control.setValue(`${res}`);
     });
-}
+};
   openCommercialDialog = () => {
     const dialogRef = this.dialog.open(CommericalComponent, {
       width: '200vh',
@@ -386,57 +539,41 @@ export class PartyComponent implements OnInit {
       data:  this.mociData
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
     });
-  }
+  };
   onChangesBirthDate = (event: any) => {
-    this.birthDate = {
-      day: `${event.value._i.date}`,
-      month: `${event.value._i.month + 1}`,
-      year: `${event.value._i.year}`
-    };
-  }
+    this.birthDate = this.dateToObject(event);
+  };
   onGetBirthDateFromROP = (date: string): any => {
     let d: any = date.split('-');
     d = {day: d[0], month: d[1], year: d[2]};
     return d;
-  }
+  };
   onChangesEmbassyDate = (event: any) => {
-    this.embassyDate = {
-      day: `${event.value._i.date}`,
-      month: `${event.value._i.month + 1}`,
-      year: `${event.value._i.year}`
-    };
-  }
+    this.embassyDate = this.dateToObject(event);
+  };
   onChangesCompanyExpiryDate = (event: any) => {
-    this.companyExpiryDate = {
-      day: `${event.value._i.date}`,
-      month: `${event.value._i.month + 1}`,
-      year: `${event.value._i.year}`
-    };
-  }
+    this.companyExpiryDate = this.dateToObject(event);
+  };
   onChangesWidowingDate = (event: any) => {
-    this.widowingDate = {
-      day: `${event.value._i.date}`,
-      month: `${event.value._i.month + 1}`,
-      year: `${event.value._i.year}`
-    };
-  }
+    this.widowingDate = this.dateToObject(event);
+  };
   getFormControlCustomerValue = (control) => {
     return this.procurationCustomer.controls.customer.value[`${control}`];
-  }
+  };
   getFormControlCustomer = (control) => {
     return this.procurationCustomer.controls.customer.get(`${control}`);
-  }
+  };
   getFormControlFacilityData = (control) => {
     return this.procurationCustomer.controls.facilityData.get(`${control}`);
-  }
+  };
   getFormControlProcurationValue = (control) => {
     return this.procurationCustomer.controls.procuration.value[`${control}`];
-  }
+  };
   getFormControlProcuration = (control) => {
     return this.procurationCustomer.controls.procuration.get(`${control}`);
-  }
+  };
   clearForm = () => {
     this.procurationCustomer.reset({
       customer: {
@@ -521,7 +658,9 @@ export class PartyComponent implements OnInit {
       particpantType: {id : this.participantType},
       request: {id: this.requestId}
     });
-  }
+    this.fetchedCustomer = '';
+    this.mociData = '';
+  };
   openLawersDialog(): void {
     const dialogRef = this.dialog.open(LawyersModalComponent, {
       width: '250vh'
@@ -529,33 +668,47 @@ export class PartyComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.length > 0) {
-        result.forEach((e, i) => {
-          this.clearForm();
-          this.procurationCustomer.patchValue({
-            facilityData: {
-              commericalRegister: e.InstitutionId,
-              facilityName: this.lawOfficeName,
-            },
-            customer: {
-              customerName: e.CustomerName,
-              customerStatus: {id: 1},
-              customerType: {id: 1},
-              customerCategory: {id: 1},
-              nationality: {id: e.NationalityTypeNo},
-              customerIDType: {id: 1},
-              customerCivilId: e.CustomerCivilId,
-              address: e.GadwalDesc,
-              government: {id: 2},
-              idExpiryDate: null,
-              customerGender: {id: 1},
-              customerReligion: {id: 4},
-              professionId: e.LawyerId
-            },
-            customerType: {id: 1},
-            requestCustomerType: {id: 56},
+        const api = [];
+        this.customers$.subscribe(res => {
+          res.forEach((ele, i) => {
+          //  this.deleteProcurationCustomer()
+             api.push(this.customerService.deleteCustomer({"success":true,"status":null,"data":{"id":ele.customer.id}}));
           });
-          this.store.dispatch(createCustomer({customer: this.procurationCustomer.getRawValue() }));
-        });
+        }).unsubscribe();
+        zip(...api).subscribe(res => {
+          this.store.dispatch(clearCustomers());
+
+          result.forEach((e, i) => {
+            this.clearForm();
+            this.procurationCustomer.patchValue({
+              facilityData: {
+                commericalRegister: e.InstitutionId,
+                facilityName: this.lawOfficeName,
+              },
+              customer: {
+                customerName: e.CustomerName,
+                customerStatus: {id: 1},
+                customerType: {id: 1},
+                customerCategory: {id: 1},
+                nationality: {id: e.NationalityTypeNo},
+                customerIDType: {id: 1},
+                customerCivilId: e.CustomerCivilId,
+                address: e.GadwalDesc,
+                government: {id: 2},
+                idExpiryDate: null,
+                customerGender: {id: 1},
+                customerReligion: {id: 4},
+                professionId: e.LawyerId
+              },
+              customerType: {id: 1},
+              requestCustomerType: {id: 56},
+            });
+            this.store.dispatch(createCustomer({customer: this.procurationCustomer.getRawValue() }));
+          });
+
+       });
+
+
 
       }
     });
@@ -564,6 +717,47 @@ export class PartyComponent implements OnInit {
     return office && office.InstitutionName ? office.InstitutionName : '';
   }
 
+drawCommercialHumanParteners = (partners: any[]) => {
+  return partners.map(e => ({
+        humanName: e.person.arabicName,
+        nationality: e.person.nationality.code,
+        nIn: e.person?.civilId ? e.person?.civilId : e.person?.passport.number,
+        nInTypeCode: e.person?.civilId ? '1' : '2',
+        nInTypeDesc: e.person?.civilId ? 'OID' : 'PASSPORT',
+        partnerTypeCode: e.designation.code,
+        partnerTypeDesc: e.designation.arabicName,
+        percentage: e.numberOfShares,
+    }));
+};
+
+  drawCommercialSignatures = (partners: any[]) => {
+    return  partners.map(e => ({
+      nationality: e.nationality.code,
+      nIn: e?.civilId,
+      nInTypeCode: e?.civilId ? '1' : '2',
+      nInTypeDesc: e?.civilId ? 'OID' : 'PASSPORT',
+      partnerTypeCode: '1',
+      partnerTypeDesc: 'SIGNATORY',
+      signatorieName: e.arabicName,
+    }));
+  };
+  dateToObject = (event) => {
+    let i = [];
+    if (typeof event === 'string') {
+      i =  event.split('-');
+      return {
+        day: `${i[2]}`,
+        month: `${i[1]}`,
+        year: `${i[0]}`
+      };
+    } else {
+      return {
+        day: `${event.value?._i.date ? event.value._i.date : event._i.day}`,
+        month: `${event.value?._i.month + 1 ? event.value._i.month + 1 : event._i.month}`,
+        year: `${event.value?._i.year ? event.value?._i.year : event._i.year}`
+      };
+    }
+  };
   encryption = (data) => {
     return this.encryptDecryptService.encryptUsingAES256(data);
   }

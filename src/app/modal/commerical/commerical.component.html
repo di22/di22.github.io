@@ -5,7 +5,7 @@
 
       <mat-card-content>
         <mat-card-title>بيانات الشركاء</mat-card-title>
-      <mat-table [dataSource]="data.data.companySummary.investors" class="mat-elevation-z8">
+      <mat-table [dataSource]="data.companySummary.investors" class="mat-elevation-z8">
         <!-- Position Column -->
         <ng-container *ngFor="let column of columnsCommercialInvestors" [matColumnDef]="column.columnDef">
           <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
@@ -20,7 +20,7 @@
 
       <mat-card-content>
         <mat-card-title>بيانات المخولين بالتوقيع</mat-card-title>
-        <mat-table [dataSource]="data.data.companySummary.signatories" class="mat-elevation-z8">
+        <mat-table [dataSource]="data.companySummary.signatories" class="mat-elevation-z8">
           <!-- Position Column -->
           <ng-container *ngFor="let column of columnsCommercialSignatories" [matColumnDef]="column.columnDef">
             <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
@@ -35,7 +35,7 @@
 
       <mat-card-content>
         <mat-card-title>بيانات الفروع</mat-card-title>
-        <mat-table [dataSource]="data.data.companySummary.placeOfActivities" class="mat-elevation-z8">
+        <mat-table [dataSource]="data.companySummary.placeOfActivities" class="mat-elevation-z8">
           <!-- Position Column -->
           <ng-container *ngFor="let column of columnsCommercialBranches" [matColumnDef]="column.columnDef">
             <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>

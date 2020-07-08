@@ -12,7 +12,6 @@ export class TableDataService {
   getBasicDataTable = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.',    cell: (element: any) => `` },
-      // tslint:disable-next-line:max-line-length
       { columnDef: 'customerIdType',     header: 'نوع الوثيقه',   cell: (element: any) => element.customer.customerIDType ?
           `${element.customer.customerIDType.description}` : ''},
       { columnDef: 'civilId',   header: 'الرقم المدني', cell: (element: any) => `${element.customer.customerCivilId}`},
@@ -25,12 +24,11 @@ export class TableDataService {
       { columnDef: 'edit-delete',   header: 'تعديل/حذف', cell: (element: any) => ``}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
 
   getLawerDataTable = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.',    cell: (element: any) => `` },
-      // tslint:disable-next-line:max-line-length
       { columnDef: 'customerIdType',     header: 'نوع الوثيقه',   cell: (element: any) => `${element.customer.customerIDType.description}`},
       { columnDef: 'civilId',   header: 'الرقم المدني', cell: (element: any) => `${element.customer.customerCivilId}`},
       { columnDef: 'nationality',   header: 'الجنسية', cell: (element: any) => `${element.customer.nationality.description}`},
@@ -44,7 +42,7 @@ export class TableDataService {
       { columnDef: 'edit-delete',   header: 'تعديل/حذف', cell: (element: any) => ``   }
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
 
   getLawersDataTableModal = () => {
     this.columns = [
@@ -57,7 +55,7 @@ export class TableDataService {
       { columnDef: 'class',   header: 'الدرجة', cell: (element: any) => `${element.GadwalDesc ? element.GadwalDesc : ''}`},
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
   getCommercialInvestorsModal = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
@@ -68,7 +66,7 @@ export class TableDataService {
       { columnDef: 'partnershipType', header: 'نوع الشراكة', cell: (element: any) => `${element.designation.arabicName}`}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
   getCommercialSignatoriesModal = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
@@ -77,7 +75,7 @@ export class TableDataService {
       { columnDef: 'civilId', header: 'الرقم المدني', cell: (element: any) => `${element.civilId ? element.civilId : element.passport.number}`}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
   getCommercialBranchesModal = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
@@ -85,12 +83,11 @@ export class TableDataService {
       { columnDef: 'poaCode', header: 'الرقم المسلسل',   cell: (element: any) => element.poaCode}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
 
   getMyRequestsTable = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.',    cell: (element: any) => `` },
-      // tslint:disable-next-line:max-line-length
       { columnDef: 'requestId',     header: 'رقم الطلب',   cell: (element: any) => element.id},
       { columnDef: 'requestDate',   header: 'تاريخ الطلب', cell: (element: any) => `${element.requestDate.day}/${element.requestDate.month}/${element.requestDate.year}`},
       { columnDef: 'requestStatus',   header: 'حالة الطلب', cell: (element: any) =>
@@ -100,7 +97,22 @@ export class TableDataService {
       { columnDef: 'complete-request',   header: 'إستكمال الطلب', cell: (element: any) => `إستكمال الطلب`}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
+
+  getSearchRequestsTable = () => {
+    this.columns = [
+      { columnDef: 'position', header: 'No.',    cell: (element: any) => `` },
+      { columnDef: 'requestId',     header: 'رقم الطلب',   cell: (element: any) => `${element.request.id}` },
+      { columnDef: 'requestDate',   header: 'تاريخ الطلب', cell: (element: any) => `${element.request.requestDate.day}/${element.request.requestDate.month}/${element.request.requestDate.year}`},
+      { columnDef: 'requestNo',   header: 'رقم التوثيق', cell: (element: any) => `${element.procurationSerial}/${element.procurationYear}`},
+      { columnDef: 'stampDate',   header: 'تاريخ الإصدار', cell: (element: any) => `${new Date(element.procurationDate).toLocaleDateString()}`},
+      { columnDef: 'requestType',   header: 'نوع المحرر', cell: (element: any) => `${element.request.transactionType.description}`},
+      { columnDef: 'requester',   header: 'الموثق', cell: (element: any) => `${element.procUsers.customerName}`},
+      { columnDef: 'mo7arr-attachments',   header: 'المحرر/المرفقات', cell: (element: any) => ``}
+    ];
+    this.displayedColumns = this.columns.map(c => c.columnDef);
+  };
+
   getFeesTableModal = () => {
     this.columns = [
       { columnDef: 'position', header: 'No.', cell: (element: any) => `` },
@@ -110,12 +122,11 @@ export class TableDataService {
       { columnDef: 'total',   header: 'الإجمالي', cell: (element: any) => `${element.total}`}
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
   ///////////////////////////////////
   getFeesSettingTable = () => {
     this.columns = [
       { columnDef: 'position', header: 'الجهة',    cell: (element: any) => `` },
-      // tslint:disable-next-line:max-line-length
       { columnDef: 'requestId',     header: 'رقم الطلب',   cell: (element: any) =>element.id},
       { columnDef: 'requestType',   header: 'نوع الطلب', cell: (element: any) =>element.description},
       { columnDef: 'partiesFeesValue',   header: 'قيمة رسوم الاطراف', cell: (element: any) =>element.partyFees},
@@ -125,7 +136,7 @@ export class TableDataService {
       { columnDef: 'deleteFee', header: '#',    cell: (element: any) => `` },
     ];
     this.displayedColumns = this.columns.map(c => c.columnDef);
-  }
+  };
 
 
   ///////////////////////////////////

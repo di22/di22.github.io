@@ -24,7 +24,7 @@ export class AuthService {
   }
   getToken = () => {
    return sessionStorage.getItem('token');
-  }
+  };
   getUserFromSession = () => {
     return JSON.parse(sessionStorage.getItem('user'));
   }

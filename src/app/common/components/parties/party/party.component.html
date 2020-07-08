@@ -18,8 +18,8 @@
                 <mat-select   formControlName="customerCategory">
                   <mat-option *ngFor="let cg of (requestCustomerTypes$ | async) | requestCustomerTypePipe: participantType: (transactionCustomerTypes$ | async)" [value]="cg?.id">{{cg?.description}}</mat-option>
                 </mat-select>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('customerCategory').hasError(type) && (getFormControlCustomer('customerCategory').dirty || getFormControlCustomer('customerCategory').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الصفه')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('customerCategory')" [fieldName]="'الصفه'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -28,17 +28,16 @@
                 <mat-select  formControlName="customerIDType">
                   <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id" (onSelectionChange)="customerType = cId">{{cId.description}}</mat-option>
                 </mat-select>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('customerIDType').hasError(type) && (getFormControlCustomer('customerIDType').dirty
-                   || getFormControlCustomer('customerIDType').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'نوع الوثيفه')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('customerIDType')" [fieldName]="'نوع الوثيفه'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width">
                 <mat-label>الرقم المدني</mat-label>
                 <input matInput type="number" formControlName="customerCivilId" appInputLimiter="maxLength">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('customerCivilId').hasError(type) && (getFormControlCustomer('customerCivilId').dirty || getFormControlCustomer('customerCivilId').touched)">{{validationMessagesService.getValidatorErrorMessage(type, {max: maxLength, min: 1}, 'الرقم المدني')}}</mat-error>
+                <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('customerCivilId')" [fieldName]="'الرقم المدني'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -47,9 +46,8 @@
                 <input matInput [matDatepicker]="dp2" (dateChange)="onChangesExpiryDate($event)" formControlName="idExpiryDate" >
                 <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
                 <mat-datepicker #dp2 ></mat-datepicker>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('idExpiryDate').hasError(type) && (getFormControlCustomer('idExpiryDate').dirty
-                   || getFormControlCustomer('idExpiryDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الصلاحيه')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('idExpiryDate')" [fieldName]="'الصلاحيه'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -57,18 +55,16 @@
                 <mat-label>الاسم كامل</mat-label>
                 <input matInput formControlName="customerName">
                 <mat-hint align="start"><strong>الاسم يتكون من مقطعين علي الأقل</strong> </mat-hint>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('customerName').hasError(type) && (getFormControlCustomer('customerName').dirty
-                   || getFormControlCustomer('customerName').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الاسم كامل')}}</mat-error>
+                <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('customerName')" [fieldName]="'الاسم كامل'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width" *ngIf="participantType !== 3">
                 <mat-label> رقم النقال</mat-label>
                 <input matInput type="tel" formControlName="mobileNo">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('mobileNo').hasError(type) && (getFormControlCustomer('mobileNo').dirty
-                   || getFormControlCustomer('mobileNo').touched)">hhhhh</mat-error>
+                <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('mobileNo')" [fieldName]="'رقم النقال'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -77,9 +73,8 @@
                 <mat-form-field class="input-width" *ngIf="participantType !== 3">
                   <mat-label>العنوان</mat-label>
                   <input matInput formControlName="address">
-                  <mat-error *ngFor="let type of (validationTypes$ | async)">
-                    <mat-error *ngIf="getFormControlCustomer('address').hasError(type) && (getFormControlCustomer('address').dirty
-                   || getFormControlCustomer('address').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'العنوان')}}</mat-error>
+                  <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('address')" [fieldName]="'العنوان'"></app-control-messages>
                   </mat-error>
                 </mat-form-field>
               </ng-template>
@@ -91,9 +86,8 @@
                 <mat-select   formControlName="nationality">
                   <mat-option *ngFor="let n of (nationalities$ | async)" [value]="n.id">{{n.description}}</mat-option>
                 </mat-select>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('nationality').hasError(type) && (getFormControlCustomer('nationality').dirty
-                   || getFormControlCustomer('nationality').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'الجنسيه')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('nationality')" [fieldName]="'الجنسيه'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -103,9 +97,8 @@
                   <input matInput [matDatepicker]="dp" (dateChange)="onChangesBirthDate($event)" formControlName="birthDate">
                   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                   <mat-datepicker #dp></mat-datepicker>
-                  <mat-error *ngFor="let type of (validationTypes$ | async)">
-                    <mat-error *ngIf="getFormControlCustomer('birthDate').hasError(type) && (getFormControlCustomer('birthDate').dirty
-                   || getFormControlCustomer('birthDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'تاريخ الميلاد')}}</mat-error>
+                  <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('birthDate')" [fieldName]="'تاريخ الميلاد'"></app-control-messages>
                   </mat-error>
                 </mat-form-field>
               </ng-template>
@@ -140,9 +133,8 @@
                 <mat-select   formControlName="workStatusId">
                   <mat-option *ngFor="let qualification of (adminTypes$ | async) | adminTypes: 3" [value]="qualification.Id">{{qualification.NameAr}}</mat-option>
                 </mat-select>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('workStatusId').hasError(type) && (getFormControlCustomer('workStatusId').dirty
-                   || getFormControlCustomer('workStatusId').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'حالة العمل')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('workStatusId')" [fieldName]="'حالة العمل'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
               </ng-template>
@@ -151,9 +143,8 @@
               <mat-form-field class="input-width" *ngIf="getFormControlCustomerValue('customerIDType') !== 1 && participantType !== 3">
                 <mat-label>رقم موافقه السفاره</mat-label>
                 <input matInput formControlName="embassyDocNo">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('embassyDocNo').hasError(type) && (getFormControlCustomer('embassyDocNo').dirty
-                   || getFormControlCustomer('embassyDocNo').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'رقم موافقه السفاره')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('embassyDocNo')" [fieldName]="'رقم موافقه السفاره'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -162,9 +153,8 @@
                 <input matInput [matDatepicker]="embassy" (dateChange)="onChangesEmbassyDate($event)" formControlName="embassyDocDate">
                 <mat-datepicker-toggle matSuffix [for]="embassy"></mat-datepicker-toggle>
                 <mat-datepicker #embassy></mat-datepicker>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('embassyDocDate').hasError(type) && (getFormControlCustomer('embassyDocDate').dirty
-                   || getFormControlCustomer('embassyDocDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'تاريخ موافقة السفاره')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('embassyDocDate')" [fieldName]="'تاريخ موافقة السفاره'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
               </ng-template>
@@ -173,9 +163,8 @@
                 <mat-form-field class="input-width" *ngIf="participantType === 2">
                   <mat-label>رقم الإعلام الشرعي</mat-label>
                   <input matInput formControlName="widowingNo">
-                  <mat-error *ngFor="let type of (validationTypes$ | async)">
-                    <mat-error *ngIf="getFormControlCustomer('widowingNo').hasError(type) && (getFormControlCustomer('widowingNo').dirty
-                   || getFormControlCustomer('widowingNo').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'رقم الإعلام الشرعي')}}</mat-error>
+                  <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('widowingNo')" [fieldName]="'رقم الإعلام الشرعي'"></app-control-messages>
                   </mat-error>
                 </mat-form-field>
               </ng-template>
@@ -186,9 +175,8 @@
                   <input matInput [matDatepicker]="widowingDate" (dateChange)="onChangesWidowingDate($event)" formControlName="widowingDate">
                   <mat-datepicker-toggle matSuffix [for]="widowingDate"></mat-datepicker-toggle>
                   <mat-datepicker #widowingDate></mat-datepicker>
-                  <mat-error *ngFor="let type of (validationTypes$ | async)">
-                    <mat-error *ngIf="getFormControlCustomer('widowingDate').hasError(type) && (getFormControlCustomer('widowingDate').dirty
-                   || getFormControlCustomer('widowingDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'تاريخ الإصدار')}}</mat-error>
+                  <mat-error>
+                  <app-control-messages [control]="getFormControlCustomer('widowingDate')" [fieldName]="'تاريخ الإصدار'"></app-control-messages>
                   </mat-error>
                 </mat-form-field>
               </ng-template>
@@ -197,9 +185,8 @@
               <mat-form-field class="input-width" *ngIf="participantType == 2">
                 <mat-label>جهة الإصدار</mat-label>
                 <input matInput formControlName="widowingIssuePlace">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlCustomer('widowingIssuePlace').hasError(type) && (getFormControlCustomer('widowingIssuePlace').dirty
-                   || getFormControlCustomer('widowingIssuePlace').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'جهة الإصدار')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlCustomer('widowingIssuePlace')" [fieldName]="'جهة الإصدار'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
               </ng-template>
@@ -230,18 +217,16 @@
               <mat-form-field class="input-width">
                 <mat-label> السجل التجاري</mat-label>
                 <input matInput formControlName="commericalRegister" type="number" (blur)="getCommercials()">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlFacilityData('commericalRegister').hasError(type) && (getFormControlFacilityData('commericalRegister').dirty
-                   || getFormControlFacilityData('commericalRegister').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'السجل التجاري')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlFacilityData('commericalRegister')" [fieldName]="'السجل التجاري'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field class="input-width" >
                 <mat-label> اسم الشركه</mat-label>
                 <input matInput formControlName="facilityName">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlFacilityData('facilityName').hasError(type) && (getFormControlFacilityData('facilityName').dirty
-                   || getFormControlFacilityData('facilityName').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'اسم الشركه')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlFacilityData('facilityName')" [fieldName]="'اسم الشركه'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -260,9 +245,8 @@
                 <input matInput [matDatepicker]="companyExpiry" (dateChange)="onChangesCompanyExpiryDate($event)" formControlName="expiryDate">
                 <mat-datepicker-toggle matSuffix [for]="companyExpiry"></mat-datepicker-toggle>
                 <mat-datepicker #companyExpiry></mat-datepicker>
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlFacilityData('expiryDate').hasError(type) && (getFormControlFacilityData('expiryDate').dirty
-                   || getFormControlFacilityData('expiryDate').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'اسم الشركه')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlFacilityData('expiryDate')" [fieldName]="'تاريخ الإنتهاء'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
               <button *ngIf="mociData" mat-raised-button color="warn" (click)="openCommercialDialog()">تحقق</button>
@@ -289,22 +273,19 @@
                 getFormControlCustomerValue('customerCategory') === 1? 'رقم الوكاله' : 'رقم الخطاب'}}</mat-label>
                 <input matInput formControlName="procurationNote" *ngIf="getFormControlProcurationValue('manualFlag') === true">
                 <input matInput  formControlName="repProcurationSerial" *ngIf="getFormControlProcurationValue('manualFlag') === false">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="(getFormControlProcuration('procurationNote').hasError(type) && (getFormControlProcuration('procurationNote').dirty
-                   || getFormControlProcuration('procurationNote').touched))
-                    || (getFormControlProcuration('repProcurationSerial').hasError(type) && (getFormControlProcuration('repProcurationSerial').dirty
-                   || getFormControlProcuration('repProcurationSerial').touched))">{{validationMessagesService.getValidatorErrorMessage(type, null, getFormControlCustomerValue('customerCategory') === 7 ? 'رقم التفويض' :
-                    getFormControlCustomerValue('customerCategory') === 1? 'رقم الوكاله' : 'رقم الخطاب')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlProcurationValue('manualFlag') ? getFormControlProcuration('procurationNote') : getFormControlProcuration('repProcurationSerial')" [fieldName]="getFormControlCustomerValue('customerCategory') === 7 ? 'رقم التفويض' :
+                getFormControlCustomerValue('customerCategory') === 1? 'رقم الوكاله' : 'رقم الخطاب'"></app-control-messages>
                 </mat-error>
+
               </mat-form-field>
 
               <mat-form-field class="input-width" *ngIf="getFormControlCustomerValue('customerCategory') === 3 ||
                                                          getFormControlCustomerValue('customerCategory') === 74">
                 <mat-label>جهة الخطاب</mat-label>
                 <input matInput formControlName="issuer">
-                <mat-error *ngFor="let type of (validationTypes$ | async)">
-                  <mat-error *ngIf="getFormControlProcuration('issuer').hasError(type) && (getFormControlProcuration('issuer').dirty
-                   || getFormControlProcuration('issuer').touched)">{{validationMessagesService.getValidatorErrorMessage(type, null, 'جهة الخطاب')}}</mat-error>
+                <mat-error>
+                <app-control-messages [control]="getFormControlProcuration('issuer')" [fieldName]="'جهة الخطاب'"></app-control-messages>
                 </mat-error>
               </mat-form-field>
 
@@ -332,7 +313,7 @@
               </button>
             </div>
 
-            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center" *ngIf="!(requester$ | async)">
+            <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10%" fxLayoutAlign="start center" *ngIf="!(requester$ | async)&& participantType !== 3 || fetchedCustomer?.requesterFlag">
                 <mat-checkbox formControlName="requesterFlag" >مقدم الطلب</mat-checkbox>
             </div>
 
@@ -343,7 +324,7 @@
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div>
-            <button mat-raised-button color="Basic" [disabled]="!requestId" (click)="creatProcurationCustomer(procurationCustomer)">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
+            <button mat-raised-button color="Basic" [disabled]="!requestId || (participantType === 1 && url.includes('POA_LAWYER') && ((customers$ | async)| customerParticpantType: 1).length === 1 && !procurationCustomer.value.id)" (click)="creatProcurationCustomer(procurationCustomer)">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
           </div>
           <div>
           <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>

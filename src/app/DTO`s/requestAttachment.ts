@@ -1,6 +1,6 @@
 import {Subscription} from 'rxjs';
 
-export interface RequestAttachment {
+export class RequestAttachment {
   data: File;
   state: string;
   inProgress: boolean;

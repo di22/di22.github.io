@@ -34,8 +34,6 @@ export class MyRequestsComponent implements OnInit {
   searchObj: any = {data: {}};
   dateFrom: any;
   dateTo: {};
-  searchResult: any;
-  searchResultLength: number;
   displayedColumns: string[];
   columns = [];
   size: number;
@@ -50,8 +48,6 @@ export class MyRequestsComponent implements OnInit {
               private authService: AuthService,
               private routeService: RouteService,
               private inboxService: InboxService,
-              private router: Router,
-              private activatedRoute: ActivatedRoute,
               private encryptDecryptService: EncryptDecryptService) {
     this.tableDataService.getMyRequestsTable();
     this.columns = this.tableDataService.tableColumns;
@@ -76,7 +72,7 @@ export class MyRequestsComponent implements OnInit {
       pageNo: [1],
       pageSize: [1000000000],
     });
-  }
+  };
   search = (searchObj) => {
     searchObj.requestDateTo = this.dateTo;
     searchObj.requestDateFrom = this.dateFrom;
@@ -84,28 +80,27 @@ export class MyRequestsComponent implements OnInit {
       data: { ...searchObj }
     });
     this.inboxService.searchOSsDraftRequest(this.searchObj).subscribe((res: any) => {
-      this.dataSource.data = res.data.searchResults.ossNoneCompletedRequests.results;
-      this.searchResultLength = res.data.searchResults.ossNoneCompletedRequests.results.length;
+      this.dataSource.data = res.data.searchResults.ossNoneCompletedRequests?.results? res.data.searchResults.ossNoneCompletedRequests?.results : [];
     });
-   // this.store.dispatch(loadInbox({fees-package: this.searchObj}));
-  }
+
+  };
   onChangesFromDate = (event: any) => {
     this.dateFrom = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
-  }
+  };
   onChangesToDate = (event: any) => {
     this.dateTo = {
       day: `${event.value._i.date}`,
       month: `${event.value._i.month + 1}`,
       year: `${event.value._i.year}`
     };
-  }
+  };
   routeToRequest = (requestType, requestId) => {
     this.routeService.route(requestType, requestId);
-  }
+  };
   onPageChange(e) {
     this.size = e.pageSize;
    // this.page = e.pageIndex;

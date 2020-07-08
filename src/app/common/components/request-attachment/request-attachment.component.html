@@ -16,6 +16,10 @@
                 <mat-select  formControlName="attachmentTypeId">
                   <mat-option *ngFor="let ra of (requestAttachments$ | async)" [value]="ra.id">{{ra.description}}</mat-option>
                 </mat-select>
+                <mat-error>
+                  <app-control-messages [control]="requestAttachmentForm.controls.attachmentTypeId" [fieldName]="'نوع المرفق'"></app-control-messages>
+                </mat-error>
+
               </mat-form-field>
 
               <button mat-button color="warn" (click)="onClick()">
@@ -35,9 +39,11 @@
             </span>
                 </li>
               </ul>
-              <input type="file" id="fileUpload" name="fileUpload" multiple="multiple"
+              <input type="file" id="fileUpload" name="fileUpload" accept="{{accept}}" style="display:none;"/>
 
-                     accept="{{accept}}" style="display:none;"/>
+                <app-control-messages [control]="requestAttachmentForm.controls.file" [fieldName]="'المرفق'"></app-control-messages>
+
+
             </div>
           </div>
         </form>
@@ -61,15 +67,11 @@
             <mat-header-cell *matHeaderCellDef>نوع المرفق </mat-header-cell>
             <mat-cell *matCellDef="let element">{{element?.attachmentType.description}} </mat-cell>
           </ng-container>
-          <ng-container matColumnDef="show">
-            <mat-header-cell *matHeaderCellDef>عرض </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-              <mat-icon matTooltip="عرض" color="primary">remove_red_eye</mat-icon>
-            </mat-cell>
-          </ng-container>
+
           <ng-container matColumnDef="edit-delete">
-            <mat-header-cell *matHeaderCellDef>حذف </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>عرض/حذف</mat-header-cell>
             <mat-cell *matCellDef="let element">
+              <a mat-icon-button> <mat-icon matTooltip="عرض" color="primary" (click)="viewAttachment(element)">remove_red_eye</mat-icon></a>
               <a mat-icon-button><mat-icon matTooltip="حذف" color="warn" (click)="deleteRequestAttachment(element.id)">delete</mat-icon></a>
             </mat-cell>
           </ng-container>

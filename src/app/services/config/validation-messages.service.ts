@@ -1,20 +1,18 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {TransactionCategories} from '../../common/transaction-data/transactionCategories';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ValidationMessagesService {
 
-  private subject = new BehaviorSubject<any>('');
-  message: Observable<any> = this.subject.asObservable();
   transactionCategories: TransactionCategories = new TransactionCategories();
   routUrl = this.route.config[this.route.config.length - 1].path;
   constructor(private route: Router) { }
-  getValidatorErrorMessage = (validatorName: string, validatorValue?: any, fieldName?: string) => {
+  static getValidatorErrorMessage = (validatorName: string, validatorValue?: any, fieldName?: string) => {
 
     const config = {
       required: `  يرجي إدخال ${fieldName}`,
@@ -23,27 +21,26 @@ export class ValidationMessagesService {
       validDateMore: `يرجي إدخال تاريخ أكبر من تاريخ اليوم`,
       email: 'The ' + validatorName + ' must contain a valid email address',
       pattern: 'يرجي إدخال صيغه صحيحه',
-      minlength: ` يرجي إدخال أكثر من ${validatorValue ? validatorValue.min : 0} رقما `,
-      maxlength: ` يرجي إدخال أقل من${validatorValue ? validatorValue.max : 0}رقما `,
+      minlength: ` يرجي إدخال أكثر من ${validatorValue ? validatorValue.requiredLength : 0}`,
+      maxlength: ` يرجي إدخال أقل من${validatorValue ? validatorValue.requiredLength : 0}`,
       invalidPassword: 'Password must be at least 6 characters long, and contain a number.',
       invalidMatch: 'The password and confirm password must match'
     };
-    // this.subject.next(config[validatorName]);
     return config[validatorName];
-  }
-getMessages = () => {
+  };
+  getMessages = () => {
     return of([
       'required',
-    'validChose',
-    'validDate',
-    'email',
-    'pattern',
-    'minLength',
-    'maxLength',
-    'invalidPassword',
-    'invalidMatch'
+      'validChose',
+      'validDate',
+      'email',
+      'pattern',
+      'minLength',
+      'maxLength',
+      'invalidPassword',
+      'invalidMatch'
     ]);
-}
+  }
   validateAllFormFields(formGroup: FormGroup) {
     Object.keys(formGroup.controls).forEach(field => {
       const control = formGroup.get(field);
@@ -83,7 +80,7 @@ getMessages = () => {
       return Validators.required(formControl);
     }
     return null;
-  }
+  };
 
 mobileNoConditionallyRequiredValidator = (formControl: AbstractControl) => {
     if (!formControl.parent) {

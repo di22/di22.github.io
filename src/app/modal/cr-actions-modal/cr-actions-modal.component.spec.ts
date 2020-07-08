@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Mo7rrModalComponent } from './mo7rr-modal.component';
+import { CRActionsModalComponent } from './cr-actions-modal.component';
 
-describe('Mo7rrModalComponent', () => {
-  let component: Mo7rrModalComponent;
-  let fixture: ComponentFixture<Mo7rrModalComponent>;
+describe('CRActionsModalComponent', () => {
+  let component: CRActionsModalComponent;
+  let fixture: ComponentFixture<CRActionsModalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ Mo7rrModalComponent ]
+      declarations: [ CRActionsModalComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Mo7rrModalComponent);
+    fixture = TestBed.createComponent(CRActionsModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

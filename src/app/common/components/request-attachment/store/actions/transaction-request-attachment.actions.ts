@@ -10,7 +10,7 @@ export const loadTransactionRequestAttachments = createAction(
 
 export const addTransactionRequestAttachment = createAction(
   '[TransactionRequestAttachment/API] Add TransactionRequestAttachment',
-  props<{ transactionRequestAttachment: any }>()
+  props<{ transactionRequestAttachment: any, requestID: string }>()
 );
 
 export const addTransactionRequestAttachmentSuccess = createAction(

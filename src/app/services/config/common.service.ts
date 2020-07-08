@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {environment} from '../../../environments/environment';
-import {AdminTypes} from '../../DTO`s/admin-types';
 
 @Injectable({
   providedIn: 'root'

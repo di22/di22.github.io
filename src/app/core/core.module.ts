@@ -29,7 +29,9 @@ import {NgxSpinnerModule} from 'ngx-spinner';
     SpinnerComponent,
     LogoutComponent,
     RightMenuComponent,
-    BreadCrumbsComponent],
+    BreadCrumbsComponent
+  ],
+
   imports: [
     MaterialModule,
     CommonModule,

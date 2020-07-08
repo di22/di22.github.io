@@ -28,7 +28,7 @@
             <div fxFlex="25%">
               <mat-form-field>
                 <mat-label>الفتره من</mat-label>
-                <input matInput [matDatepicker]="dp" placeholder="Different locale" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
+                <input matInput [matDatepicker]="dp" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
                 <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                 <mat-datepicker #dp></mat-datepicker>
               </mat-form-field>
@@ -36,7 +36,7 @@
             <div fxFlex="25%">
               <mat-form-field>
                 <mat-label>الفتره إلي</mat-label>
-                <input matInput [matDatepicker]="dp1" placeholder="Different locale" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
+                <input matInput [matDatepicker]="dp1" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
                 <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
                 <mat-datepicker #dp1></mat-datepicker>
               </mat-form-field>
@@ -93,7 +93,7 @@
           <!-- Weight Column -->
           <ng-container matColumnDef="request-date">
             <mat-header-cell *matHeaderCellDef> تاريخ الطلب </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.requestDate.day}}/{{element.requestDate.month}}/{{element.requestDate.year}} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{element.requestDate?.day}}/{{element.requestDate?.month}}/{{element.requestDate?.year}} </mat-cell>
           </ng-container>
 
           <!-- Symbol Column -->
@@ -124,7 +124,9 @@
           <ng-container matColumnDef="attachments">
             <mat-header-cell *matHeaderCellDef>المرفقات </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <mat-icon matTooltip="المرفقات" color="primary">attachment</mat-icon>
+              <a mat-icon-button>
+              <mat-icon matTooltip="المرفقات" color="primary" (click)="attachmentsView(element.id)">attachment</mat-icon>
+              </a>
             </mat-cell>
           </ng-container>
 

@@ -21,14 +21,14 @@
                 <mat-form-field>
                   <mat-label >نوع الطلب</mat-label>
                   <mat-select  value="16px" formControlName="transactionTypeId">
-                    <mat-option *ngFor="let requestStatus of (transactionCategories$ | async)" [value]="requestStatus.id">{{requestStatus.description}}</mat-option>
+                    <mat-option *ngFor="let requestType of (transactionCategories$ | async)" [value]="requestType.id">{{requestType.description}}</mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
               <div fxFlex="25%">
                 <mat-form-field>
                   <mat-label>الفتره من</mat-label>
-                  <input matInput [matDatepicker]="dp" placeholder="Different locale" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
+                  <input matInput [matDatepicker]="dp" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
                   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                   <mat-datepicker #dp></mat-datepicker>
                 </mat-form-field>
@@ -36,7 +36,7 @@
               <div fxFlex="25%">
                 <mat-form-field>
                   <mat-label>الفتره إلي</mat-label>
-                  <input matInput [matDatepicker]="dp1" placeholder="Different locale" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
+                  <input matInput [matDatepicker]="dp1" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
                   <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
                   <mat-datepicker #dp1></mat-datepicker>
                 </mat-form-field>
@@ -70,7 +70,7 @@
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
-        <mat-paginator [pageSize]="size" [pageSizeOptions]="[5, 10, 20]"  [length]="searchResultLength" showFirstLastButtons></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
       </mat-card-content>
     </mat-card>
   </div>

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CommonService} from '../../services/config/common.service';
-import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,26 +11,26 @@ export class CustomerService {
   constructor(private http: HttpClient,
               private commonService: CommonService) {
     this.URL =  this.commonService.getURL('procuration');
-    this.mociURL =  this.commonService.getURL('service/integration/moci/companyData/');
+    this.mociURL =  this.commonService.getURL('service/integration/moci/companyData');
   }
   createCustomer = (obj) => {
    return this.http.post<any>(`${this.URL}add-procuration-customer.do`, obj);
-  }
+  };
   updateCustomer = (obj) => {
     return this.http.post<any>(`${this.URL}update-procuration-customer.do`, obj);
-  }
+  };
   getCustomerFromROP = (obj) => {
     return this.http.get<any>(`${this.commonService.getROPURL()}`, {params: obj});
-  }
+  };
   searchProcurationCustomerChilds = (obj) => {
     return  this.http.post(`${this.URL}search-customer-child.do`, obj);
-  }
+  };
   deleteCustomer = (id) => {
     return  this.http.post(`${this.URL}delete-procuration-customer.do`, id);
-  }
+  };
   getMociData = (cr) => {
-    return this.http.get<any>(`${this.mociURL + cr}`);
-  }
+    return this.http.get<any>(`${this.mociURL + cr}`, {headers: {'requestId': '123123'}});
+  };
   getMociDataMocaup = (cr) => {
     if (cr === 126) {
       return {

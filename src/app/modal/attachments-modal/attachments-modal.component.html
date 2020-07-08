@@ -3,7 +3,9 @@
   <mat-card class="card"  >
     <mat-card-content>
 
-<object [attr.data]="data.pdf" type="application/pdf" width="750px" height="500vh"></object>
+<object *ngIf="data?.pdf" [attr.data]="data.pdf" type="application/pdf" width="750px" height="500vh"></object>
+
+<object *ngIf="data?.image" [attr.data]="data.image"  width="750px" height="500vh"></object>
 
     </mat-card-content>
   <mat-card-actions>

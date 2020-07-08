@@ -59,6 +59,10 @@ export const deleteCustomerSuccess = createAction(
   props<{id: number}>()
 );
 
+export const clearCustomers = createAction(
+  '[Customer/API] Clear Customers'
+);
+
 export const loadCustomersSuccess = createAction(
   '[Customer] Load Customers Success',
   props<{ customers: Customer[] }>()

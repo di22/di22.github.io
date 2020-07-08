@@ -1,0 +1,126 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" fxLayoutAlign="center center" >
+    <mat-card class="card" >
+
+      <mat-card-content>
+        <form [formGroup]="transactionsForm" novalidate autocomplete="off">
+
+          <mat-form-field [hideRequiredMarker]="false"  class="input-width">
+            <mat-label > نوع المعاملة</mat-label>
+            <input type="text" matInput formControlName="transactionId"  [matAutocomplete]="auto">
+            <mat-icon matSuffix>search</mat-icon>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="getDisplayFn">
+              <mat-option  *ngFor="let requestType of (transactionCategories$ | async)|transactionsFlat|autoCompleteTypeFilter: transactionsForm.controls.transactionId.value" [value]="requestType">
+                {{requestType.description}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="5%" fxFlexFill>
+            <div fxLayout="column" fxFlex="20" class="mat-elevation-z8 card-content-space-around" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+             <mat-card-subtitle>
+                 <h5 class="headers-color header-size">التعامل مع المعاملة</h5>
+             </mat-card-subtitle>
+              <section fxLayout="column" fxLayoutAlign="center" fxLayoutGap="5%">
+                <mat-checkbox class="example-margin" formControlName="accessFromOss" >تعامل شباك واحد</mat-checkbox>
+                <mat-checkbox class="example-margin" formControlName="accessFromPortal" >تعامل بوابة</mat-checkbox>
+                <mat-checkbox class="example-margin" formControlName="accessFromMobile" >تعامل محمول</mat-checkbox>
+              </section>
+            </div>
+
+            <div fxLayout="column wrap" fxFlex="40" class="mat-elevation-z8 card-content-space-around" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+              <mat-card-subtitle>
+                <h5 class="headers-color header-size">الموافقات والصلاحية</h5>
+              </mat-card-subtitle>
+              <div fxLayout="row" >
+              <section fxLayout="column wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                <mat-checkbox class="example-margin" formControlName="approveFirstParty" >تستدعي موافقة الطرف الأول</mat-checkbox>
+                <mat-checkbox class="example-margin" formControlName="approveSecondParty" >تستدعي موافقة الطرف الثاني</mat-checkbox>
+                <mat-checkbox class="example-margin" formControlName="canIssueFromOss" >يسمح بالتسجيل من دائرة الكاتب بالعدل</mat-checkbox>
+              </section>
+
+              <section fxLayout="column wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                <div fxLayout="row wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                <mat-form-field class="input-width">
+                  <mat-label>الصلاحية (شهور)</mat-label>
+                  <input matInput type="number" formControlName="expirationPeriod" >
+                </mat-form-field>
+                <mat-form-field class="input-width">
+                  <mat-label> حد التكرار</mat-label>
+                  <input matInput type="number" formControlName="expirationPeriodCount" >
+                </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                <mat-form-field class="input-width">
+                  <mat-label>النسبة %</mat-label>
+                  <input matInput type="number" formControlName="percent" >
+                </mat-form-field>
+                <mat-form-field class="input-width">
+                  <mat-label>الحقل النسبي</mat-label>
+                  <input matInput type="number" formControlName="percentField" >
+                </mat-form-field>
+              </div>
+              </section>
+            </div>
+            </div>
+
+
+            <div fxLayout="column" fxFlex="30" class="mat-elevation-z8 card-content-space-around" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+              <mat-card-subtitle>
+                <h5 class="headers-color header-size">الأقارب</h5>
+              </mat-card-subtitle>
+              <section fxLayout="column wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                <div fxLayout="row wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                  <mat-form-field class="input-width">
+                    <mat-label>رسوم الدرجة الأولى</mat-label>
+                    <input matInput type="number" formControlName="showFirstClassRelation">
+                  </mat-form-field>
+                  <mat-form-field class="input-width">
+                    <mat-label> رسوم الدرجة الثانيه</mat-label>
+                    <input matInput type="number" formControlName="showSecondClassRelation">
+                  </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="center" fxLayoutGap="5%">
+                  <mat-form-field class="input-width">
+                    <mat-label>رسوم الدرجة الثالثه</mat-label>
+                    <input matInput type="number" formControlName="showThirdClassRelation">
+                  </mat-form-field>
+                  <mat-form-field class="input-width">
+                    <mat-label>رسوم الدرجة الرابعه</mat-label>
+                    <input matInput type="number" formControlName="showFourthClassRelation">
+                  </mat-form-field>
+                </div>
+              </section>
+            </div>
+          </div>
+        </form>
+        <form [formGroup]="custPartiesForm" novalidate autocomplete="off" fxLayout="row" fxLayoutAlign="center" fxLayoutGap="10%">
+          <div formArrayName="custTypes" *ngFor="let party of castParties.controls; let i = index" fxFlex="40" class="mat-elevation-z8 card-content-space-around" >
+
+
+            <div [formGroupName]="i" fxLayout="column"   fxLayout.xs="column"  fxLayoutAlign="center">
+              <mat-card-subtitle>
+                <h5 class="headers-color header-size">{{parties[i]}}</h5>
+              </mat-card-subtitle>
+              <mat-form-field >
+                <mat-label >الصفات</mat-label>
+                <mat-select formControlName="custTypeId" multiple>
+                  <mat-option *ngFor="let cg of (requestCustomerTypes$ | async)" [value]="cg?.id">{{cg?.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            </div>
+        </form>
+
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div  >
+            <button mat-raised-button color="Basic" (click)="save(transactionsForm.value)">حفظ</button>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

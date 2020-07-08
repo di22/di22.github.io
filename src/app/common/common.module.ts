@@ -39,6 +39,7 @@ import { RequestComponent } from './components/request/request.component';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {PipesModule} from '../pipes-module/pipes.module';
+import {ControlMessagesComponent} from './components/config/control-messages/control-messages.component'
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import {PipesModule} from '../pipes-module/pipes.module';
     RequestCustomerTypePipe,
     CompleteRequestComponent,
     RequestComponent,
+    ControlMessagesComponent
   ],
   imports: [
     CommonModule,
@@ -95,6 +97,7 @@ import {PipesModule} from '../pipes-module/pipes.module';
         DebagaComponent,
         RequestAttachmentComponent,
         CompleteRequestComponent,
+      ControlMessagesComponent,
       PipesModule
     ],
   providers: [{provide: MAT_DATE_LOCALE, useValue: 'ar-AR'},

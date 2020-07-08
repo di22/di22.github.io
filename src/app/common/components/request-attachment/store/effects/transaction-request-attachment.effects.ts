@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, concatMap } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { map, concatMap, tap} from 'rxjs/operators';
 
 import * as TransactionRequestAttachmentActions from '../actions/transaction-request-attachment.actions';
 import {RequestAttachmentService} from '../../../../services/request-attachment.service';
+import * as RequestActions from '../../../request/store/actions/request.actions';
+import {MessageService} from '../../../../../services/config/message.service';
 
 
 
@@ -17,7 +18,9 @@ export class TransactionRequestAttachmentEffects {
       ofType(TransactionRequestAttachmentActions.addTransactionRequestAttachment),
       concatMap((action) =>
         this.requestAttachmentService.addRequestAttachment(action.transactionRequestAttachment).pipe(
-          map(data => data))
+         // map(data => data)),
+        map(data => RequestActions.GetRequestDetails({requestId: action.requestID})),
+        tap( data => this.messageService.successMessage('تم إضافة المرفق بنجاح')))
       )
     );
   });
@@ -27,13 +30,14 @@ export class TransactionRequestAttachmentEffects {
 
       ofType(TransactionRequestAttachmentActions.deleteTransactionRequestAttachment),
       concatMap((action) =>
-        this.requestAttachmentService.addRequestAttachment(action.id).pipe(
+        this.requestAttachmentService.deleteRequestAttachment(action.id).pipe(
           map(data => TransactionRequestAttachmentActions.deleteTransactionRequestAttachmentSuccess({ id: action.id })))
       )
     );
   });
 
   constructor(private actions$: Actions,
-              private requestAttachmentService: RequestAttachmentService) {}
+              private requestAttachmentService: RequestAttachmentService,
+              private messageService: MessageService) {}
 
 }

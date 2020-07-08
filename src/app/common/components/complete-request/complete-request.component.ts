@@ -12,13 +12,12 @@ import {loadExemptReasons} from '../../../store/general/lookups/exemptReasons/ac
 import {DatePipe} from '@angular/common';
 import {AuthService} from '../../../auth/services/auth.service';
 import {loadUserDetails} from '../../../store/general/user-org-details/actions/user-org.actions';
-import {PDFService} from '../../services/pdf`s.service';
+import {AttachmentsService} from '../../services/attachments.service';
 import {CompleteRequestService} from '../../services/complete-request.service';
 import {MatDialog} from '@angular/material/dialog';
 import {FeesModalComponent} from '../../../modal/fees-modal/fees-modal.component';
-import {MessageService} from '../../../services/config/message.service';
-import {IFees} from '../../fees-package/IFees';
 import {CFeesEstimation} from '../../fees-package/CFees-Estimation';
+import {CRActionsModalComponent} from '../../../modal/cr-actions-modal/cr-actions-modal.component';
 
 
 @Component({
@@ -45,7 +44,7 @@ export class CompleteRequestComponent implements OnInit {
               private validationMessagesService: ValidationMessagesService,
               private customerService: CustomerService,
               private completeRequestService: CompleteRequestService,
-              private pdfService: PDFService,
+              private pdfService: AttachmentsService,
               private dialog: MatDialog,
               private authService: AuthService,
               private activatedRout: ActivatedRoute) { }
@@ -85,7 +84,7 @@ export class CompleteRequestComponent implements OnInit {
   }
 
   estimate = () => {
-    this.cFeesEstimat = new CFeesEstimation(this.store, this.requestId)
+    this.cFeesEstimat = new CFeesEstimation(this.store, this.requestId);
   return this.cFeesEstimat.firstEstimation();
   };
 
@@ -104,11 +103,21 @@ export class CompleteRequestComponent implements OnInit {
     });
   };
 
+generalActions = (num) => {
+  const dialogRef = this.dialog.open(CRActionsModalComponent, {
+    width: '500px',
+    data: num
+  });
 
+  dialogRef.afterClosed().subscribe(() => {
+  });
+};
 
+  submitRequest = () => {
 
-  mo7rrReview = () => {
-    const params = {x__RepName: 'POA_REPORT',
+  };
+  mo7rrReview = (type) => {
+    const params = {x__RepName: type,
       p___REQUEST_ID: this.encryptDecryptService.encryptUsingAES256(this.requestId),
       xat: this.authService.getToken()};
     this.pdfService.mo7rrView(params);

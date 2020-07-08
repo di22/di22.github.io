@@ -1,0 +1,129 @@
+<div class="container" fxFlexFill>
+  <div fxLayout="row" fxLayoutAlign="center center" >
+    <mat-card class="card" >
+      <mat-card-title fxLayout.gt-xs="row" fxLayout.xs="column">
+        <h5 class="headers-color">البحث</h5>
+      </mat-card-title>
+
+      <mat-divider ></mat-divider>
+
+      <mat-card-content>
+        <form [formGroup]="searchForm" novalidate autocomplete="off">
+          <div class="mat-elevation-z8 card-content-space-around" fxLayout="column" fxLayoutAlign="center">
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+              <div fxFlex="25%" fxFlexOffset.gt-lg="10px">
+                <mat-form-field>
+                  <mat-label>رقم الطلب</mat-label>
+                  <input matInput formControlName="id">
+                </mat-form-field>
+              </div>
+
+
+              <div fxFlex="10%" >
+                <mat-form-field class="input-width">
+                  <mat-label>رقم التوثيق</mat-label>
+                  <input matInput type="number" formControlName="procurationSerial">
+                </mat-form-field>
+              </div>
+              <div fxFlex="15%" >
+                <mat-form-field class="input-width">
+                  <mat-label>سنة الإصدار</mat-label>
+                  <input matInput type="number" formControlName="procurationYear">
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%" >
+                <mat-form-field>
+                  <mat-label > نوع الطلب</mat-label>
+                  <mat-select  formControlName="transactionTypeId" >
+                    <mat-option *ngFor="let requestType of (transactionCategories$ | async)|transactionsFlat" [value]="requestType.id">{{requestType.description}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div fxFlex="25%" >
+                <mat-form-field>
+                  <mat-label >الصفه</mat-label>
+                  <mat-select   formControlName="customerTypeCode">
+                    <mat-option *ngFor="let cg of (requestCustomerTypes$ | async)" [value]="cg?.id">{{cg?.description}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+
+            </div>
+
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+              <div fxFlex="25%" >
+                <mat-form-field>
+                  <mat-label >نوع الوثيفه</mat-label>
+                  <mat-select  formControlName="customerIdTypeCode">
+                    <mat-option *ngFor="let cId of (customerIdTypes$ | async)" [value]="cId.id" >{{cId.description}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%">
+                <mat-form-field >
+                  <mat-label>رقم الوثيفه</mat-label>
+                  <input matInput type="number" formControlName="qid" appInputLimiter="maxLength">
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%">
+                <mat-form-field>
+                  <mat-label>الفتره من</mat-label>
+                  <input matInput [matDatepicker]="dp" (dateChange)="onChangesFromDate($event)" formControlName="requestDateFrom">
+                  <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                  <mat-datepicker #dp></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25%">
+                <mat-form-field>
+                  <mat-label>الفتره إلي</mat-label>
+                  <input matInput [matDatepicker]="dp1" (dateChange)="onChangesToDate($event)" formControlName="requestDateTo">
+                  <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+                  <mat-datepicker #dp1></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
+          <div  >
+            <button mat-raised-button color="Basic" (click)="search(searchForm.value)">بحث</button>
+          </div>
+          <div >
+            <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>
+          </div>
+        </div>
+      </mat-card-actions>
+      <mat-card-content>
+        <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+          <!-- Position Column -->
+          <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+            <mat-header-cell *matHeaderCellDef> {{column.header}} </mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index ">
+              {{column.columnDef === 'position' ? i+1 : column.columnDef !== 'requestId' ? column.cell(element) : ''}}
+              <a *ngIf="column.columnDef === 'requestId'" mat-icon-button > {{element.request.id}} </a>
+
+
+              <a mat-icon-button *ngIf="column.columnDef === 'mo7arr-attachments'">
+                <mat-icon matTooltip="عرض" color="primary" (click)="mo7rrReview(element.request.id)">remove_red_eye</mat-icon>
+              </a>
+
+            <a mat-icon-button *ngIf="column.columnDef === 'mo7arr-attachments'">
+              <mat-icon matTooltip="المرفقات" color="primary" (click)="attachmentsView(element.request.id)">attachment</mat-icon>
+            </a>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -16,7 +16,7 @@ export class TokenInterceptorService implements HttpInterceptor {
     this.spinnerService.show();
 
     const token = this.authService.getToken();
-    if (!req.url.includes('login') && !req.url.includes('QueryROP.ashx')) {
+    if (!req.url.includes('login') && !req.url.includes('QueryROP.ashx') && !req.url.includes('moj.om.report')) {
       if (req.url.includes('notary') || req.url.includes('GetRest')) {
         req = req.clone({
           setHeaders: {
