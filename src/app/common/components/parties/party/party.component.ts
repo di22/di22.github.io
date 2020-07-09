@@ -15,7 +15,6 @@ import * as fromTransactionCustomerTypesSelectors from '../../../../store/genera
 import * as fromCustomerSelectors from './store/selectors/customer.selectors';
 import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {clearCustomers, createCustomer, deleteCustomer, updateCustomer} from './store/actions/customer.actions';
 import { MatDialog} from '@angular/material/dialog';
@@ -75,7 +74,6 @@ export class PartyComponent implements OnInit {
 
   constructor(private store: Store<State>,
               private formBuilder: FormBuilder,
-              private encryptDecryptService: EncryptDecryptService,
               private validationMessagesService: ValidationMessagesService,
               private customerService: CustomerService,
               private requestService: RequestService,
@@ -758,8 +756,5 @@ drawCommercialHumanParteners = (partners: any[]) => {
       };
     }
   };
-  encryption = (data) => {
-    return this.encryptDecryptService.encryptUsingAES256(data);
-  }
 
 }

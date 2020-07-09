@@ -10,7 +10,6 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import * as fromApp from '../../../../store';
-import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute} from '@angular/router';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
 import {ValidationMessagesService} from '../../../../services/config/validation-messages.service';
@@ -70,7 +69,6 @@ export class OptionalDataComponent implements OnInit, OnDestroy {
               private debagaService: DebagaService,
               private validationMessagesService: ValidationMessagesService,
               private formBuilder: FormBuilder,
-              private encryptDecryptService: EncryptDecryptService,
               private activatedRout: ActivatedRoute,
               private messageService: MessageService,
               private basicDataValuesPipe: GetBasicDataValuesPipe,

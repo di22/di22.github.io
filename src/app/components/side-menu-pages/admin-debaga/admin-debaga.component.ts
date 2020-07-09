@@ -2,13 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import {Store} from '@ngrx/store';
 import * as fromApp from '../../../store';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromTransactionCategoriesSelectors from '../../../store/general/categories/main-categories-selector';
-import * as fromTransactionCategories from '../../../store/general/categories/main-categories.reducer';
 import * as fromDebagaSelectors from './store/selectors/debaga.selectors';
-import * as fromDebaga from './store/reducers/debaga.reducer';
 import {AdminDebagaService} from '../../../services/admin-debaga.service';
 import {loadMainCategories} from '../../../store/general/categories/main-categories.actions';
 import {loadDebagas} from './store/actions/debaga.actions';
@@ -35,9 +32,7 @@ export class AdminDebagaComponent implements OnInit {
 
   constructor(private store: Store<fromApp.State>,
               private formBuilder: FormBuilder,
-              private adminDebagaService: AdminDebagaService,
-              private encryptDecryptService: EncryptDecryptService,
-              private activatedRout: ActivatedRoute) { }
+              private adminDebagaService: AdminDebagaService) { }
 
   ngOnInit() {
     this.initForms();

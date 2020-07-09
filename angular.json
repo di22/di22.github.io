@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "./node_modules/@angular-devkit/core/src/workspace/json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -17,6 +17,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "crypto-js"
+            ],
             "outputPath": "dist/notary",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -35,7 +38,6 @@
               "./node_modules/material-design-icons/iconfont/material-icons.css"
             ],
             "scripts": [],
-            "es5BrowserSupport": true,
             "aot": true
           },
           "configurations": {

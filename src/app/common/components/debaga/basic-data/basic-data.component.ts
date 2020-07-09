@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import {Store} from '@ngrx/store';
 import * as fromApp from '../../../../store';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
-import {EncryptDecryptService} from '../../../../services/config/encrypt-decrypt.service';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromRequestDebagaSelectors from '../store/selectors/request-debaga.selectors';
@@ -43,7 +42,6 @@ export class BasicDataComponent implements OnInit {
               private messageService: MessageService,
               private customerService: CustomerService,
               private dialog: MatDialog,
-              private encryptDecryptService: EncryptDecryptService,
               private router: Router) { }
 
   ngOnInit() {

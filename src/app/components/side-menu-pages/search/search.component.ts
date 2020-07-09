@@ -199,8 +199,4 @@ export class SearchComponent implements OnInit {
   clearForm = () => {
     this.searchForm.reset();
   };
-
-  encryption = (data) => {
-    return this.encryptDecryptService.encryptUsingAES256(data);
-  };
 }

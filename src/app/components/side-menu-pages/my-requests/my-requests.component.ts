@@ -5,8 +5,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {TableDataService} from '../../../common/services/table-data.service';
 import {AuthService} from '../../../auth/services/auth.service';
 import {RouteService} from '../../../services/route.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 import {InboxService} from '../../../services/inbox.service';
 import {Observable} from 'rxjs';
 import * as fromTransactionCategoriesSelector from '../../../store/general/categories/main-categories-selector';
@@ -47,8 +45,7 @@ export class MyRequestsComponent implements OnInit {
               private formBuilder: FormBuilder,
               private authService: AuthService,
               private routeService: RouteService,
-              private inboxService: InboxService,
-              private encryptDecryptService: EncryptDecryptService) {
+              private inboxService: InboxService) {
     this.tableDataService.getMyRequestsTable();
     this.columns = this.tableDataService.tableColumns;
     this.displayedColumns = this.tableDataService.displayColumns;

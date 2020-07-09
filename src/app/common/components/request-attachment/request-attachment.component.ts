@@ -4,7 +4,6 @@ import * as fromApp from '../../../store';
 import * as fromRequestAttachmentSelectors from '../../../store/general/lookups/requestAttachments/selectors/request-attachments.selectors';
 import * as fromTransactionRequestAttachmentSelectors from './store/selectors/transaction-request-attachment.selectors';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {EncryptDecryptService} from '../../../services/config/encrypt-decrypt.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {RequestAttachments} from '../../../DTO`s/requestAttachments';
@@ -50,7 +49,6 @@ export class RequestAttachmentComponent implements OnInit {
 
   constructor(private store: Store<fromApp.State>,
               private formBuilder: FormBuilder,
-              private encryptDecryptService: EncryptDecryptService,
               private attachmentsService: AttachmentsService,
               private validationMessagesService: ValidationMessagesService,
               private authService: AuthService,
