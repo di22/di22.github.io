@@ -109,8 +109,8 @@ import { TransactionTypesComponent } from './components/side-menu-pages/transact
   ],
   providers: [reducerProvider,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    ErrorHandlerService,
-    {provide: ErrorHandler, useClass: ErrorHandlerService}
+   // ErrorHandlerService,
+    //{provide: ErrorHandler, useClass: ErrorHandlerService}
     ],
     exports: [
         MainCategoriesComponent,

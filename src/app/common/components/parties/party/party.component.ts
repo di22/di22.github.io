@@ -668,15 +668,15 @@ if (this.mociData) {
       if (result && result.length > 0) {
         const api = [];
         this.customers$.subscribe(res => {
-          res.forEach((ele, i) => {
+          res.forEach((ele) => {
           //  this.deleteProcurationCustomer()
              api.push(this.customerService.deleteCustomer({"success":true,"status":null,"data":{"id":ele.customer.id}}));
           });
         }).unsubscribe();
-        zip(...api).subscribe(res => {
+        zip(...api).subscribe(() => {
           this.store.dispatch(clearCustomers());
 
-          result.forEach((e, i) => {
+          result.forEach((e) => {
             this.clearForm();
             this.procurationCustomer.patchValue({
               facilityData: {
@@ -715,6 +715,9 @@ if (this.mociData) {
     return office && office.InstitutionName ? office.InstitutionName : '';
   }
 
+  isPOA = (): boolean => {
+   return this.router.url.includes('POA');
+  }
 drawCommercialHumanParteners = (partners: any[]) => {
   return partners.map(e => ({
         humanName: e.person.arabicName,

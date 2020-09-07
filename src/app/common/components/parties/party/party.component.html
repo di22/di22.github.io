@@ -324,7 +324,7 @@
       <mat-card-actions>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="center">
           <div>
-            <button mat-raised-button color="Basic" [disabled]="!requestId || (participantType === 1 && url.includes('POA_LAWYER') && ((customers$ | async)| customerParticpantType: 1).length === 1 && !procurationCustomer.value.id)" (click)="creatProcurationCustomer(procurationCustomer)">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
+            <button mat-raised-button color="Basic" [disabled]="!requestId || (participantType === 1 && url.includes('POA') && ((customers$ | async)| customerParticpantType: 1).length === 1 && !procurationCustomer.value.id)" (click)="creatProcurationCustomer(procurationCustomer)">{{procurationCustomer.value.id ? 'تعديل' : 'إضافه'}}</button>
           </div>
           <div>
           <button mat-raised-button color="warn" (click)="clearForm()">مسح</button>

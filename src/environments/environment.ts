@@ -4,14 +4,15 @@
 
 export const environment = {
   production: true,
-   apiURL : 'https://ntry.moj.gov.om/',
-  //   apiURL : 'https://tstntry.moj.gov.om/',
+  apiURL : 'https://ntry.moj.gov.om/',
+    // apiURL : 'https://tstntry.moj.gov.om/',
  // apiURL : 'http://192.168.0.45:7400/',
  //  ROPURL : 'http://192.168.0.47:888/QueryROP.ashx',
    ROPURL : 'https://ews.moj.gov.om/QueryROP.ashx',
  //  ROPURL : 'https://ewsstg.moj.gov.om/QueryROP.ashx',
   asmxURL: 'http://192.168.0.47:8001/',
-   PORTAL_BASE_URL: 'https://iwsstg.moj.gov.om/PortalWebService.asmx/',
+  // PORTAL_BASE_URL: 'https://iwsstg.moj.gov.om/PortalWebService.asmx/',
+   PORTAL_BASE_URL: 'https://iws.moj.gov.om/PortalWebService.asmx/',
 //  PORTAL_BASE_URL: 'http://192.168.0.47:8001/PortalWebService.asmx/',
   paymentURLService: 'https://192.168.0.47:888/pay.ashx', // url param (amount)
  // paymentURLServiceMok: 'http://192.168.0.47:888/pay.ashx', // url param (amount)

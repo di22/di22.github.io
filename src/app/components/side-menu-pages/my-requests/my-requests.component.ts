@@ -13,6 +13,7 @@ import {State} from '../../../store';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {loadMainCategories} from '../../../store/general/categories/main-categories.actions';
+import moment from 'moment';
 
 @Component({
   selector: 'app-my-requests',
@@ -67,10 +68,13 @@ export class MyRequestsComponent implements OnInit {
       transactionTypeId: [],
       requestNo: [],
       pageNo: [1],
-      pageSize: [1000000000],
+      pageSize: [10],
     });
   };
   search = (searchObj) => {
+    if(!this.dateFrom) {
+      this.onChangesFromDate(moment(new Date()).format('YYYY-MM-DD'))
+    }
     searchObj.requestDateTo = this.dateTo;
     searchObj.requestDateFrom = this.dateFrom;
     this.searchObj = Object.assign({}, this.searchObj, {
@@ -82,11 +86,19 @@ export class MyRequestsComponent implements OnInit {
 
   };
   onChangesFromDate = (event: any) => {
-    this.dateFrom = {
-      day: `${event.value._i.date}`,
-      month: `${event.value._i.month + 1}`,
-      year: `${event.value._i.year}`
-    };
+    if(typeof event == 'string') {
+      this.dateFrom = {
+        day: `${event.split('-')[2]}`,
+        month: `${event.split('-')[1]}`,
+        year: `${event.split('-')[0]}`
+      };
+    } else {
+      this.dateFrom = {
+        day: `${event.value._i.date}`,
+        month: `${event.value._i.month + 1}`,
+        year: `${event.value._i.year}`
+      };
+    }
   };
   onChangesToDate = (event: any) => {
     this.dateTo = {

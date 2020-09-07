@@ -13,7 +13,7 @@ export class Optional_Debaga_Fees implements IFees{
   constructor(private store: Store<State>) {
    this.requestDebaga$.subscribe(res => {
       this.amount =  res.reduce((acc, ele) => {
-        if (ele.debagaTemplate.cost && ele.text && !ele.groupNumber) {
+        if (ele.debagaTemplate.cost && ele.text && ele.text !== 'false' && !ele.groupNumber) {
           acc += +ele.debagaTemplate.cost;
         }
         return acc;
