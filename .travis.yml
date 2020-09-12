@@ -1,0 +1,18 @@
+language: node_js
+app: notary
+node_js:
+  - "12.15.0"
+branches:
+  only:
+    - newFeature
+before_script:
+  - npm install -g @angular/cli
+script:
+  - npm install
+  - npm run build
+deploy:
+  skip_cleanup: true
+  provider: heroku
+  api_key: "secure api key"
+  on:
+    all_branches: true
