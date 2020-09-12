@@ -127,7 +127,6 @@ export class PartyComponent implements OnInit {
       this.procurationCustomer.get('procuration').get('issuer').updateValueAndValidity();
       this.procurationCustomer.get('procuration').get('repProcurationSerial').updateValueAndValidity();
       this.procurationCustomer.get('procuration').get('procurationNote').updateValueAndValidity();
-
       if (value !== 55 || value !== 64 || value !== 6) {
         this.procurationCustomer.get('facilityData').reset();
       }
