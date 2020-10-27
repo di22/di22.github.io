@@ -1,10 +1,9 @@
 {
-  "main": "server.js",
   "name": "notary",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "node server.js",
+    "start": "ng serve",
     "eg-local": "ng serve -o --port 999 -c egLocal",
     "om-dev": "ng serve -o --port 999 -c omDev",
     "om-prod": "ng serve -o --port 999 -c omProd",
@@ -12,17 +11,12 @@
     "build": "ng build --prod --aot --base-href ./",
     "build-eg-local": "ng build -c egLocal --base-href ./",
     "build-om-dev": "ng build -c omDev --base-href ./",
-    "build-om-prod": "ng build -c omProd --base-href ./",
+    "build-om-prod": "ng build --prod --aot -c omProd --base-href ./",
     "build-om-test": "ng build -c omTest --base-href ./",
     "postbuild": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
-  },
-
-  "engines": {
-    "node": "12.15.0",
-    "npm": "6.14.6"
   },
   "private": true,
   "dependencies": {
