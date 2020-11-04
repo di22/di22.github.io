@@ -11,9 +11,9 @@
     "build": "ng build --prod --aot --base-href ./",
     "build-eg-local": "ng build -c egLocal --base-href ./",
     "build-om-dev": "ng build -c omDev --base-href ./",
-    "build-om-prod": "ng build -c omProd --base-href ./",
+    "build-om-prod": "ng build --prod --aot -c omProd --base-href ./",
     "build-om-test": "ng build -c omTest --base-href ./",
-    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
+    "postbuild": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -43,7 +43,9 @@
     "angular-cli-ghpages": "^0.6.2",
     "core-js": "^3.6.5",
     "crypto-js": "^4.0.0",
+    "express": "^4.17.1",
     "html2canvas": "^1.0.0-rc.5",
+    "http": "0.0.1-security",
     "jspdf": "^1.5.3",
     "mapbox-gl": "^1.11.1",
     "material-design-icons": "^3.0.1",
@@ -51,8 +53,10 @@
     "ng-form-group": "^1.4.2",
     "ngx-spinner": "^9.0.2",
     "normalize.css": "^8.0.1",
+    "path": "^0.12.7",
     "rxjs": "^6.6.0",
     "tslib": "^2.0.0",
+    "typescript": "3.9.6",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

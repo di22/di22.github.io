@@ -235,13 +235,7 @@
     transform: scale(1);
   }
 }
-.shake{
-  &:hover{
-    li, img {
-      animation: shake 1200ms ;
-    }
-  }
-}
+
 @keyframes shake{
   0%{transform: rotateZ(0);}
   $pos: 1;
